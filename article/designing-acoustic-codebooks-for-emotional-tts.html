@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Designing Acoustic Codebooks for Emotional TTS - tts</title>
+    <meta name="description" content="Modern neural Text-to-Speech (TTS) models increasingly rely on discrete acoustic codebooks to compress high-fidelity audio into manageable tokens. However, standard lossy vector quantization frequently discards subtle acoustic details—such as micro-pro">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/designing-acoustic-codebooks-for-emotional-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Designing Acoustic Codebooks for Emotional TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/designing-acoustic-codebooks-for-emotional-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern neural Text-to-Speech (TTS) models increasingly rely on discrete acoustic codebooks to compress high-fidelity audio into manageable tokens. However, standard lossy vector quantization frequently discards subtle acoustic details—such as micro-pro" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="designing-acoustic-codebooks-for-emotional-tts">Designing
+Acoustic Codebooks for Emotional TTS</h1>
+<p>Modern neural Text-to-Speech (TTS) models increasingly rely on
+discrete acoustic codebooks to compress high-fidelity audio into
+manageable tokens. However, standard lossy vector quantization
+frequently discards subtle acoustic details—such as micro-prosody, vocal
+fry, and breathiness—that carry vital emotional nuance. Preserving these
+expressive characteristics requires a deliberate redesign of the
+quantization pipeline, focusing on disentangled representations,
+multi-scale residual quantization, and emotion-aware objective
+functions.</p>
+<h3 id="disentangling-prosody-from-phonetic-content">Disentangling
+Prosody from Phonetic Content</h3>
+<p>Standard neural audio codecs compress speech into a shared latent
+space where dominant linguistic patterns often suppress subtler
+emotional signals. To preserve emotional nuance, codebooks should be
+split into dedicated, disentangled streams:</p>
+<ul>
+<li><strong>Prosodic Codebooks:</strong> Quantize low-frequency
+variations, including fundamental frequency (<span
+class="math inline">\(F_0\)</span>) contours, energy trajectories, and
+duration patterns across syllable and sentence boundaries.</li>
+<li><strong>Acoustic/Timbral Codebooks:</strong> Quantize spectral
+envelope details, vocal tract resonances, and paralinguistic cues such
+as trembling or breathy phonation.</li>
+<li><strong>Linguistic Codebooks:</strong> Quantize canonical phonemic
+content independently, preventing phonetic reconstruction from
+overpowering subtle expressive variations.</li>
+</ul>
+<p>Explicitly separating these features forces the quantization
+bottleneck to retain distinct representations of emotional state rather
+than discarding them as negligible reconstruction noise.</p>
+<h3 id="structuring-hierarchical-and-residual-quantization">Structuring
+Hierarchical and Residual Quantization</h3>
+<p>Residual Vector Quantization (RVQ) is widely used to scale codebook
+capacity, but naive implementations allocate most bits to coarse timbral
+matching. Codebooks can be structured to preserve emotional
+hierarchy:</p>
+<ul>
+<li><strong>Depth-Wise Allocation:</strong> Assign the initial
+quantization stages strictly to macro-prosody and emotional tone.
+Because emotional arousal and valence are primarily driven by
+macro-level intonation, anchoring the first codebook layers to these
+attributes ensures that even low-bitrate generation maintains the target
+emotion.</li>
+<li><strong>Micro-Dynamic Capture in Later Stages:</strong> Use the
+deeper RVQ layers specifically for high-frequency paralinguistic
+artifacts (such as sighs, gasps, and vocal creak). Preventing aggressive
+codebook dropout during training ensures these emotional cues are not
+pruned.</li>
+<li><strong>Temporal Multi-Scale Processing:</strong> Implement
+different frame rates across codebooks. A slower frame rate (e.g., 20–50
+Hz) captures sentence-level emotional prosody, while a faster frame rate
+captures transient expressive nuances without ballooning the overall
+token count.</li>
+</ul>
+<h3 id="implementing-emotion-aware-optimization">Implementing
+Emotion-Aware Optimization</h3>
+<p>Codebook learning depends on the loss landscape used during training.
+Standard reconstruction metrics—such as <span
+class="math inline">\(L_1\)</span> mel-spectrogram distance and broad
+adversarial losses—favor intelligibility and perceptual sharpness over
+emotional fidelity. To safeguard expressive nuances, the training
+pipeline must incorporate dedicated emotional objectives:</p>
+<ul>
+<li><strong>Perceptual Emotion Distance:</strong> Utilize pre-trained
+Speech Emotion Recognition (SER) models to compute perceptual
+feature-matching losses in the latent space of the codec. This penalizes
+the quantizer when it alters the emotional classification of the
+reconstructed output.</li>
+<li><strong>Pitch and Energy Dynamics Loss:</strong> Apply explicit
+regression losses to extracted <span class="math inline">\(F_0\)</span>
+and root-mean-square (RMS) energy contours, particularly penalizing
+deviations at inflection points where emotional transitions occur.</li>
+<li><strong>Contrastive Expressive Loss:</strong> Use self-supervised
+contrastive learning to push speech segments with different emotional
+intensities into distinct regions of the codebook space, preventing
+expressive compression collapse.</li>
+</ul>
+<h3 id="dynamic-bitrate-and-codebook-capacity">Dynamic Bitrate and
+Codebook Capacity</h3>
+<p>Emotional speech features high variance in information density; a
+calm sentence requires fewer expressive bits than an impassioned
+exclamation. Employing variable-rate quantization or dynamic codebook
+routing allows the codec to allocate higher bit depths to emotionally
+volatile segments while compressing neutral passages more aggressively.
+This preserves critical emotional inflection without unnecessarily
+increasing the overall sequence length for downstream TTS
+generation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

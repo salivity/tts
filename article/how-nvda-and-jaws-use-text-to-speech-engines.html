@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How NVDA and JAWS Use Text-to-Speech Engines - tts</title>
+    <meta name="description" content="This article explores how screen readers such as NonVisual Desktop Access (NVDA) and Job Access With Speech (JAWS) bridge the gap between operating systems and blind users by leveraging Text-to-Speech (TTS) engines. It breaks down the process of intercep">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-nvda-and-jaws-use-text-to-speech-engines">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How NVDA and JAWS Use Text-to-Speech Engines - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-nvda-and-jaws-use-text-to-speech-engines" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores how screen readers such as NonVisual Desktop Access (NVDA) and Job Access With Speech (JAWS) bridge the gap between operating systems and blind users by leveraging Text-to-Speech (TTS) engines. It breaks down the process of intercep" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-nvda-and-jaws-use-text-to-speech-engines">How NVDA and JAWS
+Use Text-to-Speech Engines</h1>
+<p>This article explores how screen readers such as NonVisual Desktop
+Access (NVDA) and Job Access With Speech (JAWS) bridge the gap between
+operating systems and blind users by leveraging Text-to-Speech (TTS)
+engines. It breaks down the process of intercepting system events
+through accessibility Application Programming Interfaces (APIs),
+translating visual interface elements into readable text, communicating
+with speech synthesizers, and outputting low-latency audio to ensure
+real-time computer navigation.</p>
+<h3 id="the-accessibility-tree-and-system-interception">The
+Accessibility Tree and System Interception</h3>
+<p>To verbalize what is on the screen, a screen reader must first
+understand the user interface. Operating systems like Windows do not
+expose their interface to screen readers merely as pixels; instead, they
+maintain a hierarchical structure of accessible elements known as the
+Accessibility Tree.</p>
+<p>Screen readers hook into the operating system using specialized
+Accessibility APIs, including Microsoft Active Accessibility (MSAA), UI
+Automation (UIA), and IAccessible2. When an operating system event
+occurs—such as moving focus to a desktop icon, opening a dialog box, or
+typing a character—the OS fires an event notification. Both NVDA and
+JAWS monitor these hooks continuously to identify the focused element,
+its role (e.g., button, checkbox, link), its state (e.g., checked,
+disabled, focused), and its accessible name or value.</p>
+<h3 id="text-and-attribute-normalization">Text and Attribute
+Normalization</h3>
+<p>Once the screen reader retrieves the raw data from the accessibility
+API, it filters and formats the information into a logical sequence.
+Screen readers apply internal translation rules based on user
+settings:</p>
+<ul>
+<li><strong>Role and State Presentation:</strong> The screen reader
+determines how and when to append the element's role (e.g., reading
+"Submit, button" versus "Button, Submit").</li>
+<li><strong>Phonetic and Pronunciation Dictionaries:</strong>
+User-defined dictionaries replace specific strings, abbreviations, or
+jargon with phonetic representations before the text reaches the speech
+synthesizer.</li>
+<li><strong>Symbol and Punctuation Processing:</strong> The user's
+punctuation level settings dictate whether characters such as commas,
+hyphens, or brackets are spoken aloud or inferred through vocal
+pauses.</li>
+</ul>
+<h3 id="communicating-with-text-to-speech-engines">Communicating with
+Text-to-Speech Engines</h3>
+<p>After assembling the normalized text stream, the screen reader sends
+this data directly to a Text-to-Speech (TTS) engine. The screen reader
+communicates with the synthesizer using standard or proprietary driver
+interfaces:</p>
+<ol type="1">
+<li><strong>System APIs:</strong> Both NVDA and JAWS can utilize native
+platform synthesizers via Microsoft Speech API (SAPI 5) or the modern
+Windows OneCore voices.</li>
+<li><strong>Proprietary and Third-Party Drivers:</strong> Professional
+users often prefer high-performance, responsive synthesizers like
+Eloquence, Vocalizer, or open-source solutions like eSpeak NG. JAWS and
+NVDA use dedicated software drivers to communicate directly with these
+engines, bypassing generic OS audio overhead.</li>
+</ol>
+<p>Along with the plain text, the screen reader delivers control
+parameters to the synthesizer. These parameters include pitch, speech
+rate, volume, and inflections. In some implementations, screen readers
+embed Speech Synthesis Markup Language (SSML) or synthesizer-specific
+control codes to adjust pitch dynamically—for instance, raising pitch to
+indicate an uppercase letter.</p>
+<h3 id="audio-pipeline-and-low-latency-playback">Audio Pipeline and
+Low-Latency Playback</h3>
+<p>For blind users navigating via keyboard shortcuts, responsiveness is
+critical. A delay of even 100 milliseconds between a keystroke and
+speech feedback can make an operating system feel sluggish and difficult
+to control.</p>
+<p>To achieve minimal latency:</p>
+<ul>
+<li><strong>Wave Stream Buffering:</strong> Modern TTS engines
+synthesize audio into small, real-time audio buffers rather than
+rendering entire sentences at once.</li>
+<li><strong>Audio Interruption Handling:</strong> When a user presses an
+arrow key while the screen reader is speaking, the screen reader
+instantly sends an interrupt signal to the TTS engine. The synthesizer
+halts generation immediately, purges the current audio buffer from the
+sound device, and begins processing the new context.</li>
+</ul>
+<p>Through this continuous cycle of event interception, text
+normalization, synthesizer control, and audio management, NVDA and JAWS
+convert complex graphical interfaces into immediate acoustic feedback,
+granting blind users full control over the underlying operating
+system.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

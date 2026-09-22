@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sub-Band Coding in Neural TTS Vocoders - tts</title>
+    <meta name="description" content="Sub-band coding optimizes computational efficiency in neural Text-to-Speech (TTS) vocoders by decomposing high-rate, full-band audio signals into multiple narrow frequency bands with lower sampling rates. By predicting these lower-rate sub-bands in paral">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/sub-band-coding-in-neural-tts-vocoders">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Sub-Band Coding in Neural TTS Vocoders - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/sub-band-coding-in-neural-tts-vocoders" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Sub-band coding optimizes computational efficiency in neural Text-to-Speech (TTS) vocoders by decomposing high-rate, full-band audio signals into multiple narrow frequency bands with lower sampling rates. By predicting these lower-rate sub-bands in paral" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="sub-band-coding-in-neural-tts-vocoders">Sub-Band Coding in
+Neural TTS Vocoders</h1>
+<p>Sub-band coding optimizes computational efficiency in neural
+Text-to-Speech (TTS) vocoders by decomposing high-rate, full-band audio
+signals into multiple narrow frequency bands with lower sampling rates.
+By predicting these lower-rate sub-bands in parallel and subsequently
+reconstructing the full-band waveform using digital filter banks,
+vocoders drastically reduce mathematical operations and latency without
+significantly degrading perceived audio quality. This article explores
+the mechanics of frequency spectrum division, downsampling, and parallel
+synthesis in modern neural vocoding architectures.</p>
+<h3 id="the-computational-bottleneck-in-neural-vocoding">The
+Computational Bottleneck in Neural Vocoding</h3>
+<p>Standard high-fidelity speech typically requires a sampling rate of
+24 kHz, 44.1 kHz, or 48 kHz. In a raw waveform generation model,
+synthesizing one second of audio involves predicting tens of thousands
+of sequential or spatially deep samples. Whether utilizing
+autoregressive networks, diffusion models, or generative adversarial
+networks (GANs), full-band waveform modeling demands heavy computational
+overhead, making real-time inference challenging on edge devices or
+resource-constrained servers.</p>
+<h3 id="frequency-decomposition-via-analysis-filter-banks">Frequency
+Decomposition via Analysis Filter Banks</h3>
+<p>Sub-band coding mitigates this issue by dividing the total frequency
+spectrum into <span class="math inline">\(N\)</span> distinct sub-bands
+before neural processing. This division is commonly achieved using an
+analysis filter bank, such as a Pseudo-Quadrature Mirror Filter (PQMF)
+bank.</p>
+<p>The analysis filter bank splits the incoming acoustic target into
+discrete spectral regions:</p>
+<ol type="1">
+<li><strong>Low-frequency bands:</strong> Capture fundamental
+frequencies (<span class="math inline">\(F_0\)</span>) and primary
+formants essential for speech intelligibility.</li>
+<li><strong>High-frequency bands:</strong> Capture fricatives,
+sibilance, and ambient breathiness.</li>
+</ol>
+<p>Because each sub-band covers only <span
+class="math inline">\(1/N\)</span> of the total bandwidth, the
+Nyquist-Shannon sampling theorem allows each band to be downsampled
+(decimated) by a factor of <span class="math inline">\(N\)</span>. For
+example, an audio signal originally sampled at 24 kHz split into 4 equal
+sub-bands yields four distinct signals, each sampled at just 6 kHz.</p>
+<h3 id="how-spectrum-division-optimizes-neural-generation">How Spectrum
+Division Optimizes Neural Generation</h3>
+<p>Dividing and downsampling the spectrum yields multiple architectural
+and computational advantages during model inference:</p>
+<ul>
+<li><strong>Temporal Reduction:</strong> By reducing the effective
+sequence length by a factor of <span class="math inline">\(N\)</span>,
+temporal convolutions or recurrent loops operate over far fewer steps
+per second of audio.</li>
+<li><strong>Parallel Processing:</strong> Neural vocoders (such as
+Multi-band MelGAN or Sub-band WaveRNN) synthesize all <span
+class="math inline">\(N\)</span> sub-bands simultaneously. Instead of
+generating a single 24 kHz waveform sequentially, the network outputs
+four 6 kHz streams concurrently, distributing the workload across
+parallel hardware threads or tensor cores.</li>
+<li><strong>Reduced Receptive Field Requirements:</strong> At lower
+temporal resolutions, dilated convolutions cover larger time spans with
+fewer layers, allowing models to use shallower networks with fewer
+parameters while still capturing long-range acoustic dependencies.</li>
+<li><strong>Efficient Memory Footprint:</strong> Processing shorter
+sequence representations significantly lowers activation memory usage
+during forward passes, enabling higher batch sizes and faster generation
+throughput.</li>
+</ul>
+<h3 id="reconstruction-via-synthesis-filter-banks">Reconstruction via
+Synthesis Filter Banks</h3>
+<p>Once the neural network predicts the lower-rate sub-bands from input
+acoustic features (such as mel-spectrograms), the final step is signal
+reconstruction.</p>
+<p>Rather than relying on a heavy neural network to upsample the audio
+back to the full resolution, the vocoder passes the predicted sub-bands
+through a non-trainable, mathematically deterministic synthesis filter
+bank (such as an inverse PQMF). The synthesis filter bank upsamples the
+sub-bands, applies phase-canceling reconstruction filters to neutralize
+spectral leakage and aliasing between adjacent bands, and sums them into
+a single, high-fidelity full-band waveform.</p>
+<p>Because the synthesis filter bank consists of lightweight
+mathematical operations, this final step takes negligible compute time,
+achieving real-time or faster-than-real-time performance while retaining
+near-original audio fidelity.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

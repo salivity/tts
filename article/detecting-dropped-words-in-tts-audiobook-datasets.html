@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detecting Dropped Words in TTS Audiobook Datasets - tts</title>
+    <meta name="description" content="Building high-quality Text-to-Speech (TTS) models requires clean, verbatim alignment between audio recordings and reference transcripts. In massive audiobook corpora, narrators frequently paraphrase, skip small function words, or misread complex sentence">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/detecting-dropped-words-in-tts-audiobook-datasets">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Detecting Dropped Words in TTS Audiobook Datasets - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/detecting-dropped-words-in-tts-audiobook-datasets" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Building high-quality Text-to-Speech (TTS) models requires clean, verbatim alignment between audio recordings and reference transcripts. In massive audiobook corpora, narrators frequently paraphrase, skip small function words, or misread complex sentence" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="detecting-dropped-words-in-tts-audiobook-datasets">Detecting
+Dropped Words in TTS Audiobook Datasets</h1>
+<p>Building high-quality Text-to-Speech (TTS) models requires clean,
+verbatim alignment between audio recordings and reference transcripts.
+In massive audiobook corpora, narrators frequently paraphrase, skip
+small function words, or misread complex sentences. Training on these
+noisy pairs introduces severe artifacts, including hallucinated speech,
+audio cutoffs, and unnatural pacing. This article outlines the primary
+automated techniques—ranging from forced alignment heuristics to
+ASR-based transcript diffing and confidence metrics—used to detect and
+filter out dropped words and misread text at scale.</p>
+<h3 id="1-asr-transcription-and-levenshtein-diffing">1. ASR
+Transcription and Levenshtein Diffing</h3>
+<p>The most direct way to identify discrepancies between an audiobook
+recording and its script is to transcribe the audio using an
+independent, high-accuracy Automatic Speech Recognition (ASR) model
+(such as Whisper or an optimized Conformer model) and compute the
+difference.</p>
+<ul>
+<li><strong>Word Error Rate (WER) and Character Error Rate (CER)
+Filtering:</strong> Compute the Levenshtein distance between the raw
+script and the ASR transcript. Sentences or audio chunks exceeding an
+empirical WER threshold (typically 5% to 10%) are automatically flagged
+or purged.</li>
+<li><strong>Token-Level Diff Analysis:</strong> By inspecting the
+specific edit operations (Insertions, Deletions, Substitutions),
+automated pipelines can detect dropped words (deletions in the ASR
+output) or misread vocabulary (substitutions).</li>
+<li><strong>Normalized Text Comparison:</strong> Prior to diffing, both
+the script and the ASR transcript must pass through identical text
+normalization pipelines (expanding numbers, standardizing contractions,
+and stripping punctuation) to ensure the diff highlights genuine
+narrator errors rather than formatting variations.</li>
+</ul>
+<h3 id="2-forced-alignment-duration-and-boundary-checks">2. Forced
+Alignment Duration and Boundary Checks</h3>
+<p>Forced aligners map known text to audio at the phoneme or word level
+by optimizing an acoustic model against the audio wave. The resulting
+temporal boundaries reveal physical anomalies that signify skipped or
+mispronounced text.</p>
+<ul>
+<li><strong>Near-Zero Token Durations:</strong> When a narrator drops a
+word, forced alignment algorithms (such as the Montreal Forced Aligner
+or CTC-based aligners) frequently compress that word into an unnaturally
+tiny time window (e.g., under 20 milliseconds) to fit the global
+acoustic path. Detecting phonemes or words below a minimum physical
+duration threshold automatically identifies skipped segments.</li>
+<li><strong>Outlier Speech Rates:</strong> Calculating the speaking rate
+(characters or syllables per second) for each segment highlights
+irregularities. An abnormally high syllable rate often indicates the
+narrator skipped text, while a very low rate indicates inserted words,
+false starts, or repeated sentences.</li>
+</ul>
+<h3 id="3-ctc-and-attention-based-alignment-confidence">3. CTC and
+Attention-Based Alignment Confidence</h3>
+<p>Modern alignment architectures generate confidence scores based on
+how well the acoustic features match the expected phonemic sequence.</p>
+<ul>
+<li><strong>Acoustic Posterior Probabilities:</strong> Aligners generate
+frame-level posterior probabilities for each expected phoneme. When a
+word is misread or pronounced incorrectly, the acoustic model outputs
+low probability scores across that specific token. Segments can be
+rejected if the minimum or average token confidence drops below a
+predetermined limit.</li>
+<li><strong>Monotonicity Checks in Cross-Attention:</strong>
+Attention-based alignment models typically display a strictly diagonal
+attention matrix between text tokens and audio frames. A flattened,
+discontinuous, or skipping attention path signals that the narrator
+either jumped ahead (dropped words) or repeated text.</li>
+</ul>
+<h3 id="4-semantic-similarity-verification">4. Semantic Similarity
+Verification</h3>
+<p>While ASR diffing flags exact text mismatches, narrators sometimes
+substitute synonyms or drop non-essential clauses that traditional diffs
+might over-penalize or fail to interpret contextually.</p>
+<ul>
+<li><strong>Embedding Distance:</strong> Encoding the original script
+sentence and the ASR-transcribed sentence with a sentence-transformer
+model allows the system to compute cosine similarity.</li>
+<li><strong>Thresholding Major Omissions:</strong> A drop in semantic
+similarity without a high raw edit distance often points to the omission
+of critical words (like negations such as "not" or "never") that
+radically change the meaning of the sentence.</li>
+</ul>
+<h3 id="5-multi-stage-automated-filtering-pipeline">5. Multi-Stage
+Automated Filtering Pipeline</h3>
+<p>Processing thousands of hours of audio requires balancing
+computational cost with precision. Production TTS pipelines typically
+employ a tiered filtering approach:</p>
+<ol type="1">
+<li><strong>Coarse Audio Splitting:</strong> Segment the continuous
+audiobook into sentence- or paragraph-level chunks using Voice Activity
+Detection (VAD) and script anchors.</li>
+<li><strong>Fast Alignment and Duration Filtering:</strong> Run a
+lightweight CTC aligner to reject segments with severe duration
+anomalies and zero-length tokens.</li>
+<li><strong>ASR Verification:</strong> Run flagged or boundary segments
+through an ASR model to precisely log deletions and substitutions.</li>
+<li><strong>Targeted Slicing or Rejection:</strong> Discard segments
+with structural misreads entirely, or slice out cleanly aligned
+sub-phrases to preserve usable training audio.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

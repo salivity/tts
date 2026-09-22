@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Early HMM-Based TTS Sounded Muffled and Buzzy - tts</title>
+    <meta name="description" content="Early Hidden Markov Model (HMM) text-to-speech synthesis represented a major breakthrough in flexible, low-footprint parametric speech generation, yet it was widely recognized for producing a synthetic voice that sounded both muffled and buzzy. This char">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-early-hmm-based-tts-sounded-muffled-and-buzzy">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Early HMM-Based TTS Sounded Muffled and Buzzy - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-early-hmm-based-tts-sounded-muffled-and-buzzy" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Early Hidden Markov Model (HMM) text-to-speech synthesis represented a major breakthrough in flexible, low-footprint parametric speech generation, yet it was widely recognized for producing a synthetic voice that sounded both muffled and buzzy. This char" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-early-hmm-based-tts-sounded-muffled-and-buzzy">Why Early
+HMM-Based TTS Sounded Muffled and Buzzy</h1>
+<p>Early Hidden Markov Model (HMM) text-to-speech synthesis represented
+a major breakthrough in flexible, low-footprint parametric speech
+generation, yet it was widely recognized for producing a synthetic voice
+that sounded both muffled and buzzy. This characteristic timbre was
+primarily the result of two interconnected limitations: the statistical
+averaging of spectral features, which eliminated dynamic acoustic
+details, and the reliance on simplistic vocoder excitation models that
+failed to capture the organic complexity of the human vocal tract.</p>
+<h3
+id="statistical-oversmoothing-the-cause-of-muffled-speech">Statistical
+Oversmoothing: The Cause of Muffled Speech</h3>
+<p>The muffled, distant quality of early HMM-based synthesis stemmed
+from a phenomenon known as statistical oversmoothing. HMM-based systems
+generate speech parameters—such as mel-cepstral coefficients (MCEPs) and
+fundamental frequency (<span class="math inline">\(F_0\)</span>)—by
+calculating maximum likelihood trajectories from statistical
+distributions.</p>
+<p>Because the models averaged training data across numerous phonetic
+contexts and speaker utterances, the generated spectral trajectories
+represented a statistical mean rather than natural, instantaneous
+acoustic variation. This process rounded off sharp spectral peaks
+(formants) and eliminated the rapid frame-to-frame variance found in
+human speech. The resulting loss of spectral contrast and high-frequency
+nuance created an acoustic low-pass filtering effect, making the
+synthesized voice sound flat, muddy, and muffled.</p>
+<h3
+id="primitive-excitation-models-the-cause-of-the-buzzy-timbre">Primitive
+Excitation Models: The Cause of the Buzzy Timbre</h3>
+<p>The unnatural "buzz" in early HMM synthesis was largely an artifact
+of the vocoders used to reconstruct speech from the generated
+parameters, such as basic source-filter models and early versions of the
+STRAIGHT vocoder.</p>
+<p>These vocoders relied on an overly simplified representation of the
+glottal source:</p>
+<ul>
+<li><strong>Periodic Impulse Trains:</strong> Voiced speech was
+typically modeled by driving the synthesis filter with a rigid train of
+impulses (Dirac delta functions) spaced at intervals corresponding to
+the pitch period. In biological speech, vocal fold vibration is
+irregular, containing subtle period-to-period variations in timing
+(jitter) and amplitude (shimmer). The mathematically perfect periodicity
+of the synthetic impulse train produced harsh harmonic overtones
+perceived by the human ear as a mechanical buzz.</li>
+<li><strong>Binary Voiced/Unvoiced Decisions:</strong> Early systems
+categorized speech frames strictly as either voiced (periodic pulses) or
+unvoiced (white noise). Human speech, however, frequently exhibits mixed
+excitation. Phonemes such as voiced fricatives (like "z" or "v") or
+breathy vowels combine periodic vocal fold vibration with turbulent
+noise simultaneously. Forcing a binary decision stripped away these
+subtle breath textures, amplifying the harshness of the voiced
+segments.</li>
+</ul>
+<h3 id="phase-discard-and-dimensionality-reduction">Phase Discard and
+Dimensionality Reduction</h3>
+<p>Natural speech carries subtle temporal dispersion and phase
+relationships across harmonics. Early HMM synthesizers discarded
+original phase information altogether, reconstructing the audio using
+minimum-phase assumptions or zero-phase filter banks. This phase
+coherence caused harmonic energy to align unnaturally in time,
+reinforcing the robotic timbre.</p>
+<p>Combined with the compression of complex vocal tract spectra into a
+low number of cepstral parameters, these algorithmic constraints meant
+that early HMM systems produced speech that was highly intelligible and
+stable, but inherently compromised by the muffled smoothing of its
+filters and the buzzy rigidity of its excitation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

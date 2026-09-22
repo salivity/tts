@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How VITS Eliminates Mel-Spectrograms in TTS - tts</title>
+    <meta name="description" content="Traditional text-to-speech (TTS) pipelines rely on a two-stage process: an acoustic model first converts text into an intermediate acoustic representation (typically a mel-spectrogram), and a separate neural vocoder then synthesizes that representation i">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-vits-eliminates-mel-spectrograms-in-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How VITS Eliminates Mel-Spectrograms in TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-vits-eliminates-mel-spectrograms-in-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Traditional text-to-speech (TTS) pipelines rely on a two-stage process: an acoustic model first converts text into an intermediate acoustic representation (typically a mel-spectrogram), and a separate neural vocoder then synthesizes that representation i" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-vits-eliminates-mel-spectrograms-in-tts">How VITS Eliminates
+Mel-Spectrograms in TTS</h1>
+<p>Traditional text-to-speech (TTS) pipelines rely on a two-stage
+process: an acoustic model first converts text into an intermediate
+acoustic representation (typically a mel-spectrogram), and a separate
+neural vocoder then synthesizes that representation into a raw audio
+waveform. VITS (Variational Inference with adversarial learning for
+end-to-end Text-to-Speech) eliminates this intermediate mel-spectrogram
+bottleneck by unifying acoustic modeling and vocoding into a single,
+fully differentiable framework. By combining Conditional Variational
+Autoencoders (VAEs), normalizing flows, Monotonic Alignment Search
+(MAS), and adversarial training, VITS maps text directly to raw
+waveforms in an end-to-end manner.</p>
+<h3 id="the-limitations-of-the-mel-spectrogram-bottleneck">The
+Limitations of the Mel-Spectrogram Bottleneck</h3>
+<p>Conventional two-stage systems suffer from two primary drawbacks:</p>
+<ol type="1">
+<li><strong>Error Propagation:</strong> Mismatches between the synthetic
+mel-spectrograms produced by the acoustic model and the ground-truth
+spectrograms the vocoder was trained on introduce acoustic artifacts and
+degraded audio quality.</li>
+<li><strong>Sub-optimal Optimization:</strong> Because the acoustic
+model and vocoder are trained independently with different loss
+objectives, the system cannot be optimized globally from input text to
+final waveform.</li>
+</ol>
+<h3 id="latent-variables-instead-of-spectrograms">Latent Variables
+Instead of Spectrograms</h3>
+<p>Rather than predicting a deterministic, hand-crafted feature map like
+a mel-spectrogram, VITS models the connection between text and audio via
+a continuous latent variable (<span class="math inline">\(z\)</span>)
+within a Conditional VAE framework.</p>
+<p>During training:</p>
+<ul>
+<li><strong>The Posterior Encoder</strong> takes linear spectrograms
+derived from target speech waveforms and encodes them into a posterior
+latent distribution <span class="math inline">\(q(z|x)\)</span>.</li>
+<li><strong>The Prior Encoder</strong> takes phoneme sequences derived
+from input text and processes them via a text encoder to produce a prior
+latent distribution.</li>
+<li><strong>Normalizing Flows</strong> are applied to the prior
+distribution. Because speech possesses complex, multimodal variations in
+pitch, rhythm, and timbre, a standard isotropic Gaussian prior is
+insufficient. Normalizing flows apply invertible transformations to the
+simple prior, reshaping it into a complex distribution that can match
+the posterior distribution generated by the real audio.</li>
+</ul>
+<p>During training, the Kullback-Leibler (KL) divergence loss minimizes
+the difference between the prior distribution (derived from text) and
+the posterior distribution (derived from audio). At inference time, the
+posterior encoder is discarded entirely, and the model samples directly
+from the transformed text prior.</p>
+<h3 id="alignment-via-monotonic-alignment-search-mas">Alignment via
+Monotonic Alignment Search (MAS)</h3>
+<p>Because text tokens and audio frames have different lengths, the
+model must learn a temporal alignment between them. Traditional systems
+rely on external aligners or attention mechanisms operating on
+mel-spectrograms.</p>
+<p>VITS addresses this using Monotonic Alignment Search (MAS). MAS
+calculates the maximum likelihood path between the text representations
+and the audio latent variables directly in the latent space. This
+alignment assigns duration targets to each phoneme. A stochastic
+duration predictor, trained alongside the system via flow-based
+variational inference, learns to predict realistic speech rhythms and
+durations directly from text, ensuring natural prosody without external
+alignment targets.</p>
+<h3 id="direct-waveform-generation-with-adversarial-learning">Direct
+Waveform Generation with Adversarial Learning</h3>
+<p>Once the latent representation <span class="math inline">\(z\)</span>
+is established, it must be converted into sound. Instead of decoding
+<span class="math inline">\(z\)</span> into a spectrogram, VITS uses a
+decoder based on the HiFi-GAN architecture that operates directly in the
+time domain.</p>
+<p>The decoder takes the latent variable <span
+class="math inline">\(z\)</span> and applies a series of transposed
+convolutions and multi-receptive field fusion modules to upsample the
+latent representation directly into a 1D raw waveform. The decoder is
+trained using a combination of:</p>
+<ul>
+<li><strong>Adversarial Loss:</strong> Multi-period and multi-scale
+discriminators evaluate the generated waveforms against real recordings,
+driving the generator to produce high-frequency details and natural
+textures.</li>
+<li><strong>Feature Matching Loss:</strong> Measures the intermediate
+feature differences between real and generated audio within the
+discriminator layers.</li>
+<li><strong>Mel-Spectrogram Loss:</strong> Although mel-spectrograms are
+not generated as an intermediate representation, a reconstruction loss
+computed on the mel-scale of the <em>final output waveform</em> is used
+as an auxiliary objective to stabilize adversarial training and ensure
+tonal accuracy.</li>
+</ul>
+<h3 id="the-complete-end-to-end-inference-flow">The Complete End-to-End
+Inference Flow</h3>
+<p>At inference time, the intermediate acoustic representations are
+completely absent:</p>
+<ol type="1">
+<li>Input phonemes pass through the text encoder.</li>
+<li>The stochastic duration predictor determines the timing for each
+phoneme.</li>
+<li>The representations are expanded according to these durations and
+transformed via the inverse normalizing flow into the latent space <span
+class="math inline">\(z\)</span>.</li>
+<li>The HiFi-GAN-based decoder translates <span
+class="math inline">\(z\)</span> directly into the output waveform.</li>
+</ol>
+<p>By optimizing the latent space jointly with the waveform generator,
+VITS eliminates intermediate representation mismatches, reduces
+computational overhead during deployment, and achieves natural,
+high-fidelity speech synthesis directly from text.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

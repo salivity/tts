@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Smart Speakers Cancel Their Own Voice Output - tts</title>
+    <meta name="description" content="Smart speakers must constantly listen for user commands, even while actively speaking or playing loud music. To prevent the device's microphones from picking up its own Text-to-Speech (TTS) output and causing a deafening acoustic feedback loop, manufactu">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-smart-speakers-cancel-their-own-voice-output">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Smart Speakers Cancel Their Own Voice Output - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-smart-speakers-cancel-their-own-voice-output" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Smart speakers must constantly listen for user commands, even while actively speaking or playing loud music. To prevent the device's microphones from picking up its own Text-to-Speech (TTS) output and causing a deafening acoustic feedback loop, manufactu" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-smart-speakers-cancel-their-own-voice-output">How Smart
+Speakers Cancel Their Own Voice Output</h1>
+<p>Smart speakers must constantly listen for user commands, even while
+actively speaking or playing loud music. To prevent the device's
+microphones from picking up its own Text-to-Speech (TTS) output and
+causing a deafening acoustic feedback loop, manufacturers combine
+physical acoustic isolation with digital Acoustic Echo Cancellation
+(AEC). This article explains how structural design, digital loopback
+references, and adaptive filtering work together to isolate a speaker's
+voice output from its audio input, enabling clear voice recognition and
+seamless user interruptions.</p>
+<h3 id="the-feedback-challenge-in-smart-speakers">The Feedback Challenge
+in Smart Speakers</h3>
+<p>When a smart speaker plays a TTS response, sound waves exit the
+speaker cone and instantly travel to the built-in microphones. This
+sound reaches the microphones through two primary paths: direct airborne
+sound waves and mechanical vibrations transmitted through the device's
+internal chassis. Without intervention, this output signal overpowers
+the much quieter voice of a human user in the room, creating an infinite
+feedback loop that blinds the speech recognition system to incoming
+commands.</p>
+<h3 id="physical-and-mechanical-isolation">Physical and Mechanical
+Isolation</h3>
+<p>Before any digital processing occurs, physical engineering minimizes
+how much audio reaches the microphones.</p>
+<ol type="1">
+<li><strong>Chassis Decoupling:</strong> Speaker drivers produce intense
+physical vibrations. Manufacturers mount drivers on silicone or rubber
+dampeners to prevent vibrations from traveling through the plastic
+housing directly into the microphone array.</li>
+<li><strong>Acoustic Chambers:</strong> The speaker driver is sealed
+within an isolated internal acoustic chamber, while microphones are
+positioned in separate, sealed cavities with dedicated sound ports
+facing away from the primary driver orientation.</li>
+<li><strong>Geometry and Beamforming:</strong> Microphones are arranged
+in specific geometric arrays (often circular or linear) that allow the
+device to calculate sound arrival times and physically favor directional
+sounds coming from across the room rather than sound radiating from its
+own base.</li>
+</ol>
+<h3 id="the-digital-loopback-reference">The Digital Loopback
+Reference</h3>
+<p>Physical isolation significantly reduces chassis vibration, but it
+cannot stop sound waves from bouncing off walls, furniture, and ceilings
+back into the microphone. To eliminate this airborne sound, the system
+uses a digital reference signal.</p>
+<p>When the device generates TTS audio, the digital audio stream is sent
+simultaneously to two destinations:</p>
+<ul>
+<li>The Digital-to-Analog Converter (DAC) and amplifier to drive the
+physical speaker.</li>
+<li>The digital signal processor (DSP) as an internal "reference
+signal."</li>
+</ul>
+<p>Because the device knows the exact digital waveform it is
+broadcasting, it can use this reference signal as a mathematical
+template for what it needs to erase from the microphone input.</p>
+<h3 id="adaptive-filtering-and-echo-subtraction">Adaptive Filtering and
+Echo Subtraction</h3>
+<p>The core of Acoustic Echo Cancellation (AEC) is adaptive filtering.
+Sound leaving the speaker does not hit the microphone instantly; it is
+delayed, altered by room acoustics, and distorted slightly by the
+speaker driver and amplifier. Therefore, the DSP cannot simply subtract
+the pure reference signal from the microphone input.</p>
+<p>Instead, an adaptive filter (commonly using algorithms like
+Normalized Least Mean Squares) constantly calculates the "Room Impulse
+Response." It models how the room's surfaces reflect, delay, and
+attenuate the speaker's output. The filter applies these modeled changes
+to the reference signal, creating an estimated echo signal that mirrors
+what the microphone is physically receiving.</p>
+<p>The DSP then subtracts this synthesized echo from the real microphone
+signal:</p>
+<p><span class="math display">\[\text{Clean Signal} = \text{Microphone
+Input} - \text{Estimated Echo}\]</span></p>
+<h3 id="double-talk-detection-and-barge-in">Double-Talk Detection and
+"Barge-In"</h3>
+<p>A critical component of this process is handling "double-talk," which
+occurs when a user speaks while the smart speaker is still talking
+(known as "barge-in").</p>
+<p>The DSP's double-talk detector continuously monitors energy levels
+and cross-correlation between the reference signal and the microphone
+input. When it detects acoustic energy that does not correlate with the
+TTS output—meaning an external voice has entered the room—the algorithm
+freezes the adaptation of the filter. This prevents the system from
+accidentally mistaking the user's voice for room echo and attempting to
+cancel it out.</p>
+<p>Any remaining artifacts are cleaned up by a Non-Linear Processor
+(NLP) and residual echo suppressor, leaving only the user’s voice to be
+forwarded to the automated speech recognition engine.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

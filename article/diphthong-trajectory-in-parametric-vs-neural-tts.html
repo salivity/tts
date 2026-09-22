@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diphthong Trajectory in Parametric vs Neural TTS - tts</title>
+    <meta name="description" content="Diphthong trajectory modeling represents a significant hurdle in modern speech synthesis because diphthongs involve dynamic, continuous formant shifts rather than static acoustic targets. This article examines the core difficulties of synthesizing these">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/diphthong-trajectory-in-parametric-vs-neural-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Diphthong Trajectory in Parametric vs Neural TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/diphthong-trajectory-in-parametric-vs-neural-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Diphthong trajectory modeling represents a significant hurdle in modern speech synthesis because diphthongs involve dynamic, continuous formant shifts rather than static acoustic targets. This article examines the core difficulties of synthesizing these" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="diphthong-trajectory-in-parametric-vs-neural-tts">Diphthong
+Trajectory in Parametric vs Neural TTS</h1>
+<p>Diphthong trajectory modeling represents a significant hurdle in
+modern speech synthesis because diphthongs involve dynamic, continuous
+formant shifts rather than static acoustic targets. This article
+examines the core difficulties of synthesizing these complex vowel
+glides, contrasting how parametric neural Text-to-Speech (TTS)
+architectures struggle with over-smoothing and intermediate feature
+collapse against how non-parametric, end-to-end neural models face
+obstacles with phase consistency, temporal alignment, and fine-grained
+latent path stability.</p>
+<p>A diphthong is a single syllabic nucleus where the vocal tract
+transitions smoothly from an initial vowel posture to a final off-glide
+(such as /aɪ/ or /oʊ/). This movement produces non-linear, time-varying
+trajectories in the lower formant frequencies (primarily F1 and F2).
+Accurately synthesizing a diphthong requires precise control over
+transition onset, glide velocity, and offset timing, all of which vary
+significantly based on speaking rate, stress, and phonetic context.</p>
+<p>In parametric neural TTS systems—where an acoustic model predicts
+intermediate representations like mel-spectrograms or vocoder
+parameters—the primary challenge is the over-smoothing effect. Acoustic
+models trained with regression objectives such as Mean Squared Error
+(MSE) or L1 loss inherently penalize outliers, favoring the statistical
+mean of the training data. Because human speakers produce variable glide
+rates, this statistical averaging blurs the sharp, non-linear formant
+trajectories into a muddy, static intermediate state. As a result, the
+synthetic diphthong often sounds like a single monophthongized vowel
+rather than a distinct, articulate glide. Furthermore, frame-based
+representations discretize time (typically in 10–12.5 ms hops), which
+can fail to capture rapid, micro-prosodic articulator movements during
+fast speech.</p>
+<p>Non-parametric neural TTS systems—including direct waveform
+generators, flow-matching systems, and fully end-to-end models like
+VITS—bypass explicit parametric intermediate representations to model
+the speech distribution directly. While this prevents the spectral
+over-smoothing typical of parametric models, it introduces distinct
+challenges:</p>
+<ul>
+<li><strong>Latent Trajectory Drift:</strong> Generative models relying
+on stochastic differential equations or diffusion processes must infer
+complex continuous paths in high-dimensional latent space. Without
+explicit phonetic trajectory constraints, the model can suffer from path
+drift, resulting in unnatural diphthong durations, unsteady pitch, or
+fluctuating vowel quality during the transition.</li>
+<li><strong>Phase Incoherence and Jitter:</strong> Diphthong transitions
+demand rapid, continuous shifts in instantaneous frequency and pitch
+harmonics. Non-parametric models generating raw audio directly can
+produce subtle phase mismatches across the glide, leading to audible
+roughness, metallic artifacts, or buzzy transitions.</li>
+<li><strong>Data Sparsity in Continuous Transitions:</strong> While a
+parametric system explicitly enforces acoustic features, non-parametric
+networks must learn every nuanced spectral shift entirely from the
+training distribution. Dialectal variations and rare diphthongs with
+limited training samples frequently result in inconsistent transition
+velocities or unnatural vowel off-glides.</li>
+</ul>
+<p>Ultimately, the difficulty in parametric neural TTS stems from
+representational bottlenecks and objective functions that wash out rapid
+spectral dynamics. Conversely, non-parametric neural TTS struggles with
+the unconstrained nature of end-to-end generation, where preserving
+phase coherence, fine-grained duration control, and temporal alignment
+across non-linear spectral glides demands immense data scale and tightly
+regulated latent sampling.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stop TTS Hallucinations and Chatter During Pauses - tts</title>
+    <meta name="description" content="Conversational Text-to-Speech (TTS) models frequently suffer from "chatter" or audio hallucinations—such as phantom whispers, murmurs, or ambient babble—when attempting to render natural pauses between utterances. This guide breaks down why autoregre">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/stop-tts-hallucinations-and-chatter-during-pauses">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Stop TTS Hallucinations and Chatter During Pauses - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/stop-tts-hallucinations-and-chatter-during-pauses" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Conversational Text-to-Speech (TTS) models frequently suffer from "chatter" or audio hallucinations—such as phantom whispers, murmurs, or ambient babble—when attempting to render natural pauses between utterances. This guide breaks down why autoregre" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="stop-tts-hallucinations-and-chatter-during-pauses">Stop TTS
+Hallucinations and Chatter During Pauses</h1>
+<p>Conversational Text-to-Speech (TTS) models frequently suffer from
+"chatter" or audio hallucinations—such as phantom whispers, murmurs, or
+ambient babble—when attempting to render natural pauses between
+utterances. This guide breaks down why autoregressive and
+diffusion-based acoustic models generate these artifacts during silence,
+and outlines the exact engineering, architectural, and post-processing
+strategies required to enforce clean, natural pauses in conversational
+pipelines.</p>
+<h3 id="understanding-the-cause-of-silence-hallucinations">Understanding
+the Cause of Silence Hallucinations</h3>
+<p>Modern TTS models trained on massive, unstructured datasets (such as
+podcasts, audiobooks, and live conversations) learn that natural human
+pauses rarely contain absolute digital silence. Instead, pauses in the
+training data are filled with room tone, breath sounds, distant
+background voices, and throat clearing. When an autoregressive model
+encounters a pause token or an extended duration without explicit
+phoneme conditioning, its prediction entropy spikes. The model attempts
+to resolve this uncertainty by generating probabilistic "filler" sounds,
+resulting in hallucinated speech or background chatter.</p>
+<h3 id="1-explicit-duration-modeling-and-tokenization">1. Explicit
+Duration Modeling and Tokenization</h3>
+<p>Relying on implicit silence generation is the primary cause of pause
+degradation. Models should instead utilize explicit structural controls
+for silence:</p>
+<ul>
+<li><strong>Dedicated Pause Tokens:</strong> Replace variable whitespace
+or punctuation-based pauses with discrete duration tokens (e.g.,
+<code>&lt;break time="500ms"/&gt;</code> or
+<code>&lt;silence_0.5s&gt;</code>).</li>
+<li><strong>Non-Autoregressive Duration Predictors:</strong> Decouple
+phoneme duration from audio frame generation. Systems utilizing
+architectures similar to FastSpeech or explicit alignment networks
+assign a fixed duration to silence, strictly limiting the number of
+latent frames allocated to a pause. Once the frame budget is reached,
+generation immediately shifts to the next phoneme.</li>
+</ul>
+<h3 id="2-dynamic-sampling-and-decoding-constraints">2. Dynamic Sampling
+and Decoding Constraints</h3>
+<p>During active speech, higher temperature sampling adds realism and
+expressiveness. However, maintaining high temperature during pauses
+significantly increases the likelihood of sampling unintended acoustic
+artifacts.</p>
+<ul>
+<li><strong>Dynamic Temperature Scaling:</strong> Automatically lower
+the sampling temperature (e.g., dropping from 0.8 to 0.1) when
+generating frames conditioned on silence tokens.</li>
+<li><strong>Logit Masking:</strong> For autoregressive models operating
+in the token domain, suppress the probability of non-silence acoustic
+tokens during designated pause intervals to prevent the model from
+pivoting into vocalization.</li>
+<li><strong>Classifier-Free Guidance (CFG):</strong> Increase CFG scale
+values during pauses to force the model to adhere strictly to the
+non-speech prompt, suppressing the unconditioned ambient sound
+distribution.</li>
+</ul>
+<h3 id="3-training-data-sanitization-and-conditioning">3. Training Data
+Sanitization and Conditioning</h3>
+<p>If a model is trained on noisy raw audio, it will reproduce that
+noise as a feature rather than an error.</p>
+<ul>
+<li><strong>Acoustic Environment Tagging:</strong> During
+pre-processing, annotate training data with signal-to-noise ratio (SNR)
+scores or acoustic tags (e.g., <code>studio_clean</code>,
+<code>background_noise</code>, <code>room_reverb</code>). During
+inference, conditioning the model explicitly on
+<code>clean_studio</code> prompts forces the model to synthesize true
+silence rather than ambient noise during breaks.</li>
+<li><strong>Negative Prompting:</strong> In flow-matching and diffusion
+architectures, implement negative prompting during generation to
+penalize tokens or audio states that match background speech or
+unintelligible murmuring.</li>
+</ul>
+<h3 id="4-downstream-voice-activity-detection-vad-and-gating">4.
+Downstream Voice Activity Detection (VAD) and Gating</h3>
+<p>When low-latency streaming precludes complex inference-time
+constraints, deterministic audio engineering applied downstream
+guarantees clean pauses:</p>
+<ul>
+<li><strong>VAD-Driven Gating:</strong> Run generated audio chunks
+through a fast Voice Activity Detector. If the model is processing a
+pause interval and low-amplitude acoustic energy is detected, an
+automated noise gate can zero the output.</li>
+<li><strong>Synthesized Room Tone Infilling:</strong> Absolute digital
+silence can sound jarring to human listeners. Instead of letting the
+neural network generate the silence, strip the generated audio during
+the pause entirely and replace it with a loop of flat, standardized,
+non-vocal comfort noise (dithered room tone).</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

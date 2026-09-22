@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonic and Noise Separation in Neural Vocoders - tts</title>
+    <meta name="description" content="Neural source-filter (NSF) vocoders bridge classical acoustic theory and modern deep learning by explicitly dividing speech synthesis into periodic (harmonic) and aperiodic (noise) components. In Text-to-Speech (TTS) pipelines, this explicit decompositio">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/harmonic-and-noise-separation-in-neural-vocoders">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Harmonic and Noise Separation in Neural Vocoders - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/harmonic-and-noise-separation-in-neural-vocoders" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Neural source-filter (NSF) vocoders bridge classical acoustic theory and modern deep learning by explicitly dividing speech synthesis into periodic (harmonic) and aperiodic (noise) components. In Text-to-Speech (TTS) pipelines, this explicit decompositio" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="harmonic-and-noise-separation-in-neural-vocoders">Harmonic and
+Noise Separation in Neural Vocoders</h1>
+<p>Neural source-filter (NSF) vocoders bridge classical acoustic theory
+and modern deep learning by explicitly dividing speech synthesis into
+periodic (harmonic) and aperiodic (noise) components. In Text-to-Speech
+(TTS) pipelines, this explicit decomposition allows neural models to
+strictly adhere to fundamental frequency (<span
+class="math inline">\(F_0\)</span>) contours while independently
+modeling breathiness, fricatives, and unvoiced consonants. By feeding
+mathematically defined excitation signals into dedicated neural
+filtering networks, NSF vocoders eliminate pitch-tracking errors,
+suppress metallic artifacts, and produce highly natural speech
+waveforms.</p>
+<h3 id="the-source-filter-framework-in-deep-learning">The Source-Filter
+Framework in Deep Learning</h3>
+<p>Classical speech production theory models the human voice as an
+excitation source modulated by the resonances of the vocal tract.
+Traditional neural vocoders often act as black boxes, learning to
+generate raw audio directly from mel-spectrograms without structural
+constraints. This frequently leads to pitch drift, buzzing, or phase
+collapse.</p>
+<p>Neural source-filter models resolve this by embedding the physical
+separation of the source (vocal folds) and filter (vocal tract) directly
+into the neural architecture. Instead of generating the entire acoustic
+waveform from scratch, the neural network acts as a time-variant,
+nonlinear filter operating on predefined excitation signals.</p>
+<h3 id="explicit-excitation-generation">Explicit Excitation
+Generation</h3>
+<p>The explicit separation begins at the excitation stage, where the
+model creates two distinct signals based on input conditioning
+features:</p>
+<ol type="1">
+<li><p><strong>Harmonic Source (Voiced Component):</strong> The harmonic
+excitation represents the vibration of the vocal cords during voiced
+sounds like vowels. It is generated algorithmically from the fundamental
+frequency (<span class="math inline">\(F_0\)</span>) track. The vocoder
+computes the instantaneous phase of the fundamental pitch and generates
+a deterministic signal, typically composed of a pulse train or a sum of
+sine waves matched to the fundamental frequency and its harmonics: <span
+class="math display">\[e_{\text{harmonic}}(t) = \sum_{k=1}^{K}
+\sin\left(2\pi k \int_0^t F_0(\tau)d\tau + \phi_k\right)\]</span>
+Because this signal is derived mathematically from <span
+class="math inline">\(F_0\)</span>, the model cannot deviate from the
+intended pitch.</p></li>
+<li><p><strong>Noise Source (Aperiodic Component):</strong> The unvoiced
+excitation represents air turbulence, friction, and aspiration. It is
+generated independently of pitch using stochastic distributions, such as
+zero-mean Gaussian white noise: <span
+class="math display">\[e_{\text{noise}}(t) \sim \mathcal{N}(0,
+\sigma^2)\]</span> This signal contains a flat, continuous spectrum
+ideal for producing unvoiced stops, whispered sounds, and the turbulent
+components of fricatives.</p></li>
+</ol>
+<h3 id="dual-stream-neural-filtering">Dual-Stream Neural Filtering</h3>
+<p>Once generated, the harmonic and noise excitations are routed through
+specialized neural filter branches conditioned on mel-spectrograms or
+linguistic embeddings.</p>
+<ul>
+<li><strong>The Harmonic Neural Filter:</strong> This branch processes
+the deterministic sine-based signal. Dilated convolutional layers or
+recurrent blocks shape the excitation into vowel formants and voiced
+consonants, applying resonances and spectral envelopes that match the
+conditioning features.</li>
+<li><strong>The Noise Neural Filter:</strong> Operating in parallel,
+this branch takes the white noise excitation and applies spectral
+shaping to form aperiodic acoustic phenomena, such as the high-frequency
+energy in sounds like /s/, /f/, and /t/, as well as natural vocal
+breathiness.</li>
+</ul>
+<p>Because each neural sub-network receives a dedicated, structurally
+pure input, neither network needs to learn how to create pitch or
+stochasticity from scratch. The filters strictly learn transfer
+functions.</p>
+<h3 id="waveform-recombination">Waveform Recombination</h3>
+<p>The outputs of the two filtered paths are combined to generate the
+final synthetic waveform. In most implementations, this occurs via
+direct linear addition:</p>
+<p><span class="math display">\[y(t) = y_{\text{harmonic}}(t) +
+y_{\text{noise}}(t)\]</span></p>
+<p>In advanced variants, dynamic gain networks predict time-varying
+weighting coefficients that balance the contribution of each branch at
+every sample or frame. During fully voiced segments, the harmonic branch
+dominates; during unvoiced speech or silence, the noise branch is either
+shaped into unvoiced consonants or attenuated to zero.</p>
+<h3 id="practical-benefits-in-tts-pipelines">Practical Benefits in TTS
+Pipelines</h3>
+<p>Explicit harmonic-noise separation yields major advantages over
+unconstrained neural vocoders:</p>
+<ul>
+<li><strong>Pitch Accuracy:</strong> Voicing artifacts and pitch
+instability are virtually eliminated because the harmonic source
+strictly follows the input <span
+class="math inline">\(F_0\)</span>.</li>
+<li><strong>High-Frequency Naturalness:</strong> Separating noise allows
+high-frequency consonants to remain crisp and distinct, avoiding the
+muffled or phase-smeared quality common in purely autoregressive or
+generative adversarial architectures.</li>
+<li><strong>Efficient Generalization:</strong> NSF models generalize
+better to unseen speakers and extreme pitch shifts, requiring
+significantly less training data to achieve stable acoustic
+control.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

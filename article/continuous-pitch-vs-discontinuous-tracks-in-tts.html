@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Pitch vs Discontinuous Tracks in TTS - tts</title>
+    <meta name="description" content="Continuous pitch representations provide substantial advantages over discontinuous pitch tracks in Text-to-Speech (TTS) synthesis by eliminating unvoiced gaps, stabilizing neural network training, and improving prosodic naturalness. Traditional fundament">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/continuous-pitch-vs-discontinuous-tracks-in-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Continuous Pitch vs Discontinuous Tracks in TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/continuous-pitch-vs-discontinuous-tracks-in-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Continuous pitch representations provide substantial advantages over discontinuous pitch tracks in Text-to-Speech (TTS) synthesis by eliminating unvoiced gaps, stabilizing neural network training, and improving prosodic naturalness. Traditional fundament" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="continuous-pitch-vs-discontinuous-tracks-in-tts">Continuous
+Pitch vs Discontinuous Tracks in TTS</h1>
+<p>Continuous pitch representations provide substantial advantages over
+discontinuous pitch tracks in Text-to-Speech (TTS) synthesis by
+eliminating unvoiced gaps, stabilizing neural network training, and
+improving prosodic naturalness. Traditional fundamental frequency (<span
+class="math inline">\(F_0\)</span>) representations define pitch only
+during voiced segments, creating discontinuous step changes and
+undefined values during unvoiced consonants and pauses. Transitioning to
+a continuous pitch contour—typically paired with an independent voicing
+predictor—decouples global intonation from segmental phonetics,
+resulting in smoother gradient propagation, fewer acoustic artifacts,
+and more human-like speech output.</p>
+<h3 id="elimination-of-discontinuous-gradient-boundaries">Elimination of
+Discontinuous Gradient Boundaries</h3>
+<p>Standard discontinuous pitch contours assign a zero, negative, or
+undefined value to unvoiced segments. When training deep learning
+acoustic models or vocoders, these sudden transitions between voiced
+values (e.g., 100–300 Hz) and zero values act as sharp mathematical step
+functions.</p>
+<p>Continuous representations interpolate pitch values through unvoiced
+regions, generating a continuous trajectory. This continuous curve
+enables standard regression losses (such as Mean Squared Error or L1
+loss) to propagate gradients smoothly across the entire utterance
+without destabilizing updates at voiced-to-unvoiced transitions.</p>
+<h3 id="decoupling-intonation-from-segmental-voicing">Decoupling
+Intonation from Segmental Voicing</h3>
+<p>Linguistic intonation exists as a continuous cognitive and
+physiological target across an entire utterance, even when unvoiced
+consonants (such as /s/, /t/, or /k/) interrupt physical vocal cord
+vibration. Discontinuous pitch representations conflate two separate
+physical mechanisms:</p>
+<ul>
+<li><strong>Phonation:</strong> Whether the vocal folds are vibrating
+(voiced vs. unvoiced).</li>
+<li><strong>Pitch contour:</strong> The tension and frequency of the
+vocal folds determined by the broader prosodic contour.</li>
+</ul>
+<p>Continuous pitch representations separate these phenomena. The
+continuous <span class="math inline">\(F_0\)</span> model predicts the
+underlying macro-prosody and emotional contour, while an auxiliary
+binary classifier predicts the voicing state. This separation allows the
+system to capture long-range melodic patterns without being disrupted by
+local phonetic obstacles.</p>
+<h3 id="improved-model-convergence-and-stability">Improved Model
+Convergence and Stability</h3>
+<p>In neural TTS architectures (such as FastSpeech, VITS, or Tacotron
+variants), discontinuous pitch inputs force models to learn complex
+non-linear mappings to ignore unvoiced regions. This often results
+in:</p>
+<ul>
+<li>Slower convergence rates during the training phase.</li>
+<li>Training instability and sensitivity to weight initialization.</li>
+<li>Pitch "leakage" where models predict low, non-zero frequencies into
+unvoiced regions, causing audible buzzes or raspiness.</li>
+</ul>
+<p>Continuous representations present a smoother distribution for the
+model to fit. By normalizing and modeling continuous trajectories,
+statistical and neural predictors converge faster and achieve lower
+variance in their objective evaluation metrics.</p>
+<h3 id="mitigation-of-boundary-artifacts">Mitigation of Boundary
+Artifacts</h3>
+<p>Vocoders that depend on discontinuous <span
+class="math inline">\(F_0\)</span> contours often struggle at the onset
+and offset of voicing. Slight timing misalignments between the predicted
+pitch curve and the predicted spectral features can lead to:</p>
+<ul>
+<li>Harsh clicking sounds at the start of voiced phonemes.</li>
+<li>Unintended micro-prosodic dips or spikes at vowel-consonant
+boundaries.</li>
+<li>Robotic transitions caused by sudden zero-value dropouts.</li>
+</ul>
+<p>Using a continuous pitch track ensures that the vocoder always has an
+established frequency target at the exact moment voicing starts. When
+the voicing decision flips to active, the vocoder synthesizes the
+correct pitch immediately, avoiding phase inconsistencies and onset
+glitches.</p>
+<h3 id="enhanced-expressiveness-and-contour-controllability">Enhanced
+Expressiveness and Contour Controllability</h3>
+<p>Expressive TTS systems often require pitch scaling, shifting, or
+style transfer. Manipulating a discontinuous track is difficult because
+scaling factors can inadvertently alter unvoiced thresholds or create
+unnatural boundary cliffs. Continuous pitch representations can be
+modified, smoothed, or transformed using techniques like continuous
+wavelet transforms (CWT) or spline adjustments, allowing fine-grained,
+intuitive control over prosody without distorting phoneme-level
+boundaries.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

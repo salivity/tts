@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How TTS Synthesizes Vowel Lengthening in English - tts</title>
+    <meta name="description" content="In English, vowels are systematically held longer before voiced consonants (such as /d/, /b/, or /z/) than before voiceless ones (such as /t/, /p/, or /s/), a phonetic phenomenon known as pre-lenis lengthening or pre-fortis clipping. Modern Text-to-Speec">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-tts-synthesizes-vowel-lengthening-in-english">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How TTS Synthesizes Vowel Lengthening in English - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-tts-synthesizes-vowel-lengthening-in-english" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In English, vowels are systematically held longer before voiced consonants (such as /d/, /b/, or /z/) than before voiceless ones (such as /t/, /p/, or /s/), a phonetic phenomenon known as pre-lenis lengthening or pre-fortis clipping. Modern Text-to-Speec" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-tts-synthesizes-vowel-lengthening-in-english">How TTS
+Synthesizes Vowel Lengthening in English</h1>
+<p>In English, vowels are systematically held longer before voiced
+consonants (such as /d/, /b/, or /z/) than before voiceless ones (such
+as /t/, /p/, or /s/), a phonetic phenomenon known as pre-lenis
+lengthening or pre-fortis clipping. Modern Text-to-Speech (TTS) systems
+recreate this subtle duration difference using a combination of phonetic
+text processing, learned duration models, and neural acoustic
+synthesizers. This article explains the exact mechanisms TTS pipelines
+use to identify phonological context, predict precise phoneme durations,
+and render natural-sounding stretched vowels without introducing
+acoustic distortion.</p>
+<h2 id="the-linguistic-cue-why-duration-matters">The Linguistic Cue: Why
+Duration Matters</h2>
+<p>In native English speech, the vowel in "bad" (/bæd/) is typically 30%
+to 50% longer than the vowel in "bat" (/bæt/). Listeners rely heavily on
+this duration cue—often more than the voicing of the consonant itself—to
+distinguish between words with final voiced and voiceless consonants. If
+a TTS system fails to apply this lengthening, synthetic speech sounds
+clipped, unnatural, or ambiguous to the listener.</p>
+<h2 id="step-1-frontend-phonetic-analysis">Step 1: Frontend Phonetic
+Analysis</h2>
+<p>Before any audio is generated, the TTS frontend transforms raw text
+into a sequence of linguistic specifications.</p>
+<ol type="1">
+<li><strong>Text Normalization and Grapheme-to-Phoneme (G2P):</strong>
+The engine converts orthographic words into standardized phonemes using
+pronunciation dictionaries (such as CMUdict) or neural G2P models.</li>
+<li><strong>Context Extraction:</strong> The frontend analyzes the
+neighboring phonetic environment. It tags each vowel with contextual
+features, specifically identifying whether the subsequent phoneme
+carries the <code>[+voiced]</code> or <code>[-voiced]</code> phonetic
+feature, whether the syllable is stressed, and whether it sits at a word
+or phrase boundary.</li>
+</ol>
+<h2 id="step-2-duration-modeling-across-architectures">Step 2: Duration
+Modeling Across Architectures</h2>
+<p>The method used to calculate how many milliseconds a vowel should
+last depends on the underlying TTS architecture.</p>
+<h3
+id="neural-non-autoregressive-systems-eg-fastspeech-matcha-tts">Neural
+Non-Autoregressive Systems (e.g., FastSpeech, Matcha-TTS)</h3>
+<p>Modern non-autoregressive neural systems utilize explicit
+<strong>duration predictors</strong>. During training, alignment
+algorithms (such as the Montreal Forced Aligner or dynamic programming
+paths inside the model) compute ground-truth durations from large
+corpora of human speech.</p>
+<p>A dedicated duration predictor—typically composed of convolutional or
+transformer layers—learns to map phoneme embeddings to scalar frame
+counts. Because these models are trained on tens of hours of real
+speech, they automatically learn the relationship between a vowel and
+the voicing feature of the subsequent consonant. At inference, the
+duration predictor assigns more acoustic frames (e.g., 80-millisecond
+mel-spectrogram steps) to a vowel preceding /d/ than one preceding
+/t/.</p>
+<h3 id="autoregressive-neural-systems-eg-tacotron-2">Autoregressive
+Neural Systems (e.g., Tacotron 2)</h3>
+<p>Autoregressive architectures model duration implicitly through an
+<strong>attention mechanism</strong>. As the decoder generates
+mel-spectrogram frames step-by-step, the attention weights determine
+when to move from the current vowel token to the subsequent consonant
+token. The network's recurrent layers capture the statistical likelihood
+that a vowel preceding a voiced consonant requires more decoding steps
+before transitioning.</p>
+<h3
+id="traditional-systems-unit-selection-and-parametric-hmms">Traditional
+Systems (Unit Selection and Parametric HMMs)</h3>
+<ul>
+<li><strong>Statistical Parametric Synthesis (HMM-based):</strong> Uses
+decision trees (CART) trained on contextual questions, such as "Is the
+next phoneme voiced?" to predict the mean duration and variance for
+state transitions within the vowel's Hidden Markov Model.</li>
+<li><strong>Concatenative / Unit Selection:</strong> Targets recordings
+that match the exact triphone or diphonic context (e.g., /æ/ followed by
+/d/). If the chosen unit is slightly too short or long, algorithms like
+PSOLA (Pitch Synchronous Overlap and Add) stretch or compress the
+waveform cycles to hit target durations without altering pitch.</li>
+</ul>
+<h2 id="step-3-acoustic-synthesis-and-formant-trajectories">Step 3:
+Acoustic Synthesis and Formant Trajectories</h2>
+<p>Lengthening a vowel is not merely a matter of time-stretching an
+audio snippet; natural vowels evolve over time. Formant frequencies
+(especially F1 and F2) shift continuously as the tongue moves from the
+nucleus of the vowel toward the consonant closure.</p>
+<ul>
+<li><strong>Mel-Spectrogram Generation:</strong> The acoustic model
+produces spectral frames representing the lengthened vowel. Because the
+target duration is expanded, the model generates intermediate frames
+where formant transitions slow down, mirroring real human articulatory
+dynamics.</li>
+<li><strong>F0 (Pitch) Contours:</strong> Voiced contexts encourage
+lower fundamental frequencies (F0) at the vowel-consonant boundary
+compared to voiceless contexts. The acoustic model simultaneously
+adjusts the pitch curve, dropping slightly as the lengthened vowel
+approaches a voiced consonant.</li>
+</ul>
+<h2 id="step-4-neural-vocoding">Step 4: Neural Vocoding</h2>
+<p>Once the duration-adjusted mel-spectrogram is finalized, a neural
+vocoder (such as HiFi-GAN or BigVGAN) synthesizes the time-domain
+waveform. The vocoder converts the sequence of spectrogram frames into
+audio samples without introducing phase artifacts, robotic "metallic"
+timbres, or unnatural harmonic smearing that historically plagued
+digital time-stretching algorithms. The result is a smooth, organically
+sustained vowel that naturally signals the voiced consonant that
+follows.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

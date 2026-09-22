@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Unit Selection TTS Outperformed Diphone Synthesis - tts</title>
+    <meta name="description" content="Unit selection Text-to-Speech (TTS) marked a monumental transition in speech synthesis by replacing rigid, unnatural-sounding diphone concatenation with dynamic, data-driven unit matching. While diphone synthesis relied on a minimal set of isolated acous">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-unit-selection-tts-outperformed-diphone-synthesis">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Unit Selection TTS Outperformed Diphone Synthesis - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-unit-selection-tts-outperformed-diphone-synthesis" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Unit selection Text-to-Speech (TTS) marked a monumental transition in speech synthesis by replacing rigid, unnatural-sounding diphone concatenation with dynamic, data-driven unit matching. While diphone synthesis relied on a minimal set of isolated acous" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-unit-selection-tts-outperformed-diphone-synthesis">Why Unit
+Selection TTS Outperformed Diphone Synthesis</h1>
+<p>Unit selection Text-to-Speech (TTS) marked a monumental transition in
+speech synthesis by replacing rigid, unnatural-sounding diphone
+concatenation with dynamic, data-driven unit matching. While diphone
+synthesis relied on a minimal set of isolated acoustic fragments heavily
+modified by signal processing, unit selection mined large speech
+databases to find phonemes that naturally matched the desired context,
+pitch, and duration. This shift drastically eliminated digital
+processing artifacts, captured natural expressive prosody, and produced
+an unprecedented leap in synthesized voice realism during the late
+1990s.</p>
+<h3 id="the-problem-with-fixed-inventory-diphone-synthesis">The Problem
+with Fixed-Inventory Diphone Synthesis</h3>
+<p>Before unit selection, the dominant concatenative approach was
+diphone synthesis. A diphone represents the transition from the middle
+of one phone to the middle of the next. To minimize computational
+demands and storage requirements, diphone synthesis operated on a fixed,
+minimal inventory. It contained roughly one or two recorded instances of
+each possible diphone pair in a given language (typically between 1,500
+and 3,000 units).</p>
+<p>Because these diphones were recorded with flat, neutral intonation,
+the TTS engine had to forcefully impose the target pitch (fundamental
+frequency) and duration onto the segments. This was accomplished using
+digital signal processing algorithms, most notably Pitch-Synchronous
+Overlap and Add (PSOLA). While computationally efficient, these
+algorithms severely degraded voice quality:</p>
+<ul>
+<li><strong>Acoustic Artifacts:</strong> Continual stretching,
+compressing, and pitch-shifting introduced metallic, buzzy, and hollow
+artifacts into the speech.</li>
+<li><strong>Loss of Natural Micro-Prosody:</strong> Human speech
+contains microscopic variations in spectral tilt, energy, and pitch that
+signal processing effectively erased, leaving voices sounding overtly
+robotic and lifeless.</li>
+<li><strong>Phase Inconsistencies:</strong> Concatenating two arbitrary
+sound segments often resulted in spectral mismatches at the boundaries,
+leading to audible clicks and unnatural jumps.</li>
+</ul>
+<h3 id="the-breakthrough-data-driven-selection">The Breakthrough:
+Data-Driven Selection</h3>
+<p>Introduced primarily by researchers Andrew Hunt and Alan Black in
+1996, unit selection turned the diphone philosophy upside down. Instead
+of collecting a minimal, static set of sound segments, unit selection
+leveraged large databases containing hours of naturally spoken,
+phonetically rich speech.</p>
+<p>In this new paradigm, every phoneme, diphthong, and word existed in
+the database dozens or hundreds of times across diverse phonetic
+environments, pitch contours, and stress levels. Instead of modifying a
+sound to fit the target sentence, the engine searched the database to
+find an existing recording that already matched the target criteria.</p>
+<h3 id="dual-cost-optimization">Dual-Cost Optimization</h3>
+<p>The core mathematical breakthrough that powered unit selection was
+the formulation of a dynamic search problem solved via the Viterbi
+algorithm. The selection engine balanced two competing metrics:</p>
+<ol type="1">
+<li><strong>Target Cost:</strong> How closely a candidate unit in the
+database matches the desired linguistic context, target pitch, duration,
+and position in the sentence.</li>
+<li><strong>Join Cost (Concatenation Cost):</strong> How smoothly two
+adjacent units will blend together at their boundary, measured through
+acoustic features like spectral distance and energy matching.</li>
+</ol>
+<p>By calculating the path of lowest total cost across an entire
+utterance, the system selected sequences of units that sounded cohesive
+and natural together.</p>
+<h3 id="minimizing-signal-processing">Minimizing Signal Processing</h3>
+<p>The defining advantage of unit selection was the near-total
+elimination of acoustic modification. Because the algorithm frequently
+found units that naturally possessed the intended duration and pitch,
+the synthesizer could splice segments directly together with little to
+no signal manipulation.</p>
+<p>This preservation of pristine acoustic data ensured that the natural
+timbre of the speaker, natural formant transitions, and subtle acoustic
+cues remained intact. Longer units—such as entire words, syllables, or
+multi-phone sequences—could frequently be used without interruption,
+significantly reducing the total number of concatenation boundaries.</p>
+<h3 id="summary-of-impact">Summary of Impact</h3>
+<p>Unit selection transformed synthetic speech from an artificial,
+robotic utility into a lifelike representation of human voices. By
+trading minimal storage for large-scale data searching and algorithmic
+cost minimization, unit selection set the industry standard for
+naturalness and intelligibility for over two decades, laying the
+foundation for modern conversational interfaces and the deep learning
+speech technologies that followed.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

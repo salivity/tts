@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Instruction-Tuned TTS Models Follow Style Prompts - tts</title>
+    <meta name="description" content="Instruction-tuned Text-to-Speech (TTS) models interpret descriptive prompts—such as whispering, dramatic shouting, or sarcastic delivery—by bridging natural language understanding with fine-grained acoustic generation. By leveraging shared latent spa">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-instruction-tuned-tts-models-follow-style-prompts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Instruction-Tuned TTS Models Follow Style Prompts - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-instruction-tuned-tts-models-follow-style-prompts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Instruction-tuned Text-to-Speech (TTS) models interpret descriptive prompts—such as whispering, dramatic shouting, or sarcastic delivery—by bridging natural language understanding with fine-grained acoustic generation. By leveraging shared latent spa" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-instruction-tuned-tts-models-follow-style-prompts">How
+Instruction-Tuned TTS Models Follow Style Prompts</h1>
+<p>Instruction-tuned Text-to-Speech (TTS) models interpret descriptive
+prompts—such as whispering, dramatic shouting, or sarcastic delivery—by
+bridging natural language understanding with fine-grained acoustic
+generation. By leveraging shared latent spaces, descriptive audio-text
+training datasets, and neural audio codecs, these systems translate
+high-level stylistic instructions into precise vocal characteristics
+like pitch, energy, and breathiness.</p>
+<h3 id="natural-language-alignment-and-style-embeddings">Natural
+Language Alignment and Style Embeddings</h3>
+<p>Traditional TTS systems rely on rigid labels (e.g., "emotion =
+angry") or reference audio clips to control vocal style. In contrast,
+instruction-tuned TTS uses large language model (LLM) text encoders or
+multi-modal models like CLAP (Contrastive Language-Audio Pretraining) to
+parse descriptive instructions.</p>
+<p>When a user provides a prompt like <em>"whisper this like a
+secret,"</em> the text encoder processes the instruction and maps it
+into a continuous style embedding. This embedding acts as a conditioning
+vector that guides the generation process, telling the model how the
+target speech should sound rather than what it should say.</p>
+<h3 id="discrete-audio-codecs-and-expressive-modeling">Discrete Audio
+Codecs and Expressive Modeling</h3>
+<p>Modern generative TTS models represent raw audio as discrete acoustic
+tokens using neural audio codecs (such as EnCodec or Descript Audio
+Codec). During generation, an autoregressive transformer or diffusion
+backbone predicts these acoustic tokens conditioned on two inputs:</p>
+<ol type="1">
+<li><strong>The content tokens:</strong> The actual words being
+spoken.</li>
+<li><strong>The instruction tokens:</strong> The stylistic description
+controlling delivery.</li>
+</ol>
+<p>By processing the style instruction alongside the textual content,
+the model adjusts the sequence of acoustic tokens to match the requested
+delivery before a neural vocoder decodes them back into audible
+waveforms.</p>
+<h3 id="translation-of-prompts-to-acoustic-features">Translation of
+Prompts to Acoustic Features</h3>
+<p>Descriptive prompts alter specific physical and acoustic properties
+of human speech:</p>
+<ul>
+<li><strong>Whispering:</strong> The model suppresses vocal cord
+vibration (fundamental frequency or F0), increases high-frequency noise
+to simulate breathiness, and reduces overall energy and dynamic
+range.</li>
+<li><strong>Dramatic Shouting:</strong> The model drastically elevates
+the fundamental frequency, expands dynamic pitch variation, increases
+vocal energy (loudness), and shifts formant frequencies to replicate
+vocal strain and projection.</li>
+<li><strong>Emotional Pacing:</strong> Stylistic instructions also alter
+duration modeling, causing the system to insert dramatic pauses,
+lengthen stressed vowels, or accelerate speech cadence.</li>
+</ul>
+<h3 id="supervised-fine-tuning-and-preference-alignment">Supervised
+Fine-Tuning and Preference Alignment</h3>
+<p>To enable this capability, models undergo supervised fine-tuning on
+large datasets containing audio paired with rich, natural language
+descriptions of vocal style, environment, and emotion. Automated
+labeling pipelines often use audio-captioning models to annotate
+thousands of hours of expressive speech with detailed descriptions.</p>
+<p>Additionally, techniques like Direct Preference Optimization (DPO)
+and Reinforcement Learning from Human Feedback (RLHF) are applied to
+speech synthesis. These frameworks reward models for accurately matching
+the requested acoustic intent, ensuring that when instructed to "shout
+dramatically," the system produces a convincing performance rather than
+a minor volume increase.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

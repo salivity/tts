@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acoustic Features of Whispered Speech in TTS Synthesis - tts</title>
+    <meta name="description" content="In controllable Text-to-Speech (TTS) synthesis, generating natural whispered speech requires modifying key acoustic parameters that distinguish it from standard modal (voiced) speech. Because whispering eliminates vocal cord vibration, it alters the spec">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/acoustic-features-of-whispered-speech-in-tts-synthesis">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Acoustic Features of Whispered Speech in TTS Synthesis - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/acoustic-features-of-whispered-speech-in-tts-synthesis" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In controllable Text-to-Speech (TTS) synthesis, generating natural whispered speech requires modifying key acoustic parameters that distinguish it from standard modal (voiced) speech. Because whispering eliminates vocal cord vibration, it alters the spec" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="acoustic-features-of-whispered-speech-in-tts-synthesis">Acoustic
+Features of Whispered Speech in TTS Synthesis</h1>
+<p>In controllable Text-to-Speech (TTS) synthesis, generating natural
+whispered speech requires modifying key acoustic parameters that
+distinguish it from standard modal (voiced) speech. Because whispering
+eliminates vocal cord vibration, it alters the spectral structure,
+energy distribution, and temporal dynamics of the vocal signal. This
+article examines the primary acoustic differences—including the absence
+of fundamental frequency, formant frequency shifts, altered spectral
+tilt, high aperiodicity, and duration changes—and their direct
+implications for controllable speech synthesis.</p>
+<h2 id="absence-of-fundamental-frequency-f_0">Absence of Fundamental
+Frequency (<span class="math inline">\(F_0\)</span>)</h2>
+<p>The most defining acoustic distinction is the complete absence of
+vocal fold oscillation. In voiced speech, periodic vocal fold vibration
+creates a distinct fundamental frequency (<span
+class="math inline">\(F_0\)</span>) and a rich harmonic structure. In
+whispered speech, the glottis remains partially abducted, producing
+turbulent airflow instead of periodic pulses.</p>
+<p>For controllable TTS architectures, this means:</p>
+<ul>
+<li>The <span class="math inline">\(F_0\)</span> contour must be set to
+unvoiced (or zeroed out) across all phonemes, including vowels and
+voiced consonants.</li>
+<li>Pitch perception in whisper is conveyed through vocal tract
+resonances and formant transitions rather than a physical base
+frequency.</li>
+<li>Pitch predictors and conditioning modules must be bypassed or
+adapted to prevent the vocoder from generating buzzing, pseudo-harmonic
+artifacts.</li>
+</ul>
+<h2 id="formant-shifts-and-bandwidth-broadening">Formant Shifts and
+Bandwidth Broadening</h2>
+<p>The open configuration of the vocal tract during whispering alters
+acoustic resonances, resulting in distinct changes to formant
+frequencies and their bandwidths:</p>
+<ul>
+<li><strong>Elevated <span class="math inline">\(F_1\)</span>:</strong>
+The first formant (<span class="math inline">\(F_1\)</span>) shows the
+most substantial change, typically shifting upward by 150 to 300 Hz.
+This is caused by the decoupling of the subglottal and supraglottal
+cavities through the permanently open glottal chink.</li>
+<li><strong>Shifts in <span class="math inline">\(F_2\)</span> and <span
+class="math inline">\(F_3\)</span>:</strong> Higher formants exhibit
+context-dependent upward shifts, altering vowel quality and vowel space
+compactness.</li>
+<li><strong>Broadened Formant Bandwidths:</strong> Increased acoustic
+losses at the glottis lead to broader, less distinct formant peaks
+compared to the sharp, narrow resonances found in voiced speech.</li>
+</ul>
+<p>Controllable TTS systems must adjust acoustic feature representations
+(such as mel-spectrogram targets) to reflect these higher, wider formant
+profiles to prevent synthesized whispers from sounding like
+low-pass-filtered voiced speech.</p>
+<h2 id="low-harmonic-to-noise-ratio-hnr-and-aperiodicity">Low
+Harmonic-to-Noise Ratio (HNR) and Aperiodicity</h2>
+<p>Voiced speech exhibits a high Harmonic-to-Noise Ratio (HNR) due to
+the dominance of periodic glottal pulses. Whispering replaces this
+periodic source with continuous, turbulent friction noise generated at
+the glottal constriction.</p>
+<ul>
+<li>Whispered speech approaches a zero HNR, functioning almost entirely
+as aperiodic, colored noise.</li>
+<li>Neural vocoders (such as HiFi-GAN or BigVGAN) must switch their
+source excitation from periodic pitch-synchronous pulses to pure white
+or shaped noise to render realistic whisper texture.</li>
+</ul>
+<h2 id="spectral-tilt-and-energy-redistribution">Spectral Tilt and
+Energy Redistribution</h2>
+<p>The spectral slope of whispered speech differs markedly from modal
+phonation:</p>
+<ul>
+<li><strong>Flatter Spectral Tilt:</strong> Voiced speech typically
+demonstrates a steep spectral falloff (approximately -12 dB per octave)
+due to the glottal flow wave. Whispered speech features a much flatter
+spectral tilt, retaining significantly more energy in the high-frequency
+regions (above 4 kHz).</li>
+<li><strong>Lower Overall Intensity:</strong> The root-mean-square (RMS)
+energy of whispered speech is generally 10 to 20 dB lower than that of
+voiced speech.</li>
+</ul>
+<p>In TTS pipelines, explicit energy scaling and spectral weighting
+controls are necessary so the model does not attempt to normalize the
+loudness to match standard conversational levels, which ruins the
+perceptual intimacy of a whisper.</p>
+<h2 id="temporal-and-durational-alterations">Temporal and Durational
+Alterations</h2>
+<p>Whispered speech exhibits distinct temporal differences compared to
+voiced speech:</p>
+<ul>
+<li><strong>Vowel Lengthening:</strong> Because unvoiced vowels carry
+lower acoustic energy and degraded spectral cues, speakers naturally
+compensate by prolonging vowel durations to preserve
+intelligibility.</li>
+<li><strong>Consonant-to-Vowel Ratio:</strong> Unvoiced fricatives and
+stops naturally dominate the energy envelope, altering the relative
+timing structure between consonants and vowels.</li>
+</ul>
+<p>Controllable duration predictors in modern non-autoregressive TTS
+models must account for these altered phoneme alignments to ensure the
+synthesized whisper maintains natural rhythm and phrasing.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

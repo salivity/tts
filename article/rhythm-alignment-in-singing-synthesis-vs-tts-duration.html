@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Alignment in Singing Synthesis vs TTS Duration - tts</title>
+    <meta name="description" content="This article examines how Lyric-to-Singing (LTS) synthesis systems handle temporal alignment and rhythm compared to traditional duration predictors in Text-to-Speech (TTS). While standard TTS predicts flexible, context-driven durations to emulate natural">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/rhythm-alignment-in-singing-synthesis-vs-tts-duration">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Rhythm Alignment in Singing Synthesis vs TTS Duration - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/rhythm-alignment-in-singing-synthesis-vs-tts-duration" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines how Lyric-to-Singing (LTS) synthesis systems handle temporal alignment and rhythm compared to traditional duration predictors in Text-to-Speech (TTS). While standard TTS predicts flexible, context-driven durations to emulate natural" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="rhythm-alignment-in-singing-synthesis-vs-tts-duration">Rhythm
+Alignment in Singing Synthesis vs TTS Duration</h1>
+<p>This article examines how Lyric-to-Singing (LTS) synthesis systems
+handle temporal alignment and rhythm compared to traditional duration
+predictors in Text-to-Speech (TTS). While standard TTS predicts
+flexible, context-driven durations to emulate natural speech cadence,
+singing synthesis must reconcile rigid musical constraints—such as
+meter, tempo, and note boundaries—with phonetic realities. The following
+breakdown highlights the architectural, phonetic, and conditioning
+distinctions that define rhythm management in both domains.</p>
+<h2 id="external-score-constraints-vs-statistical-cadence">External
+Score Constraints vs. Statistical Cadence</h2>
+<p>Standard TTS duration models (such as those in FastSpeech or VITS)
+predict phone durations based purely on linguistic context, syntactic
+phrasing, and prosodic intent. The rhythm is unconstrained and
+continuous; there is no rigid time grid.</p>
+<p>In contrast, lyric-to-singing systems must align phonemes to an
+explicit external musical score containing note pitches, onsets,
+offsets, and a global tempo (BPM). Instead of generating a rhythm from
+scratch, an LTS model must map phonetic material into predefined musical
+timeframes while maintaining synchronization with a musical beat.</p>
+<h2 id="vowel-extension-and-consonant-placement">Vowel Extension and
+Consonant Placement</h2>
+<p>Human speech and musical singing distribute time across phonemes
+differently:</p>
+<ul>
+<li><strong>TTS Pacing:</strong> When a speaker slows down or speeds up,
+both consonants and vowels adjust in duration relatively proportionally,
+guided by typical linguistic stress patterns.</li>
+<li><strong>Singing Pacing:</strong> Singing holds pitch primarily on
+vowels and voiced sonorants. When a syllable is extended across a long
+musical note, the vowel absorbs nearly all the temporal elongation.
+Consonants cannot simply be stretched, as doing so introduces unnatural
+slurring and degrades intelligibility.</li>
+</ul>
+<p>LTS duration models resolve this by decoupling the syllable into
+onset consonants, the vowel nucleus, and coda consonants. The model
+generally assigns standard, speech-like durations to the consonants
+while dynamically allocating the remaining note duration to the vowel.
+Furthermore, LTS models must decide whether consonants are placed
+<em>before</em> the beat (pre-beat alignment) so the vowel starts
+precisely on the downbeat, or directly <em>on</em> the beat.</p>
+<h2 id="handling-melisma-and-multi-note-phrasing">Handling Melisma and
+Multi-Note Phrasing</h2>
+<p>Standard TTS operates on a monotonic progression where each phoneme
+corresponds to a single continuous slice of time. Speech rarely requires
+a single phoneme to transition across distinct target pitches without a
+phonetic boundary.</p>
+<p>Singing voice synthesis regularly encounters <em>melisma</em>, where
+a single lyric syllable spans across multiple musical notes and pitch
+transitions. LTS rhythm alignment architectures must split a single
+phoneme duration across multiple musical note events. This requires
+hierarchical duration modeling: first mapping lyric syllables across
+musical note boundaries, and then calculating sub-phonemic durations
+that preserve the required pitch transitions without introducing
+unintended breaks or artifacts.</p>
+<h2 id="architecture-and-conditioning-discrepancies">Architecture and
+Conditioning Discrepancies</h2>
+<p>The input representations and alignment mechanics in LTS diverge
+sharply from TTS:</p>
+<ul>
+<li><strong>Conditioning Vectors:</strong> TTS duration predictors
+typically accept phoneme embeddings, positional encodings, and speaker
+embeddings. LTS duration models require musical score features,
+including note duration, beat position within the measure, tempo, and
+slur flags.</li>
+<li><strong>Alignment Mechanisms:</strong> TTS models increasingly use
+unsupervised alignment methods, like Monotonic Alignment Search (MAS),
+to learn duration implicitly from acoustic data. LTS systems frequently
+rely on forced alignment conditioned on explicit score timing or
+hierarchical duration predictors (note-level to phone-level) to ensure
+the generated voice does not drift away from the backing tempo over
+extended passages.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

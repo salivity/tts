@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Tacotron Skips and Repeats Words in TTS - tts</title>
+    <meta name="description" content="Tacotron and Tacotron 2 revolutionized neural text-to-speech (TTS) by introducing sequence-to-sequence architectures that generated high-quality mel-spectrograms directly from text. However, their reliance on dynamic, autoregressive attention mechanisms">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-tacotron-skips-and-repeats-words-in-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Tacotron Skips and Repeats Words in TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-tacotron-skips-and-repeats-words-in-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Tacotron and Tacotron 2 revolutionized neural text-to-speech (TTS) by introducing sequence-to-sequence architectures that generated high-quality mel-spectrograms directly from text. However, their reliance on dynamic, autoregressive attention mechanisms" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-tacotron-skips-and-repeats-words-in-tts">Why Tacotron Skips
+and Repeats Words in TTS</h1>
+<p>Tacotron and Tacotron 2 revolutionized neural text-to-speech (TTS) by
+introducing sequence-to-sequence architectures that generated
+high-quality mel-spectrograms directly from text. However, their
+reliance on dynamic, autoregressive attention mechanisms introduced
+significant stability issues, notably word skipping, word repeating, and
+catastrophic alignment collapse. This article breaks down the primary
+architectural and algorithmic causes behind these attention failures in
+Tacotron-based systems and explains why these models struggled to
+maintain consistent alignment.</p>
+<h3 id="1-lack-of-strict-monotonic-inductive-bias">1. Lack of Strict
+Monotonic Inductive Bias</h3>
+<p>Human speech is strictly monotonic: words are spoken sequentially
+from left to right, and a speaker does not jump backward or forward
+unpredictably. Standard sequence-to-sequence models were originally
+designed for machine translation, where word reordering is
+necessary.</p>
+<p>Tacotron adopted content-based and additive soft attention (such as
+Bahdanau attention). Because this mechanism computes a softmax
+distribution over the entire input text at every decoding step, the
+model mathematically possesses the freedom to look anywhere in the
+sequence. While Tacotron 2 introduced location-sensitive
+attention—incorporating cumulative alignment history to encourage
+forward movement—it remained a soft constraint rather than a hard
+physical restriction. When the attention weights diffuse, the focus can
+easily jump forward (skipping words) or drift backward (repeating
+words).</p>
+<h3 id="2-exposure-bias-from-teacher-forcing">2. Exposure Bias from
+Teacher Forcing</h3>
+<p>Tacotron models are trained using "teacher forcing," where the
+decoder is fed the ground-truth acoustic frame from the previous time
+step. During inference, however, the model must feed its own previously
+generated (and potentially imperfect) frame back into the decoder.</p>
+<p>This discrepancy creates exposure bias. If the decoder generates an
+acoustic frame with minor artifacts or noise, this error feeds into the
+next step. The attention mechanism, conditioned on this flawed recurrent
+state, fails to resolve the correct text position. A small tracking
+error can cascade into complete alignment loss, causing the attention
+weights to stall on a single phoneme (leading to repeated words or
+babbling loops) or skip past unvoiced phonemes entirely.</p>
+<h3 id="3-acoustic-ambiguities-and-punctuation-pauses">3. Acoustic
+Ambiguities and Punctuation Pauses</h3>
+<p>Text-to-speech alignment struggles when there is no distinct acoustic
+information corresponding to an input character. Long pauses, silence,
+and punctuation marks do not generate distinct harmonic structures.</p>
+<p>During silent frames, the decoder receives minimal acoustic feedback
+to distinguish its current position. In these silent gaps, soft
+attention often distributes weight across multiple parts of the text or
+flattens out entirely. Once the silence concludes, the model must
+"guess" where to resume alignment, often landing on the wrong word or
+re-reading the preceding phrase.</p>
+<h3 id="4-similar-phonetic-contexts">4. Similar Phonetic Contexts</h3>
+<p>When sentences contain repeated words, identical syllables, or
+similar phonetic phrases in close proximity (e.g., "she sells sea
+shells"), the attention mechanism's content-based component receives
+nearly identical key-value representations. Without an absolute
+positional guarantee, the location-sensitive filters can be overridden
+by strong content similarities, causing the alignment matrix to loop
+between duplicate words or skip the intermediate phrase entirely.</p>
+<h3 id="5-flat-attention-distributions-and-premature-termination">5.
+Flat Attention Distributions and Premature Termination</h3>
+<p>Tacotron uses a separate stop token projection to decide when an
+utterance is complete. If the attention distribution becomes
+diffuse—spreading evenly across the entire text instead of focusing
+sharply on a specific phoneme—the decoder's hidden state degrades. This
+often causes the stop-token classifier to trigger prematurely, cutting
+the sentence off halfway, or fails to trigger at all, producing
+continuous static and repeated tail syllables.</p>
+<p>These inherent vulnerabilities in dynamic attention ultimately drove
+the speech synthesis field away from autoregressive attention models,
+leading to the development of explicit duration predictors and
+non-autoregressive architectures like FastSpeech and VITS.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

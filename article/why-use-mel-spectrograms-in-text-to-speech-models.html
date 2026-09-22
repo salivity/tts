@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Use Mel-Spectrograms in Text-to-Speech Models - tts</title>
+    <meta name="description" content="In modern Text-to-Speech (TTS) pipelines, acoustic models generate an intermediate audio representation from text before a vocoder synthesizes the final waveform. Converting raw linear-frequency spectrograms into mel-spectrograms is the standard approach">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-use-mel-spectrograms-in-text-to-speech-models">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Use Mel-Spectrograms in Text-to-Speech Models - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-use-mel-spectrograms-in-text-to-speech-models" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In modern Text-to-Speech (TTS) pipelines, acoustic models generate an intermediate audio representation from text before a vocoder synthesizes the final waveform. Converting raw linear-frequency spectrograms into mel-spectrograms is the standard approach" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-use-mel-spectrograms-in-text-to-speech-models">Why Use
+Mel-Spectrograms in Text-to-Speech Models</h1>
+<p>In modern Text-to-Speech (TTS) pipelines, acoustic models generate an
+intermediate audio representation from text before a vocoder synthesizes
+the final waveform. Converting raw linear-frequency spectrograms into
+mel-spectrograms is the standard approach for this intermediate stage
+because it mimics human auditory perception, reduces computational
+complexity, and provides an effective inductive bias that stabilizes
+model training.</p>
+<h3 id="alignment-with-human-auditory-perception">Alignment with Human
+Auditory Perception</h3>
+<p>The primary motivation for using the mel scale is that human hearing
+does not perceive frequency linearly. People are significantly better at
+discerning small pitch differences at lower frequencies than at higher
+frequencies.</p>
+<p>A standard linear-frequency Short-Time Fourier Transform (STFT)
+allocates equal resolution across the entire frequency range. This
+distributes computational capacity uniformly, treating variations at
+15,000 Hz with the same importance as variations at 300 Hz. The mel
+scale applies a non-linear transformation—compressing higher frequencies
+into wider filter bands while maintaining high resolution at lower
+frequencies. This ensures the intermediate TTS model focuses its
+parameters on the spectral details that human ears actually detect in
+speech.</p>
+<h3 id="dimensionality-reduction-and-training-efficiency">Dimensionality
+Reduction and Training Efficiency</h3>
+<p>Linear spectrograms have high dimensionality. A standard STFT
+calculated with an FFT size of 1024 produces 513 frequency bins per time
+frame. Predicting a matrix of this size requires substantial memory,
+longer training times, and large neural network architectures.</p>
+<p>Mel-filterbanks compress linear STFT bins into a significantly
+smaller representation, typically 80 or 128 mel bins. This compression
+reduces the target output size by roughly 75% to 85% without discarding
+perceptually relevant acoustic features. As a result, intermediate
+acoustic models—such as Tacotron 2, FastSpeech 2, or VITS—require fewer
+parameters, train faster, and converge more reliably.</p>
+<h3 id="acting-as-an-information-bottleneck">Acting as an Information
+Bottleneck</h3>
+<p>Intermediate acoustic models perform a sequence-to-sequence mapping
+from discrete text or phonemes to continuous spectral frames. Linear
+spectrograms contain excessive low-level acoustic details, phase
+artifacts, and high-frequency noise that are difficult to predict
+directly from text alone.</p>
+<p>Converting to a mel-spectrogram acts as a regularizing bottleneck. By
+smoothing out redundant high-frequency variations and omitting phase
+information, the target space becomes smoother and more predictable.
+This prevents the model from overfitting to micro-level acoustic noise
+in the training data, allowing it to focus on prosody, formants, and
+phonetic boundaries.</p>
+<h3 id="separation-of-concerns-in-two-stage-pipelines">Separation of
+Concerns in Two-Stage Pipelines</h3>
+<p>Modern TTS architectures typically divide speech synthesis into two
+distinct stages:</p>
+<ol type="1">
+<li><strong>Acoustic Model:</strong> Maps text/phonemes to a compact
+acoustic representation (the mel-spectrogram).</li>
+<li><strong>Neural Vocoder:</strong> Reconstructs the high-fidelity
+time-domain waveform (such as HiFi-GAN or WaveGlow) from the
+mel-spectrogram.</li>
+</ol>
+<p>Using mel-spectrograms as the intermediate representation creates a
+clean division of labor. The acoustic model handles language
+understanding, duration, and pitch contours, while the vocoder handles
+the complex task of phase recovery and high-frequency audio synthesis.
+This modularity allows both models to be trained, evaluated, and
+optimized independently for better overall voice quality.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

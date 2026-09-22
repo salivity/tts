@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Multilingual TTS Handles Mixed Scripts - tts</title>
+    <meta name="description" content="Modern multilingual Text-to-Speech (TTS) engines frequently encounter mixed-script inputs, such as sentences combining Devanagari and Latin characters commonly found in Indian code-mixed languages like Hinglish. This article explains the technological pi">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-multilingual-tts-handles-mixed-scripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Multilingual TTS Handles Mixed Scripts - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-multilingual-tts-handles-mixed-scripts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern multilingual Text-to-Speech (TTS) engines frequently encounter mixed-script inputs, such as sentences combining Devanagari and Latin characters commonly found in Indian code-mixed languages like Hinglish. This article explains the technological pi" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-multilingual-tts-handles-mixed-scripts">How Multilingual TTS
+Handles Mixed Scripts</h1>
+<p>Modern multilingual Text-to-Speech (TTS) engines frequently encounter
+mixed-script inputs, such as sentences combining Devanagari and Latin
+characters commonly found in Indian code-mixed languages like Hinglish.
+This article explains the technological pipeline modern TTS
+architectures use to process mixed scripts seamlessly. It covers the
+stages of text segmentation, script normalization, unified phonetic
+mapping, and neural acoustic modeling that allow synthetic voices to
+switch between scripts naturally without disjointed accents or
+artificial pauses.</p>
+<h3 id="tokenization-and-language-identification-lid">Tokenization and
+Language Identification (LID)</h3>
+<p>The first challenge in processing mixed-script text is detecting
+which script belongs to which language context. Modern TTS pipelines
+deploy character-level and token-level Language Identification (LID)
+modules. When an input string contains both Devanagari (e.g., "नमस्ते")
+and Latin characters (e.g., "Welcome"), the tokenizer splits the text
+based on Unicode character blocks.</p>
+<p>The system flags the script type for each segment and determines
+whether a Latin-script word represents standard English (e.g., "login",
+"meeting") or a transliterated native term (e.g., "aapka", "kripya").
+This distinction determines the downstream pronunciation path.</p>
+<h3 id="transliteration-and-text-normalization">Transliteration and Text
+Normalization</h3>
+<p>Once identified, text normalization engines standardize the
+characters into a format optimal for speech synthesis. Systems typically
+choose one of two approaches:</p>
+<ol type="1">
+<li><strong>Unidirectional Transliteration:</strong> The engine
+transliterates all Latin tokens into Devanagari using machine learning
+transliteration models, standardizing the entire sentence into a single
+script.</li>
+<li><strong>Standardized Script Harmonization:</strong> Text is retained
+in its native scripts, but non-standard abbreviations, currency symbols,
+and numerical expressions are expanded according to the surrounding
+language context.</li>
+</ol>
+<p>If a Latin word is recognized as borrowed English, it is marked to be
+spoken with a localized English phonology rather than a strict
+transliterated phonetic reading.</p>
+<h3 id="unified-phonetic-representation-g2p-conversion">Unified Phonetic
+Representation (G2P Conversion)</h3>
+<p>Text scripts must be converted into sound units through
+Grapheme-to-Phoneme (G2P) conversion. For mixed-script inputs, separate
+monolingual G2P rules often produce conflicting phonetic inventories.
+Modern systems solve this by mapping both Devanagari and Latin inputs to
+a shared phonetic framework, typically the International Phonetic
+Alphabet (IPA).</p>
+<p>Because Devanagari is an abugida with near-phonetic consistency,
+mapping its characters to IPA is relatively direct, requiring explicit
+rules for inherent vowel suppression (schwa deletion). Conversely, Latin
+script used for English requires dictionary lookups or deep neural
+network (DNN) G2P models to handle irregular spelling. The system then
+merges these disparate phoneme sequences into a single, continuous
+stream of phonemes, eliminating abrupt transitions.</p>
+<h3 id="neural-acoustic-modeling-and-language-embeddings">Neural
+Acoustic Modeling and Language Embeddings</h3>
+<p>Modern neural TTS models (such as VITS, FastSpeech 2, or Tacotron
+variants) process the unified phoneme stream through an encoder-decoder
+architecture. To handle mixed scripts without sudden changes in voice
+identity:</p>
+<ul>
+<li><strong>Speaker Embeddings:</strong> A fixed speaker embedding
+vector is passed across the entire sequence. This ensures that the
+speaker's vocal characteristics, timbre, and gender remain identical
+when transitioning between Devanagari and Latin segments.</li>
+<li><strong>Language and Context Embeddings:</strong> Token-level
+language embeddings inform the model about the native accent and prosody
+required for each segment, allowing the system to produce authentic
+Indian English or Hindi accents on demand.</li>
+<li><strong>Duration and Pitch Predictors:</strong> Context-aware
+duration predictors adjust the length and pitch contours at the boundary
+where the two scripts meet, preventing unnatural pauses or robotic pitch
+drops.</li>
+</ul>
+<p>By utilizing unified phonetic representations and context-aware
+neural acoustic networks, multilingual TTS engines produce smooth,
+natural-sounding speech that accurately respects the phonetic rules of
+both Devanagari and Latin scripts within a single utterance.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

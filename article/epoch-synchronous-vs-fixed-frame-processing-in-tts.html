@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epoch-Synchronous vs Fixed-Frame Processing in TTS - tts</title>
+    <meta name="description" content="This article examines the core signal processing differences between epoch-synchronous and fixed-frame processing in parametric Text-to-Speech (TTS) synthesis. While fixed-frame processing divides audio into uniform, regularly spaced intervals, epoch-syn">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/epoch-synchronous-vs-fixed-frame-processing-in-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Epoch-Synchronous vs Fixed-Frame Processing in TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/epoch-synchronous-vs-fixed-frame-processing-in-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines the core signal processing differences between epoch-synchronous and fixed-frame processing in parametric Text-to-Speech (TTS) synthesis. While fixed-frame processing divides audio into uniform, regularly spaced intervals, epoch-syn" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="epoch-synchronous-vs-fixed-frame-processing-in-tts">Epoch-Synchronous
+vs Fixed-Frame Processing in TTS</h1>
+<p>This article examines the core signal processing differences between
+epoch-synchronous and fixed-frame processing in parametric
+Text-to-Speech (TTS) synthesis. While fixed-frame processing divides
+audio into uniform, regularly spaced intervals, epoch-synchronous
+processing dynamically aligns analysis and synthesis windows with
+physical glottal events known as Glottal Closure Instants (GCIs). The
+following sections break down how these two paradigms diverge in
+windowing mechanisms, spectral estimation accuracy, phase
+representation, computational robustness, and overall synthesis
+quality.</p>
+<hr />
+<h3 id="frame-boundary-determination-and-windowing">Frame Boundary
+Determination and Windowing</h3>
+<p>The primary mechanical difference lies in how analysis windows are
+placed along the speech signal:</p>
+<ul>
+<li><strong>Fixed-Frame Processing:</strong> The signal is segmented
+using a constant frame shift (typically 5 ms or 10 ms) and a fixed
+window length (typically 20 ms to 30 ms). The placement of the window is
+entirely independent of the fundamental frequency (<span
+class="math inline">\(F_0\)</span>) or the state of the vocal
+folds.</li>
+<li><strong>Epoch-Synchronous Processing:</strong> Analysis frames are
+tied directly to pitch epochs, specifically Glottal Closure Instants
+(GCIs). The frame shift is variable and equal to the local pitch period
+(<span class="math inline">\(T_0\)</span>). The window length is
+typically set dynamically to cover a specific number of pitch
+periods—most commonly two fundamental periods (<span
+class="math inline">\(2T_0\)</span>) centered precisely at the GCI.</li>
+</ul>
+<hr />
+<h3 id="spectral-envelope-estimation-and-leakage">Spectral Envelope
+Estimation and Leakage</h3>
+<p>The interaction between the analysis window and the underlying pitch
+period significantly impacts the accuracy of the vocal tract transfer
+function estimation:</p>
+<ul>
+<li><strong>Fixed-Frame Smearing:</strong> Because the window length
+does not match local pitch cycles, a fixed-frame window captures an
+arbitrary, non-integer number of pitch pulses. This creates spectral
+leakage and pitch-synchronous modulation artifacts in linear predictive
+coding (LPC) or mel-cepstral analysis. As a result, formant bandwidths
+and center frequencies fluctuate artificially from frame to frame based
+merely on where the window lands relative to the pulse.</li>
+<li><strong>Epoch-Synchronous Precision:</strong> By centering a
+two-period window on a GCI, the analysis window captures consistent
+energy profiles of the glottal cycle. This reduces pitch-dependent
+spectral modulation, limits cross-talk between the source harmonics and
+vocal tract resonances, and yields sharper, more accurate formant
+estimates with minimal spectral smearing.</li>
+</ul>
+<hr />
+<h3 id="source-filter-separation-and-excitation-modeling">Source-Filter
+Separation and Excitation Modeling</h3>
+<p>Parametric TTS vocoders rely on separating the source (glottal
+airflow) from the filter (vocal tract):</p>
+<ul>
+<li><strong>Fixed-Frame Approximations:</strong> Vocoders using fixed
+frames (such as standard WORLD or STRAIGHT) compute a smoothed spectral
+envelope and model the excitation as a mix of periodic impulses and
+aperiodic noise bands per frame. Phase information is typically
+discarded or approximated via minimum-phase assumptions, which can
+introduce a "buzzy" or unnatural timbre.</li>
+<li><strong>Epoch-Synchronous Excitation:</strong> Epoch-aligned
+frameworks allow direct decomposition of the speech signal into the true
+glottal flow derivative and vocal tract response. Models like the
+Liljencrants-Fant (LF) model can be accurately fitted to the signal
+cycle-by-cycle. Because the timing of each acoustic impulse is preserved
+relative to the vocal tract filter, phase alignment across pitch pulses
+is naturally maintained.</li>
+</ul>
+<hr />
+<h3 id="phase-coherence-and-artifact-generation">Phase Coherence and
+Artifact Generation</h3>
+<p>Phase handling differs considerably between the two methods during
+the synthesis stage:</p>
+<ul>
+<li><strong>Fixed-Frame Phase Reconstruction:</strong> Because frame
+shifts do not match pitch periods, reconstructing the continuous phase
+across frame boundaries requires explicit phase unwrapping or
+minimum-phase plus noise-dispersion networks. Discontinuities at frame
+boundaries can lead to phase cancellation, roughness, or temporal
+blurring of transient sounds like plosives.</li>
+<li><strong>Epoch-Synchronous Coherence:</strong> Pitch-Synchronous
+Overlap-Add (PSOLA) and epoch-based parametric vocoders naturally
+maintain phase alignment because synthesis grains overlap precisely at
+the excitation points. This eliminates destructive interference between
+adjacent harmonics and maintains natural waveform peakiness, reducing
+buzzy artifacts in voiced regions.</li>
+</ul>
+<hr />
+<h3 id="computational-complexity-and-robustness">Computational
+Complexity and Robustness</h3>
+<p>While epoch-synchronous processing offers theoretical advantages in
+fidelity, it introduces major operational constraints:</p>
+<ul>
+<li><strong>Fixed-Frame Robustness:</strong> Fixed-frame algorithms are
+computationally deterministic, simple to parallelize, and fully
+autonomous. They require no prior pitch marking and do not fail when
+acoustic conditions deteriorate.</li>
+<li><strong>Epoch-Synchronous Vulnerability:</strong> Epoch-synchronous
+processing depends entirely on the reliability of GCI detection
+algorithms (e.g., SEDREAMS, DYPSA, or deep-learning-based epoch
+detectors). If a GCI is missed, mislocated, or falsely detected in
+unvoiced regions, severe spectral distortions and audible clicks occur.
+This dependency makes epoch-synchronous pipelines more complex and less
+robust when processing noisy or non-modal speech (such as vocal fry or
+breathy voice).</li>
+</ul>
+<hr />
+<h3 id="comparison-summary">Comparison Summary</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;">Fixed-Frame Processing</th>
+<th style="text-align: left;">Epoch-Synchronous Processing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Window Step / Shift</strong></td>
+<td style="text-align: left;">Constant (e.g., 5 ms)</td>
+<td style="text-align: left;">Variable (equal to local <span
+class="math inline">\(T_0\)</span>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Window Length</strong></td>
+<td style="text-align: left;">Fixed (e.g., 25 ms)</td>
+<td style="text-align: left;">Pitch-adaptive (often <span
+class="math inline">\(2T_0\)</span>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Spectral Leakage</strong></td>
+<td style="text-align: left;">High (pitch-modulation artifacts)</td>
+<td style="text-align: left;">Low (consistent cycle sampling)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Phase Alignment</strong></td>
+<td style="text-align: left;">Requires explicit estimation/modeling</td>
+<td style="text-align: left;">Naturally aligned via GCIs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Failure Points</strong></td>
+<td style="text-align: left;">Low; highly robust</td>
+<td style="text-align: left;">High; sensitive to GCI detection
+errors</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Best Suited For</strong></td>
+<td style="text-align: left;">Real-time pipelines, deep learning
+vocoders</td>
+<td style="text-align: left;">High-precision glottal analysis,
+PSOLA</td>
+</tr>
+</tbody>
+</table></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

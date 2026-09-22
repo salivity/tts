@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why WFSTs Power Number Expansion in TTS Systems - tts</title>
+    <meta name="description" content="Despite the dominance of end-to-end deep learning in modern speech synthesis, Weighted Finite-State Transducers (WFSTs) remain the gold standard for number expansion and text normalization in production Text-to-Speech (TTS) pipelines. While neural models">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-wfs-ts-power-number-expansion-in-tts-systems">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why WFSTs Power Number Expansion in TTS Systems - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-wfs-ts-power-number-expansion-in-tts-systems" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Despite the dominance of end-to-end deep learning in modern speech synthesis, Weighted Finite-State Transducers (WFSTs) remain the gold standard for number expansion and text normalization in production Text-to-Speech (TTS) pipelines. While neural models" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-wfsts-power-number-expansion-in-tts-systems">Why WFSTs Power
+Number Expansion in TTS Systems</h1>
+<p>Despite the dominance of end-to-end deep learning in modern speech
+synthesis, Weighted Finite-State Transducers (WFSTs) remain the gold
+standard for number expansion and text normalization in production
+Text-to-Speech (TTS) pipelines. While neural models excel at acoustic
+generation, they struggle with the precision required to convert
+non-standard words like "$3.50," "1984," or "3/4" into their spoken
+equivalents ("three dollars and fifty cents," "nineteen eighty-four,"
+and "three quarters"). WFSTs persist because they guarantee zero
+hallucinations, operate with microsecond latency, offer exact
+traceability for debugging, and provide bidirectional utility across
+speech technologies.</p>
+<h3 id="zero-hallucination-and-absolute-determinism">Zero Hallucination
+and Absolute Determinism</h3>
+<p>The primary failure mode of sequence-to-sequence neural text
+normalizers is hallucination. A neural model may arbitrarily misread an
+account number, substitute a date, or invent words when encountering
+unfamiliar numeric formats. In commercial and mission-critical voice
+applications—such as navigation, banking, and medical transcription—a
+single hallucinated digit is intolerable.</p>
+<p>WFSTs are mathematically deterministic. They encode linguistic rules
+as states and weighted transitions, ensuring that a given numeric
+pattern maps only to valid, predefined spoken representations. If an
+input cannot be parsed, the system fails predictably rather than
+generating plausible-sounding nonsense.</p>
+<h3 id="microsecond-latency-and-minimal-compute">Microsecond Latency and
+Minimal Compute</h3>
+<p>Production TTS systems, especially interactive conversational agents,
+must operate with tight end-to-end latency budgets (often under 200
+milliseconds). Deploying an auxiliary transformer or neural network
+solely to normalize text introduces unnecessary GPU requirements, memory
+overhead, and inference delays.</p>
+<p>In contrast, compiled WFST grammars—built with toolkits like OpenFst
+or Pynini—execute in the order of microseconds using negligible CPU and
+RAM. The entire grammar can be composed, determinized, and minimized
+offline into an optimized graph, making runtime lookups essentially
+instantaneous.</p>
+<h3 id="granular-debugging-and-regression-control">Granular Debugging
+and Regression Control</h3>
+<p>When a production TTS system mispronounces a specific format—such as
+reading "2024" as "two thousand twenty-four" instead of "twenty
+twenty-four" in a date context—engineers using WFSTs can trace the exact
+transduction path through the graph. The issue can be resolved by
+adjusting a single transition weight or introducing a specific rule
+constraint.</p>
+<p>With neural approaches, correcting an edge case typically requires
+retraining or fine-tuning the model, which introduces the risk of
+catastrophic forgetting and regressions across previously working
+patterns. WFSTs provide strict isolation, making continuous integration
+and rule validation predictable.</p>
+<h3 id="morphosyntactic-agreement-in-complex-languages">Morphosyntactic
+Agreement in Complex Languages</h3>
+<p>Expanding numbers requires more than replacing digits with words; it
+demands correct morphosyntactic agreement based on gender, case, and
+number. For example, in inflected languages like Polish, Russian, or
+German, a cardinal or ordinal number changes its suffix depending on the
+governing preposition and noun.</p>
+<p>WFSTs handle this complexity through composition (<span
+class="math inline">\(T_1 \circ T_2 \circ T_3\)</span>). A pipeline can
+separate the process into modular stages:</p>
+<ol type="1">
+<li><strong>Classification:</strong> Tagging tokens (e.g., identifying a
+token as a date, currency, or cardinal).</li>
+<li><strong>Expansion:</strong> Generating candidate spoken word
+strings.</li>
+<li><strong>Agreement/Grammar:</strong> Filtering paths using
+language-specific grammatical transducers to enforce correct case
+declension.</li>
+</ol>
+<h3 id="invertibility-for-speech-recognition-itn">Invertibility for
+Speech Recognition (ITN)</h3>
+<p>WFSTs are fundamentally bidirectional. By inverting the input and
+output labels of a transducer, a text normalization grammar (written to
+spoken) can often be repurposed for Inverse Text Normalization (ITN),
+which converts spoken automated speech recognition (ASR) output back
+into standard written text. Maintaining a single, mathematically
+rigorous framework for both TTS and ASR reduces cross-team engineering
+overhead and ensures consistency across a company’s entire speech
+stack.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

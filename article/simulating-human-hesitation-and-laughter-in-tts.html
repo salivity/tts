@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulating Human Hesitation and Laughter in TTS - tts</title>
+    <meta name="description" content="Modern Text-to-Speech (TTS) systems are evolving from monotonic voice generators into expressive engines capable of nuanced, conversational delivery. This article explores the core engineering and machine learning techniques—such as paralinguistic toke">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/simulating-human-hesitation-and-laughter-in-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Simulating Human Hesitation and Laughter in TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/simulating-human-hesitation-and-laughter-in-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern Text-to-Speech (TTS) systems are evolving from monotonic voice generators into expressive engines capable of nuanced, conversational delivery. This article explores the core engineering and machine learning techniques—such as paralinguistic toke" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="simulating-human-hesitation-and-laughter-in-tts">Simulating
+Human Hesitation and Laughter in TTS</h1>
+<p>Modern Text-to-Speech (TTS) systems are evolving from monotonic voice
+generators into expressive engines capable of nuanced, conversational
+delivery. This article explores the core engineering and machine
+learning techniques—such as paralinguistic tokenization, latent acoustic
+conditioning, neural vocoding, and conversational training data—that
+enable speech synthesis models to generate realistic human hesitations,
+audible breaths, and spontaneous laughter.</p>
+<h3 id="1-paralinguistic-tokenization-and-ssml-expansion">1.
+Paralinguistic Tokenization and SSML Expansion</h3>
+<p>Early TTS pipelines filtered out non-verbal vocalizations as acoustic
+noise. Modern architectures intentionally preserve and tokenize them.
+Speech Synthesis Markup Language (SSML) and custom semantic tokens
+explicitly tag moments where non-verbal acoustics should occur:</p>
+<ul>
+<li><strong>Filler Words and Pauses:</strong> Phonetic representations
+of disfluencies (such as "um," "uh," or trailing ellipses) are injected
+directly into text inputs, complete with duration parameters to control
+the length of the hesitation.</li>
+<li><strong>Specialized Token Sets:</strong> Models like Vall-E, Bark,
+and ElevenLabs utilize distinct paralinguistic tokens (e.g.,
+<code>[laughter]</code>, <code>[sigh]</code>, or <code>[gasp]</code>)
+alongside standard grapheme or phoneme representations, mapping directly
+to acoustic realizations in the training set.</li>
+</ul>
+<h3 id="2-conversational-dataset-curation-and-alignment">2.
+Conversational Dataset Curation and Alignment</h3>
+<p>The realism of spontaneous sounds depends heavily on unscripted
+training data:</p>
+<ul>
+<li><strong>Preserving Acoustic Artifacts:</strong> Traditional
+studio-recorded audio deliberately removes mouth clicks, heavy
+breathing, and laughter. Training expressive models requires unscripted,
+natural dialogue datasets where these artifacts are left intact.</li>
+<li><strong>Precise Forced Alignment:</strong> Advanced alignment tools
+map text to audio down to the millisecond, isolating where a chuckle
+overlaps with a spoken word or where a distinct inhalation occurs
+between clauses. This allows the neural network to associate specific
+text contexts with these physiological patterns.</li>
+</ul>
+<h3 id="3-latent-conditioning-and-autoregressive-audio-models">3. Latent
+Conditioning and Autoregressive Audio Models</h3>
+<p>Modern generative architectures treat speech synthesis as a language
+modeling task over discrete audio codes (such as those generated by
+EnCodec or SoundStream):</p>
+<ul>
+<li><strong>Contextual Prediction:</strong> Autoregressive models
+evaluate the semantic context of a sentence. If a sentence is humorous,
+awkward, or structurally complex, the model inherently predicts tokens
+representing a nervous laugh or a hesitant micro-pause before
+proceeding.</li>
+<li><strong>Reference Audio Prompting:</strong> Few-shot voice cloning
+systems extract latent acoustic embeddings from a reference audio clip.
+If the reference clip contains an audible inhalation or vocal fry, the
+model replicates this physiological signature throughout the generated
+speech.</li>
+</ul>
+<h3 id="4-high-fidelity-neural-vocoders-and-diffusion-architectures">4.
+High-Fidelity Neural Vocoders and Diffusion Architectures</h3>
+<p>Breaths, sighs, and laughter present unique physical challenges
+because they consist primarily of unvoiced, turbulent air rather than
+harmonic pitch:</p>
+<ul>
+<li><strong>Waveform Synthesis:</strong> Traditional parametric
+synthesizers failed to generate natural breath sounds, often producing
+metallic static. Modern neural vocoders (like HiFi-GAN) and
+diffusion-based audio models accurately simulate the stochastic,
+unvoiced friction of air passing through the vocal tract.</li>
+<li><strong>Micro-Prosodic Modeling:</strong> Laughter requires rapid,
+rhythmic fluctuations in pitch, intensity, and subglottal pressure.
+Diffusion models excel at generating these fine-grained variations
+without introducing robotic artifacts or sudden phase shifts.</li>
+</ul>
+<h3 id="5-prosodic-contouring-and-disfluency-control">5. Prosodic
+Contouring and Disfluency Control</h3>
+<p>To make hesitations sound convincing, the model must alter the
+surrounding speech rhythm:</p>
+<ul>
+<li><strong>F0 (Fundamental Frequency) Modulation:</strong> When humans
+hesitate, their pitch typically flattens or rises slightly into an
+unresolved tone. TTS architectures adjust the pitch contour leading into
+an "um" or pause to signal to the listener that the thought is
+incomplete.</li>
+<li><strong>Vocal Tract Dynamics:</strong> Models simulate the acoustic
+effects of lip smacks, tongue clicks, and glottal stops that naturally
+precede speech onset, grounding the synthesis in human
+biomechanics.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

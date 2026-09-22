@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Audio Cleaning for Text-to-Speech Corpora - tts</title>
+    <meta name="description" content="High-quality Text-to-Speech (TTS) synthesis depends heavily on dry, pristine acoustic data free of room acoustics and physiological mouth noise. This article examines the automated pipelines used in modern machine learning workflows to systematically eli">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/automated-audio-cleaning-for-text-to-speech-corpora">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Automated Audio Cleaning for Text-to-Speech Corpora - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/automated-audio-cleaning-for-text-to-speech-corpora" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="High-quality Text-to-Speech (TTS) synthesis depends heavily on dry, pristine acoustic data free of room acoustics and physiological mouth noise. This article examines the automated pipelines used in modern machine learning workflows to systematically eli" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="automated-audio-cleaning-for-text-to-speech-corpora">Automated
+Audio Cleaning for Text-to-Speech Corpora</h1>
+<p>High-quality Text-to-Speech (TTS) synthesis depends heavily on dry,
+pristine acoustic data free of room acoustics and physiological mouth
+noise. This article examines the automated pipelines used in modern
+machine learning workflows to systematically eliminate room
+reverberation, mouth clicks, and breath noises from large-scale voice
+datasets.</p>
+<h3 id="the-standard-audio-cleaning-pipeline-architecture">The Standard
+Audio Cleaning Pipeline Architecture</h3>
+<p>Building a production-ready TTS dataset from raw recordings involves
+an automated, sequential pipeline. Applying cleaning algorithms in the
+wrong order can cause artifacts; for instance, dereverberating an audio
+file after dynamic compression will amplify room reflections. The
+standard processing sequence typically follows this order:</p>
+<ol type="1">
+<li><strong>Blind Dereverberation:</strong> Strips early reflections and
+late reverberation tails to create an anechoic baseline.</li>
+<li><strong>De-Clicking and Transient Repair:</strong> Identifies and
+interpolates over micro-transients caused by saliva and tongue
+movement.</li>
+<li><strong>Forced Alignment and Segmentation:</strong> Splits the audio
+into short utterances and aligns text tokens with phonemes.</li>
+<li><strong>Breath Detection and Attenuation:</strong> Attenuates or
+removes non-phonetic intake and exhale sounds during inter-word or
+sentence boundaries.</li>
+<li><strong>Loudness Normalization:</strong> Standardizes integrated
+loudness (e.g., -24 LKFS/LUFS) and true-peak levels across the
+corpus.</li>
+</ol>
+<h3 id="automated-dereverberation-techniques">Automated Dereverberation
+Techniques</h3>
+<p>Room impulse response (RIR) introduces phase distortion and temporal
+smearing, which degrades the vocoder’s ability to generate crisp
+high-frequency details. Automated pipelines employ two primary classes
+of dereverberation:</p>
+<ul>
+<li><strong>Weighted Prediction Error (WPE):</strong> Statistical
+approaches such as the <code>nara_wpe</code> library use iterative
+algorithms to invert the room transfer function without distorting the
+direct speech signal. WPE models late reverberation using long-term
+linear prediction, making it an industry standard for multi-channel and
+high-quality single-channel cleaning because it preserves speech
+naturalness and introduces minimal phase artifacts.</li>
+<li><strong>Deep Neural Dereverberation:</strong> Modern pipelines
+frequently deploy neural models like VoiceFixer, DPCRN (Deep Complex
+Recurrent Network), or MetricGAN+. These networks operate in the complex
+short-time Fourier transform (STFT) domain to predict clean spectral
+masks or directly synthesize anechoic waveforms. While highly effective
+at stripping severe room reflections, they require careful tuning of
+regularization parameters to prevent "musical noise" and phoneme
+clipping.</li>
+</ul>
+<h3 id="removing-mouth-clicks-and-saliva-artifacts">Removing Mouth
+Clicks and Saliva Artifacts</h3>
+<p>Mouth clicks are short, high-frequency transients (typically 2 to 10
+milliseconds in duration, concentrated above 4 kHz) caused by the
+separation of the tongue, lips, and palate. Automated removal relies on
+digital signal processing (DSP) rather than heavy neural networks to
+avoid altering underlying formant structures:</p>
+<ul>
+<li><strong>Transient Detection:</strong> Algorithms analyze the
+derivative of the signal's energy envelope or employ wavelet
+decomposition to identify sudden, non-harmonic spikes that exceed local
+statistical variance.</li>
+<li><strong>LPC-Based Interpolation:</strong> Once a click is localized,
+the pipeline removes the corrupted samples (typically 50–200 samples)
+and replaces them using Linear Predictive Coding (LPC) forward-backward
+interpolation or cubic spline reconstruction. This process repairs the
+waveform seamlessly without leaving an audible gap or phase
+discontinuity.</li>
+</ul>
+<h3 id="breath-detection-and-gating">Breath Detection and Gating</h3>
+<p>While natural breathing can sometimes improve conversational TTS
+models, training standard acoustic models (such as FastSpeech 2 or VITS)
+requires precise control over non-speech sounds. Unintended loud
+inhalations create alignment errors and phoneme confusion.</p>
+<ul>
+<li><strong>Forced-Alignment Masking:</strong> Tools like the Montreal
+Forced Aligner (MFA) align text transcripts with the acoustic signal.
+Intervals between words that do not map to distinct phonemes are flagged
+as silence or breath regions.</li>
+<li><strong>VAD and Semantic Breath Classifiers:</strong> Modern
+pipelines run lightweight classification models, such as fine-tuned
+Silero VAD or CNN-based audio taggers, over unaligned regions to
+categorize pauses into true digital silence, room tone, or
+inhalations.</li>
+<li><strong>Targeted Attenuation:</strong> Rather than hard-cutting
+breath segments—which causes unnatural gating and phase pops—automated
+scripts apply a dynamic downward expander or a cosine-ramped attenuation
+(lowering breath events by 12 dB to 18 dB) to preserve natural prosodic
+cadence while minimizing model bias.</li>
+</ul>
+<h3 id="integrated-end-to-end-solutions">Integrated End-to-End
+Solutions</h3>
+<p>Engineering teams often wrap these steps into continuous integration
+workflows using tools like Resemble Enhance, custom Python
+orchestrations (combining <code>librosa</code>, <code>scipy</code>, and
+<code>torchaudio</code>), or automated batch processing via headless
+sound engines. By combining statistical DSP for transient repair with
+deep learning models for acoustic dereverberation, these pipelines clean
+hundreds of hours of raw speech into studio-grade training corpora with
+minimal manual QA.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Tests for TTS Listening Tests - tts</title>
+    <meta name="description" content="Subjective listening tests, such as Mean Opinion Score (MOS), MUSHRA, and AB preference tests, represent the benchmark for evaluating Text-to-Speech (TTS) audio quality and naturalness. However, reporting raw score increases without proper statistical te">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/statistical-tests-for-tts-listening-tests">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Statistical Tests for TTS Listening Tests - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/statistical-tests-for-tts-listening-tests" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Subjective listening tests, such as Mean Opinion Score (MOS), MUSHRA, and AB preference tests, represent the benchmark for evaluating Text-to-Speech (TTS) audio quality and naturalness. However, reporting raw score increases without proper statistical te" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="statistical-tests-for-tts-listening-tests">Statistical Tests for
+TTS Listening Tests</h1>
+<p>Subjective listening tests, such as Mean Opinion Score (MOS), MUSHRA,
+and AB preference tests, represent the benchmark for evaluating
+Text-to-Speech (TTS) audio quality and naturalness. However, reporting
+raw score increases without proper statistical testing undermines the
+validity of research findings. This article outlines the essential
+statistical significance tests required to rigorously substantiate
+perceived improvements in TTS systems, categorizing methods by
+experimental design, data distribution, and error correction.</p>
+<h2 id="mean-opinion-score-mos-tests">Mean Opinion Score (MOS)
+Tests</h2>
+<p>In an absolute category rating (ACR) MOS test, listeners evaluate
+audio samples on an ordinal scale, typically ranging from 1 (Bad) to 5
+(Excellent). Because these ratings represent discrete, ordinal data that
+rarely follow a normal distribution, standard parametric tests can
+produce misleading results.</p>
+<ul>
+<li><strong>Mann-Whitney U Test (Wilcoxon Rank-Sum):</strong> Used when
+comparing two independent groups of listeners or unmatched stimuli. It
+assesses whether the distribution of ratings for one model
+stochastically dominates the other without assuming normality.</li>
+<li><strong>Wilcoxon Signed-Rank Test:</strong> Preferred when the same
+pool of listeners evaluates identical text prompts across both the
+baseline and proposed systems (paired samples).</li>
+<li><strong>Linear Mixed-Effects Models (LMM) and Cumulative Link Models
+(CLM):</strong> Advanced reporting increasingly demands mixed-effects
+models. These models treat the TTS system as a fixed effect while
+treating individual listeners and specific sentences as random effects,
+effectively controlling for listener bias and sentence difficulty
+variance.</li>
+</ul>
+<h2 id="mushra-tests">MUSHRA Tests</h2>
+<p>MUlti Stimulus test with Hidden Reference and Anchor (MUSHRA)
+evaluations present listeners with multiple systems simultaneously on a
+continuous scale from 0 to 100. This within-subject design yields
+paired, continuous data.</p>
+<ul>
+<li><strong>Repeated-Measures ANOVA:</strong> Applicable if the score
+differences pass normality checks (e.g., via the Shapiro-Wilk test). It
+evaluates whether significant differences exist across any of the
+evaluated systems.</li>
+<li><strong>Friedman Test:</strong> The non-parametric alternative to
+repeated-measures ANOVA, utilized when MUSHRA scores violate normality
+assumptions.</li>
+<li><strong>Post-Hoc Pairwise Comparisons:</strong> If the global test
+(ANOVA or Friedman) indicates significance, paired t-tests or Wilcoxon
+signed-rank tests must be conducted between individual system pairs to
+isolate where the improvement lies.</li>
+</ul>
+<h2 id="ab-and-abx-preference-tests">AB and ABX Preference Tests</h2>
+<p>Preference tests ask listeners to choose which of two samples sounds
+better, more natural, or more intelligible. The output produces
+categorical or binomial data.</p>
+<ul>
+<li><strong>Two-Tailed Binomial Test:</strong> The standard requirement
+for forced-choice pairwise comparisons (A vs. B). It tests whether the
+proportion of preferences for the proposed system significantly deviates
+from a 50% chance baseline.</li>
+<li><strong>Chi-Square Goodness-of-Fit Test:</strong> Utilized when an
+explicit "no preference" or "tie" category is permitted, testing whether
+the distribution across the three outcomes deviates from expected
+proportions.</li>
+</ul>
+<h2 id="multiple-comparisons-corrections">Multiple Comparisons
+Corrections</h2>
+<p>When comparing three or more TTS architectures against one another or
+against a shared baseline, conducting multiple pairwise tests increases
+the probability of Type I errors (false positives). Applying a
+correction method is mandatory:</p>
+<ul>
+<li><strong>Bonferroni Correction:</strong> A conservative adjustment
+that divides the significance threshold (typically <span
+class="math inline">\(\alpha = 0.05\)</span>) by the total number of
+pairwise comparisons.</li>
+<li><strong>Holm-Bonferroni Method:</strong> A step-down approach that
+maintains the family-wise error rate control of Bonferroni while
+offering greater statistical power.</li>
+<li><strong>Benjamini-Hochberg Procedure:</strong> Controls the False
+Discovery Rate (FDR) instead of the family-wise error rate, suitable for
+large-scale comparative benchmarks involving many synthetic voices.</li>
+</ul>
+<h2 id="effect-sizes-and-confidence-intervals">Effect Sizes and
+Confidence Intervals</h2>
+<p>Statistical significance denotes only that an observed difference is
+unlikely due to random chance; it does not measure practical relevance.
+Comprehensive TTS reporting requires:</p>
+<ul>
+<li><strong>Confidence Intervals (CI):</strong> Typically reported at
+the 95% level alongside the mean or median to display the margin of
+error around the perceived score.</li>
+<li><strong>Standardized Effect Sizes:</strong> Metrics such as Cohen’s
+<span class="math inline">\(d\)</span> (for parametric comparisons) or
+Cliff’s Delta and Rank-Biserial Correlation (for ordinal comparisons)
+quantify the magnitude of the audio quality gain, providing critical
+context for whether an improvement is audible and meaningful to
+real-world users.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

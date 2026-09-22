@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balancing TTS Resonance in Robot Enclosures - tts</title>
+    <meta name="description" content="Balancing acoustic resonance in robotics requires harmonizing mechanical engineering, acoustic enclosure design, and real-time digital signal processing (DSP). When robots output synthetic speech, internal vibrations and enclosure cavities often amplify">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/balancing-tts-resonance-in-robot-enclosures">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Balancing TTS Resonance in Robot Enclosures - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/balancing-tts-resonance-in-robot-enclosures" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Balancing acoustic resonance in robotics requires harmonizing mechanical engineering, acoustic enclosure design, and real-time digital signal processing (DSP). When robots output synthetic speech, internal vibrations and enclosure cavities often amplify" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="balancing-tts-resonance-in-robot-enclosures">Balancing TTS
+Resonance in Robot Enclosures</h1>
+<p>Balancing acoustic resonance in robotics requires harmonizing
+mechanical engineering, acoustic enclosure design, and real-time digital
+signal processing (DSP). When robots output synthetic speech, internal
+vibrations and enclosure cavities often amplify specific frequencies,
+causing "boxy" or distorted audio that lowers speech intelligibility and
+degrades onboard microphone performance. Robotics engineers mitigate
+these issues by structurally decoupling speakers, tuning internal air
+volumes, shaping enclosures to disperse standing waves, and applying DSP
+equalization mapped to the robot’s physical transfer function.</p>
+<h3 id="mechanical-decoupling-and-structural-damping">Mechanical
+Decoupling and Structural Damping</h3>
+<p>To prevent the robot’s chassis—often composed of rigid plastics,
+aluminum, or composite materials—from acting as an unintended sounding
+board, engineers mechanically isolate the speaker drivers.</p>
+<ul>
+<li><strong>Elastomeric Isolation:</strong> Transducers are mounted
+using silicone grommets, rubber isolators, or viscoelastic gaskets (such
+as Sorbothane). This prevents mechanical vibration from transferring
+directly into external body panels.</li>
+<li><strong>Mass Loading and Ribbing:</strong> Structural engineers add
+internal structural ribs and strategically vary wall thickness across
+plastic housings. This increases rigidity and shifts the chassis’s
+natural resonant frequency out of human voice frequency bands (typically
+300 Hz to 3.4 kHz for fundamental speech intelligibility).</li>
+<li><strong>Acoustic Absorption:</strong> Enclosure cavities are lined
+with open-cell polyurethane foam, synthetic polyfill, or felt to
+dissipate high-frequency internal reflections and minimize flutter
+echoes.</li>
+</ul>
+<h3 id="internal-cavity-and-port-tuning">Internal Cavity and Port
+Tuning</h3>
+<p>The physical space behind the speaker, known as the back-volume,
+dictates how cleanly the speaker diaphragm moves. Robotics developers
+carefully design this cavity:</p>
+<ul>
+<li><strong>Sealed Enclosures (Acoustic Suspension):</strong> Often
+favored in compact mobile robots, sealed chambers compress the trapped
+air to act as an acoustic spring. This controls cone excursion, reduces
+unintended resonance, and provides a predictable, gradual low-frequency
+roll-off.</li>
+<li><strong>Ported Chambers (Helmholtz Resonators):</strong> If the
+robot requires higher volume output with limited power, bass reflex
+ports are engineered to reinforce lower speech frequencies. The port
+dimensions are strictly tuned to avoid turbulence ("chuffing") and to
+prevent phase cancellation at typical TTS formant frequencies.</li>
+<li><strong>Non-Parallel Geometry:</strong> Symmetrical, rectangular
+cavities create standing waves. Developers utilize curved or
+asymmetrical internal geometry to break up internal reflections before
+they escape through speaker grilles.</li>
+</ul>
+<h3 id="digital-signal-processing-dsp-and-pre-emphasis">Digital Signal
+Processing (DSP) and Pre-Emphasis</h3>
+<p>Software-level acoustic compensation allows developers to correct
+physical acoustic anomalies before audio hits the digital-to-analog
+converter (DAC).</p>
+<ul>
+<li><strong>Enclosure Transfer Function Mapping:</strong> Developers
+sweep sine waves and impulses through the assembled robot inside an
+anechoic or semi-anechoic environment. Measuring the output with
+reference microphones reveals the exact resonant peaks and nulls caused
+by the chassis.</li>
+<li><strong>Parametric EQ and Notch Filters:</strong> Based on impulse
+responses, narrow notch filters are configured within the DSP pipeline
+to attenuate the exact resonance frequencies of the enclosure,
+flattening the robot's acoustic response.</li>
+<li><strong>Dynamic Range Compression (DRC):</strong> Text-to-Speech
+audio frequently exhibits sudden volume spikes depending on the voice
+model. Multiband compression suppresses amplitude in problem frequency
+ranges without sacrificing overall speech clarity.</li>
+</ul>
+<h3 id="feedback-control-for-voice-interaction">Feedback Control for
+Voice Interaction</h3>
+<p>Most robots with TTS capabilities also feature microphone arrays for
+voice user interfaces (VUI). Structural acoustic resonance directly
+interferes with Acoustic Echo Cancellation (AEC) algorithms. By
+stabilizing acoustic resonance and preventing panel vibration from
+reaching internal microphones, developers ensure that AEC algorithms can
+reliably subtract the robot’s own speech output, enabling full-duplex
+communication while the robot speaks.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

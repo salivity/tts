@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVS vs TTS: Pitch Contour Modeling Differences - tts</title>
+    <meta name="description" content="Singing Voice Synthesis (SVS) and conversational Text-to-Speech (TTS) both generate human-like vocal audio from symbolic text inputs, but they approach pitch contour modeling with fundamentally different objectives, constraints, and architectures. While">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/svs-vs-tts-pitch-contour-modeling-differences">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SVS vs TTS: Pitch Contour Modeling Differences - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/svs-vs-tts-pitch-contour-modeling-differences" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Singing Voice Synthesis (SVS) and conversational Text-to-Speech (TTS) both generate human-like vocal audio from symbolic text inputs, but they approach pitch contour modeling with fundamentally different objectives, constraints, and architectures. While" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="svs-vs-tts-pitch-contour-modeling-differences">SVS vs TTS: Pitch
+Contour Modeling Differences</h1>
+<p>Singing Voice Synthesis (SVS) and conversational Text-to-Speech (TTS)
+both generate human-like vocal audio from symbolic text inputs, but they
+approach pitch contour modeling with fundamentally different objectives,
+constraints, and architectures. While conversational TTS generates
+continuous fundamental frequency (<span
+class="math inline">\(F_0\)</span>) contours based on linguistic
+semantics, syntax, and conversational prosody, SVS must adhere to rigid
+musical scores, precise pitch targets, sustained phonemes, and intricate
+vocal expressions like vibrato and portamento. This article explores the
+technical and structural differences in how pitch contours are modeled,
+conditioned, and evaluated in SVS versus standard TTS.</p>
+<h3
+id="discrete-musical-notes-vs-continuous-linguistic-prosody">Discrete
+Musical Notes vs. Continuous Linguistic Prosody</h3>
+<p>In conversational TTS, the pitch contour represents speech
+prosody—the natural intonation, stress, and rhythm of spoken language.
+TTS models predict an <span class="math inline">\(F_0\)</span> curve
+from linguistic features (such as phonemes, part-of-speech tags, and
+punctuation) to indicate whether a phrase is a statement, a question, or
+an exclamation. These contours are continuous, highly variable, and do
+not conform to fixed frequency grids.</p>
+<p>In SVS, the fundamental frequency is strictly anchored to a musical
+scale. The input includes a musical score containing discrete pitch
+values (typically MIDI note numbers) assigned to specific lyrics. The
+pitch contour model does not generate intonation from scratch; instead,
+it synthesizes an <span class="math inline">\(F_0\)</span> curve that
+must strictly center around specific target frequencies (e.g., A4 at 440
+Hz) corresponding to the designated musical score.</p>
+<h3 id="expressive-pitch-dynamics-vibrato-and-transitions">Expressive
+Pitch Dynamics: Vibrato and Transitions</h3>
+<p>Standard conversational speech has localized pitch movements, such as
+phrase-final rises or accent peaks, but these movements are generally
+smooth and non-periodic. In contrast, singing voice acoustics rely
+heavily on stylized, dynamic pitch articulations:</p>
+<ul>
+<li><strong>Vibrato:</strong> A periodic modulation of frequency and
+depth that typically occurs on sustained vowels. SVS pitch models must
+accurately capture the rate (usually 4–7 Hz) and the extent of the
+vibrato to avoid sounding robotic or unnatural.</li>
+<li><strong>Portamento and Glissando:</strong> Continuous, controlled
+transitions between distinct musical notes. While TTS handles
+coarticulation between syllables, SVS must model deliberate pitch
+sliding over specified time intervals between notes of significantly
+different frequencies.</li>
+<li><strong>Pitch Overshoot and Preparation:</strong> Trained singers
+frequently overshoot a target note slightly or approach it from below
+before settling into the true pitch center, features that SVS models
+must explicitly learn to replicate.</li>
+</ul>
+<h3 id="temporal-alignment-and-duration-constraints">Temporal Alignment
+and Duration Constraints</h3>
+<p>Pitch contour generation is deeply coupled with duration modeling. In
+conversational TTS, phoneme duration is predicted dynamically based on
+speaking rate and phonetic context. Syllables are typically short, and
+minor duration deviations rarely degrade perceptual quality.</p>
+<p>In SVS, phoneme durations are governed by the tempo (BPM) and
+rhythmic meter of the musical piece. Pitch contours must be sustained
+over unnaturally long durations—often several seconds per vowel—without
+losing stability, naturalness, or harmonic integrity. The pitch model
+must maintain consistent micro-variations and expressive energy
+throughout the entire duration of a held note, unlike TTS where vowels
+decay quickly.</p>
+<h3 id="input-conditioning-and-model-architectures">Input Conditioning
+and Model Architectures</h3>
+<p>The architectural conditioning for <span
+class="math inline">\(F_0\)</span> predictors differs significantly
+between the two domains:</p>
+<ul>
+<li><strong>TTS Systems:</strong> Modern neural TTS systems (such as
+FastSpeech 2 or VITS) predict <span class="math inline">\(F_0\)</span>
+contours using encoders conditioned primarily on phoneme embeddings,
+speaker embeddings, and occasionally coarse prosody tokens. The <span
+class="math inline">\(F_0\)</span> predictor outputs continuous
+frame-level values across the duration of the utterance.</li>
+<li><strong>SVS Systems:</strong> SVS architectures (such as DiffSinger,
+XiaoiceSing, or Sinsy) condition their pitch predictors on musical
+scores consisting of note pitch, note duration, and tempo alongside
+phonetic inputs. Many modern SVS models break pitch generation into two
+components: a coarse step that aligns the pitch to the nominal note
+values from the score, and a fine-grained residual model (often
+utilizing diffusion models or GANs) that predicts the continuous
+deviations (<span class="math inline">\(F_0\)</span> residuals) caused
+by vocal techniques, expressive timing, and transitions.</li>
+</ul>
+<h3 id="error-tolerance-and-perceptual-sensitivity">Error Tolerance and
+Perceptual Sensitivity</h3>
+<p>The human auditory system perceives pitch errors in speech and
+singing with vastly different levels of sensitivity. In standard TTS,
+small fluctuations or global shifts in <span
+class="math inline">\(F_0\)</span> of 10 to 20 Hz simply alter the
+perceived speaker persona, mood, or accent without rendering the speech
+unintelligible.</p>
+<p>In SVS, pitch perception is constrained by musical harmony. A
+deviation of just a few hertz (tens of cents) results in the voice
+sounding audibly off-key (flat or sharp), creating severe dissonance
+against backing tracks. Consequently, SVS pitch contour modeling
+requires significantly higher numerical precision and tighter objective
+variance control than conversational TTS.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

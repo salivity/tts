@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How NISQA Evaluates Synthetic TTS Audio Quality - tts</title>
+    <meta name="description" content="Automated neural quality estimators like NISQA (Non-Intrusive Speech Quality Assessment) assess synthetic audio without a ground-truth reference by using deep neural networks trained to predict human subjective ratings directly from raw acoustic features">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-nisqa-evaluates-synthetic-tts-audio-quality">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How NISQA Evaluates Synthetic TTS Audio Quality - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-nisqa-evaluates-synthetic-tts-audio-quality" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Automated neural quality estimators like NISQA (Non-Intrusive Speech Quality Assessment) assess synthetic audio without a ground-truth reference by using deep neural networks trained to predict human subjective ratings directly from raw acoustic features" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-nisqa-evaluates-synthetic-tts-audio-quality">How NISQA
+Evaluates Synthetic TTS Audio Quality</h1>
+<p>Automated neural quality estimators like NISQA (Non-Intrusive Speech
+Quality Assessment) assess synthetic audio without a ground-truth
+reference by using deep neural networks trained to predict human
+subjective ratings directly from raw acoustic features. This article
+explains how non-intrusive evaluation works in Text-to-Speech (TTS),
+detailing the feature extraction, temporal modeling, and machine
+learning mechanisms that allow these systems to detect synthetic
+artifacts and predict Mean Opinion Scores (MOS) without comparing output
+against an original human recording.</p>
+<h3 id="the-problem-with-reference-based-evaluation">The Problem with
+Reference-Based Evaluation</h3>
+<p>Traditional speech quality metrics, such as PESQ (Perceptual
+Evaluation of Speech Quality) and POLQA (Perceptual Objective Listening
+Quality Analysis), require an intrusive, full-reference approach. They
+compare a degraded audio signal to an identical, pristine reference
+signal to compute an error score.</p>
+<p>In TTS applications, a ground-truth reference does not exist. A
+synthetic voice speaks text that may never have been recorded by a human
+voice actor, meaning there is no clean baseline for point-to-point
+temporal or spectral alignment. Consequently, evaluation requires a
+non-intrusive (no-reference) methodology that judges audio
+independently.</p>
+<h3 id="acoustic-feature-extraction">Acoustic Feature Extraction</h3>
+<p>NISQA and similar neural evaluators begin by transforming raw audio
+waveforms into time-frequency representations, typically
+mel-spectrograms.</p>
+<ol type="1">
+<li><strong>Short-Time Fourier Transform (STFT):</strong> The audio
+signal is segmented into overlapping windows to capture frequency
+changes over time.</li>
+<li><strong>Mel-Scale Warping:</strong> The linear frequency scale is
+converted to the mel-scale, mimicking human auditory perception by
+prioritizing lower frequencies where human ears are more sensitive to
+distortion.</li>
+<li><strong>Log-Amplitude Scaling:</strong> Dynamic range compression is
+applied to simulate the logarithmic nature of human perceived
+loudness.</li>
+</ol>
+<p>These spectrograms act as visual and mathematical depictions of the
+acoustic signal, revealing synthetic artifacts like phase
+inconsistencies, metallic robotic timbre, spectral smearing, and
+background hiss.</p>
+<h3 id="deep-representation-and-temporal-modeling">Deep Representation
+and Temporal Modeling</h3>
+<p>Once spectrograms are generated, they pass through a hybrid neural
+network architecture designed to analyze both localized artifacts and
+long-term acoustic patterns.</p>
+<ul>
+<li><strong>Convolutional Neural Networks (CNNs):</strong> 2D CNN layers
+act as local feature extractors. They scan the spectrogram for
+immediate, frame-level flaws such as clipping, unnatural harmonic
+spacing, frame dropouts, and unnatural spectral peaks typical of poorly
+synthesized audio.</li>
+<li><strong>Temporal Neural Networks (Bi-LSTMs or
+Transformers):</strong> Audio quality in TTS depends heavily on temporal
+consistency. A single glitch ruins the experience, but so does overall
+monotonic delivery. Recurrent structures or self-attention mechanisms
+evaluate long-term dependencies, analyzing the rhythm, prosodic flow,
+speech rate variations, and pause durations characteristic of synthetic
+generation.</li>
+<li><strong>Attention Pooling:</strong> Instead of simply averaging
+audio frames over time, attention mechanisms weigh distinct frames based
+on their perceptual relevance. Human listeners penalize sudden glitches
+far more heavily than minor background noise; attention layers mimic
+this behavior by giving more weight to salient artifacts.</li>
+</ul>
+<h3 id="supervised-training-on-subjective-datasets">Supervised Training
+on Subjective Datasets</h3>
+<p>The reason neural models do not need a reference during inference is
+that they have internalized the concept of "naturalness" during their
+training phase.</p>
+<p>NISQA is trained in a supervised manner on large datasets containing
+audio files evaluated by thousands of human listeners following standard
+ITU-T test protocols (such as P.800). Each audio file in the training
+set has an assigned subjective Mean Opinion Score (MOS) along with
+dimensional sub-scores covering dimensions like:</p>
+<ul>
+<li>Overall naturalness</li>
+<li>Discontinuity (glitches, clicks)</li>
+<li>Coloration (frequency response anomalies)</li>
+<li>Loudness stability</li>
+<li>Background noise</li>
+</ul>
+<p>By minimizing the Mean Squared Error (MSE) between the network's
+predictions and human-labeled MOS values, the network learns to
+correlate specific visual and numerical patterns in the spectrogram with
+lower or higher human evaluations.</p>
+<h3 id="inference-in-text-to-speech-pipelines">Inference in
+Text-to-Speech Pipelines</h3>
+<p>During inference, a newly synthesized TTS waveform is fed into the
+trained network.</p>
+<p>The model processes the input through its convolutional and temporal
+layers, maps the resulting high-dimensional latent vectors through fully
+connected output layers, and produces an absolute scalar score (e.g.,
+1.0 to 5.0 MOS). Because the network relies entirely on internal
+representations of human acoustic expectations learned during training,
+it provides automated, repeatable quality validation within automated
+deployment pipelines without requiring human intervention or reference
+audio.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

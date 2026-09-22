@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location-Sensitive Attention in Tacotron 2 - tts</title>
+    <meta name="description" content="Tacotron 2 achieves stable and natural text-to-speech synthesis by replacing standard content-based attention with location-sensitive attention, solving common failure modes in sequence-to-sequence audio generation. By incorporating historical alignment">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/location-sensitive-attention-in-tacotron-2">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Location-Sensitive Attention in Tacotron 2 - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/location-sensitive-attention-in-tacotron-2" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Tacotron 2 achieves stable and natural text-to-speech synthesis by replacing standard content-based attention with location-sensitive attention, solving common failure modes in sequence-to-sequence audio generation. By incorporating historical alignment" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="location-sensitive-attention-in-tacotron-2">Location-Sensitive
+Attention in Tacotron 2</h1>
+<p>Tacotron 2 achieves stable and natural text-to-speech synthesis by
+replacing standard content-based attention with location-sensitive
+attention, solving common failure modes in sequence-to-sequence audio
+generation. By incorporating historical alignment information through 1D
+convolutions alongside traditional decoder and encoder states, the
+mechanism enforces a strictly monotonic reading order. This
+architectural integration prevents phoneme skipping, word repetition,
+and alignment drift, enabling the network to reliably generate
+consistent mel-spectrograms from arbitrary text inputs.</p>
+<p>In traditional sequence-to-sequence models, such as machine
+translation systems, attention is primarily content-based. The decoder
+determines where to look in the input text by matching its current
+hidden state against the encoder states. However, text-to-speech
+generation has a unique constraint: speech is inherently monotonic and
+strictly ordered from left to right. Content-based attention alone often
+fails in speech tasks, especially when text contains repeated words,
+identical phoneme clusters, or long pauses. Under pure content matching,
+the attention mechanism easily becomes confused, resulting in
+catastrophic failures such as jumping backward (looping words), jumping
+forward (skipping phrases), or getting stuck indefinitely.</p>
+<p>Tacotron 2 resolves this by implementing a variant of
+location-sensitive attention, originally introduced by Jan Chorowski and
+colleagues for speech recognition. Instead of calculating attention
+weights based solely on the current decoder state and encoder
+representations, location-sensitive attention takes into account the
+alignment weights produced in previous time steps.</p>
+<p>The integration works by tracking the attention alignment vector from
+the preceding decoder step. Tacotron 2 passes this prior alignment
+through a 1D convolution layer with a wide receptive field (typically 32
+filters with a kernel size of 31). This convolution extracts positional
+features from the local context, giving the model an explicit awareness
+of its recent trajectory across the input text.</p>
+<p>Mathematically, the scoring function in Tacotron 2 calculates energy
+scores by summing three distinct projections:</p>
+<ol type="1">
+<li>The transformed encoder memory (the textual keys).</li>
+<li>The transformed decoder hidden state (the acoustic query).</li>
+<li>The transformed positional features derived from the 1D convolution
+of the previous alignment.</li>
+</ol>
+<p>These combined values are passed through a hyperbolic tangent
+activation and projected down to a scalar score for each input
+character. Applying a softmax function over these scores yields the
+final attention distribution for the current time step.</p>
+<p>By adding these convolutional location features, the model gains an
+inductive bias toward moving progressively forward. The attention
+mechanism knows where it just read, making it significantly more likely
+to focus on adjacent phonemes rather than jumping to similar-sounding
+phonemes elsewhere in the sentence.</p>
+<p>This location awareness provides three critical stability
+improvements to Tacotron 2:</p>
+<ul>
+<li><strong>Mitigation of Repetitions and Skips:</strong> The model
+disambiguates duplicate words (such as "that that" or identical
+syllables) because the positional context anchors the decoder to the
+correct instance in the sequence.</li>
+<li><strong>Improved Long-Form Generation:</strong> Attention drift is
+minimized, allowing the network to retain monotonic stability across
+long sentences where standard attention networks often collapse.</li>
+<li><strong>Clean Termination:</strong> Because the attention mechanism
+tracks its physical progress through the text, the auxiliary "stop
+token" prediction layer can accurately determine when the final phoneme
+has been spoken, ensuring the model halts generation promptly without
+cutting off speech or producing trailing silence.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Mask Audio Jitter in Live TTS Streaming - tts</title>
+    <meta name="description" content="Streaming real-time text-to-speech (TTS) audio over unstable network connections frequently introduces packet jitter, resulting in unnatural pauses, stuttering, or robotic artifacts. This article outlines key strategies to mask and mitigate audio packet">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-to-mask-audio-jitter-in-live-tts-streaming">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Mask Audio Jitter in Live TTS Streaming - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-to-mask-audio-jitter-in-live-tts-streaming" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Streaming real-time text-to-speech (TTS) audio over unstable network connections frequently introduces packet jitter, resulting in unnatural pauses, stuttering, or robotic artifacts. This article outlines key strategies to mask and mitigate audio packet" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-mask-audio-jitter-in-live-tts-streaming">How to Mask
+Audio Jitter in Live TTS Streaming</h1>
+<p>Streaming real-time text-to-speech (TTS) audio over unstable network
+connections frequently introduces packet jitter, resulting in unnatural
+pauses, stuttering, or robotic artifacts. This article outlines key
+strategies to mask and mitigate audio packet jitter in live TTS
+applications, covering dynamic jitter buffering, packet loss concealment
+(PLC), time-scale modification, proactive error correction, and
+TTS-specific streaming architectures to ensure smooth, natural-sounding
+voice output.</p>
+<h2 id="dynamic-and-adaptive-jitter-buffers">Dynamic and Adaptive Jitter
+Buffers</h2>
+<p>The primary defense against packet delay variation is an adaptive
+jitter buffer (AJB). Instead of relying on a fixed buffer size—which
+either introduces unacceptable latency or fails during network spikes—an
+adaptive buffer dynamically measures network variance and round-trip
+time (RTT).</p>
+<ul>
+<li><strong>Continuous Adjustment:</strong> The buffer expands when it
+detects rising jitter and shrinks when network conditions
+stabilize.</li>
+<li><strong>Target Delay Calculation:</strong> Aim for a target delay
+that covers the 95th to 99th percentile of packet arrival times,
+balancing end-to-end latency with playback continuity.</li>
+</ul>
+<h2 id="time-scale-modification-time-stretching">Time-Scale Modification
+(Time Stretching)</h2>
+<p>When an adaptive jitter buffer is close to underflowing, the client
+can slow down playback to buy time for incoming packets without altering
+the pitch.</p>
+<ul>
+<li><strong>WSOLA (Waveform Similarity Overlap-Add):</strong> Algorithms
+like WSOLA allow speech to be stretched smoothly. Slowing audio playback
+by 5% to 15% is virtually imperceptible to human ears during
+speech.</li>
+<li><strong>Catch-up Mode:</strong> Conversely, when packets arrive in a
+sudden burst and fill the buffer, the player can gently accelerate
+playback (e.g., 5% to 10% faster) to drain the buffer and restore low
+latency.</li>
+</ul>
+<h2 id="packet-loss-concealment-plc">Packet Loss Concealment (PLC)</h2>
+<p>When jitter causes a packet to arrive past its playout deadline, it
+is effectively lost. Packet loss concealment algorithms generate
+synthetic audio to bridge the gap.</p>
+<ul>
+<li><strong>Waveform Extrapolation:</strong> Traditional codecs use
+linear predictive coding (LPC) or pitch extrapolation to extend the
+waveform of the preceding frame, smoothly fading out if multiple packets
+are lost.</li>
+<li><strong>Neural PLC:</strong> Modern real-time implementations
+utilize lightweight deep learning models (such as neural vocoder-based
+concealment) to predict and synthesize the missing speech segment
+conditioned on the previous phonetic context.</li>
+</ul>
+<h2 id="in-band-forward-error-correction-fec-and-redundancy">In-Band
+Forward Error Correction (FEC) and Redundancy</h2>
+<p>Proactively protecting the audio stream reduces the impact of late or
+dropped packets before concealment is even required.</p>
+<ul>
+<li><strong>Opus In-Band FEC:</strong> The Opus audio codec allows
+encoders to embed a low-bitrate, lower-quality copy of the previous
+audio frame into the current packet. If packet <em>N</em> is lost or
+delayed, packet <em>N+1</em> can reconstruct the missing audio.</li>
+<li><strong>Selective Redundancy:</strong> For critical phonetic
+boundaries or unvoiced consonants that are difficult for PLC to predict,
+duplicate small packets across multiple network paths or re-transmit
+them with high priority.</li>
+</ul>
+<h2 id="tts-specific-structural-masking">TTS-Specific Structural
+Masking</h2>
+<p>Unlike conversational human audio, TTS generation provides
+architectural control over audio chunking and speech timing.</p>
+<ul>
+<li><strong>Synthesizing at Clause Boundaries:</strong> Configure the
+TTS engine to generate and transmit complete acoustic phrases. Inject
+intentional, natural micro-pauses at commas, periods, and clause
+boundaries. These natural silences provide an acoustic cushion where the
+jitter buffer can replenish without sounding artificial.</li>
+<li><strong>Streaming Acoustic Tokens:</strong> If using modern neural
+TTS pipelines, stream intermediate acoustic representations (such as
+discrete audio tokens) rather than raw PCM. Compressed tokens tolerate
+higher packet density, allowing the client-side neural vocoder to handle
+packet jitter natively during the local waveform generation phase.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

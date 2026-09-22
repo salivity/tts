@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causal Convolution in Streaming TTS Vocoders - tts</title>
+    <meta name="description" content="Streaming text-to-speech (TTS) systems require real-time audio synthesis with minimal latency, prompting the widespread adoption of causal convolutions within neural vocoders. This article explores how replacing standard, bidirectional convolutions with">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/causal-convolution-in-streaming-tts-vocoders">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Causal Convolution in Streaming TTS Vocoders - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/causal-convolution-in-streaming-tts-vocoders" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Streaming text-to-speech (TTS) systems require real-time audio synthesis with minimal latency, prompting the widespread adoption of causal convolutions within neural vocoders. This article explores how replacing standard, bidirectional convolutions with" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="causal-convolution-in-streaming-tts-vocoders">Causal Convolution
+in Streaming TTS Vocoders</h1>
+<p>Streaming text-to-speech (TTS) systems require real-time audio
+synthesis with minimal latency, prompting the widespread adoption of
+causal convolutions within neural vocoders. This article explores how
+replacing standard, bidirectional convolutions with causal variants
+alters the network's receptive field, enforces strict temporal
+dependencies, and impacts synthesized acoustic quality. It also covers
+common architectural compromises and mitigation techniques used to
+maintain high-fidelity speech while preserving streaming
+feasibility.</p>
+<h3 id="understanding-causal-convolutions">Understanding Causal
+Convolutions</h3>
+<p>In standard convolutional neural networks for audio synthesis, such
+as offline HiFi-GAN or WaveNet, convolutions are non-causal. The output
+at time step <span class="math inline">\(t\)</span> is computed using
+both past frames (<span class="math inline">\(t - k\)</span>) and future
+frames (<span class="math inline">\(t + k\)</span>). This bidirectional
+context provides comprehensive information about upcoming phonemes,
+transitions, and phase trajectories.</p>
+<p>Causal convolution strictly enforces the flow of time by masking or
+padding input sequences so that the calculation at time <span
+class="math inline">\(t\)</span> depends exclusively on inputs at time
+steps <span class="math inline">\(\le t\)</span>. In a streaming
+vocoder, this design prevents the model from needing to wait for future
+audio frames, enabling chunk-by-chunk or sample-by-sample audio
+generation with minimal buffering.</p>
+<h3 id="impact-on-receptive-fields">Impact on Receptive Fields</h3>
+<p>The receptive field of a neural vocoder defines the window of input
+frames that influence the generation of a specific audio sample.
+Enforcing causality introduces distinct constraints on how this field is
+structured:</p>
+<ul>
+<li><strong>Asymmetric Expansion:</strong> Unlike non-causal networks
+where the receptive field expands symmetrically in both directions, a
+causal receptive field expands exclusively backward into the past.</li>
+<li><strong>Reduced Effective Context:</strong> Because future context
+is completely eliminated, a causal filter of kernel size <span
+class="math inline">\(K\)</span> has half the immediate contextual scope
+per layer compared to a centered filter of the same size.</li>
+<li><strong>Dependence on Dilations:</strong> To compensate for the lack
+of forward context, streaming vocoders must rely heavily on deep stacks
+of dilated causal convolutions. Dilations expand the historical
+receptive field exponentially without increasing parameter count,
+ensuring the model captures long-term pitch periods and harmonic
+structures.</li>
+</ul>
+<h3 id="effects-on-acoustic-quality">Effects on Acoustic Quality</h3>
+<p>Restricting the receptive field to past context directly degrades
+acoustic fidelity if not properly addressed:</p>
+<ul>
+<li><strong>Phonetic and Prosodic Smearing:</strong> Speech is
+characterized by co-articulation, where current vocal tract positions
+are heavily influenced by upcoming sounds. Without future context,
+vocoders struggle to predict clean formant transitions, resulting in
+muffled consonants, muffled transients, or slight unnaturalness at
+phoneme boundaries.</li>
+<li><strong>Phase Inconsistencies:</strong> High-fidelity waveform
+generation depends on coherent phase reconstruction. Future context
+assists non-causal vocoders in smoothing pitch contours and avoiding
+phase discontinuities. Causal models frequently exhibit phase jitter,
+metallic artifacts, or buzzy degradation, particularly in unvoiced
+segments.</li>
+<li><strong>Error Propagation:</strong> Because causal systems generate
+outputs incrementally based on previous hidden states and inputs, any
+intermediate distortion can propagate forward across frames, causing
+audible drift or instability in pitch.</li>
+</ul>
+<h3 id="mitigating-quality-loss-in-streaming-architecture">Mitigating
+Quality Loss in Streaming Architecture</h3>
+<p>Engineers and researchers employ several architectural strategies to
+narrow the quality gap between causal and non-causal vocoders:</p>
+<ul>
+<li><strong>Bounded Lookahead (Semi-Causal Layers):</strong> Instead of
+pure causality, architectures often introduce a small, fixed lookahead
+window (typically 5 to 20 milliseconds). This small delay remains
+imperceptible to human users in real-time interactions but provides the
+receptive field with sufficient forward context to smooth phonetic
+transitions.</li>
+<li><strong>Larger Receptive Depths:</strong> Increasing the number of
+residual blocks or dilation cycles backward ensures that historical
+context encompasses multiple fundamental pitch cycles, stabilizing
+harmonic generation.</li>
+<li><strong>Conditioning Enhancements:</strong> Providing stronger
+auxiliary inputs, such as explicit fundamental frequency (<span
+class="math inline">\(F_0\)</span>) values, energy contours, or phoneme
+alignments extracted from the acoustic model, helps the causal vocoder
+resolve ambiguities without needing to infer future states directly from
+the audio history.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

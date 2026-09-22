@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glottal Stops in British English TTS - tts</title>
+    <meta name="description" content="This article examines the essential acoustic cues that text-to-speech (TTS) engines must synthesize to accurately reproduce glottal stops in colloquial British accents. Accurately modeling glottal replacement—most commonly associated with T-glottalizat">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/glottal-stops-in-british-english-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Glottal Stops in British English TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/glottal-stops-in-british-english-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines the essential acoustic cues that text-to-speech (TTS) engines must synthesize to accurately reproduce glottal stops in colloquial British accents. Accurately modeling glottal replacement—most commonly associated with T-glottalizat" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="glottal-stops-in-british-english-tts">Glottal Stops in British
+English TTS</h1>
+<p>This article examines the essential acoustic cues that text-to-speech
+(TTS) engines must synthesize to accurately reproduce glottal stops in
+colloquial British accents. Accurately modeling glottal replacement—most
+commonly associated with T-glottalization in dialects such as Cockney,
+Estuary English, and Multicultural London English—requires more than
+simply dropping phonemes. To achieve natural, authentic British speech
+synthesis, an engine must precisely control silent intervals,
+laryngealization, formant dynamics, and the absence of oral release
+bursts.</p>
+<h3 id="complete-silence-and-duration-control">Complete Silence and
+Duration Control</h3>
+<p>A canonical glottal stop ([ʔ]) involves the total adduction of the
+vocal folds, blocking the airstream at the glottis rather than the
+alveolar ridge.</p>
+<ul>
+<li><strong>Silence Interval:</strong> The TTS model must insert a brief
+silent gap into the acoustic waveform. In natural speech, this closure
+duration typically ranges between 30 to 80 milliseconds, depending on
+speaking rate and stress.</li>
+<li><strong>Abrupt Amplitude Drop:</strong> Unlike the gradual decay
+seen in lenis consonants, the transition into a glottal stop requires an
+immediate drop in sound pressure level across all frequency bands.</li>
+</ul>
+<h3 id="laryngealization-and-creaky-voice">Laryngealization and Creaky
+Voice</h3>
+<p>In natural colloquial British speech, full acoustic closure does not
+always occur; instead, speakers frequently produce glottalization or
+creaky voice. A high-quality neural vocoder or parametric synthesizer
+must generate these specific non-modal phonation patterns:</p>
+<ul>
+<li><strong>Fundamental Frequency (<span
+class="math inline">\(F_0\)</span>) Perturbation:</strong> As the vocal
+folds compress, the pitch often drops sharply immediately before and
+after the glottal event.</li>
+<li><strong>Periodicity and Jitter:</strong> The engine must reproduce
+irregular pitch periods (jitter) and cycle-to-cycle amplitude variations
+(shimmer) in the surrounding vowel margins.</li>
+<li><strong>Increased Spectral Tilt:</strong> Creaky voice features
+longer closed phases within each glottal cycle, altering the harmonic
+structure by boosting lower harmonics relative to higher
+frequencies.</li>
+</ul>
+<h3 id="suppression-of-oral-release-bursts">Suppression of Oral Release
+Bursts</h3>
+<p>When replacing voiceless alveolar plosives (/t/) with a glottal stop,
+the engine must actively suppress the standard acoustic cues of oral
+stops:</p>
+<ul>
+<li><strong>Elimination of Aspiration:</strong> Standard British
+Received Pronunciation (RP) produces a characteristic burst of
+high-frequency noise followed by aspiration upon the release of /t/. In
+colloquial accents using glottal replacement (e.g., in words like
+<em>water</em>, <em>bottle</em>, or <em>butter</em>), all transient
+burst noise and frication between 3 kHz and 8 kHz must be entirely
+absent.</li>
+<li><strong>Unvoiced Release:</strong> If a release phase is present, it
+must manifest as an unobtrusive resumption of voicing or silence,
+lacking the sharp alveolar click.</li>
+</ul>
+<h3 id="preserved-vowel-formant-trajectories">Preserved Vowel Formant
+Trajectories</h3>
+<p>A common failure in synthetic glottal stops is treating the glottal
+stop as an alveolar consonant with missing audio.</p>
+<ul>
+<li><strong>Supraglottal Neutrality:</strong> Because the constriction
+happens at the vocal folds rather than with the tongue tip, the vocal
+tract above the glottis does not shift toward alveolar target
+values.</li>
+<li><strong>Formant Transitions:</strong> The second (<span
+class="math inline">\(F_2\)</span>) and third (<span
+class="math inline">\(F_3\)</span>) formants should not bend toward the
+typical 1800 Hz alveolar locus. Instead, the formants of the preceding
+vowel must remain relatively flat or reflect only the anticipatory
+positioning of the subsequent sound.</li>
+</ul>
+<h3 id="contextual-and-phonotactic-modulation">Contextual and
+Phonotactic Modulation</h3>
+<p>To ensure realistic regional inflection, the TTS architecture must
+apply glottal cues conditionally based on phonological context:</p>
+<ul>
+<li><strong>Intervocalic Placement:</strong> Foot-internal, intervocalic
+positions (<em>city</em>, <em>better</em>) require pronounced creakiness
+or full closure depending on the targeted regional dialect.</li>
+<li><strong>Pre-Consonantal and Syllabic Environments:</strong> Before
+syllabic nasals (<em>button</em>) or liquids (<em>little</em>), the
+glottal stop transitions directly into the consonant without
+intermediate oral gestures.</li>
+<li><strong>Absolute Word-Final Boundaries:</strong> At utterance
+boundaries, glottal stops often resolve into prolonged creak rather than
+a distinct acoustic break.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

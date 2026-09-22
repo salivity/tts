@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastSpeech 2 Variance Adaptor: Pitch, Energy, Duration - tts</title>
+    <meta name="description" content="FastSpeech 2 revolutionized non-autoregressive text-to-speech (TTS) synthesis by introducing the variance adaptor, a core architectural component designed to address the one-to-many mapping problem in speech generation. This article breaks down the role">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/fast-speech-2-variance-adaptor-pitch-energy-duration">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FastSpeech 2 Variance Adaptor: Pitch, Energy, Duration - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/fast-speech-2-variance-adaptor-pitch-energy-duration" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="FastSpeech 2 revolutionized non-autoregressive text-to-speech (TTS) synthesis by introducing the variance adaptor, a core architectural component designed to address the one-to-many mapping problem in speech generation. This article breaks down the role" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="fastspeech-2-variance-adaptor-pitch-energy-duration">FastSpeech
+2 Variance Adaptor: Pitch, Energy, Duration</h1>
+<p>FastSpeech 2 revolutionized non-autoregressive text-to-speech (TTS)
+synthesis by introducing the variance adaptor, a core architectural
+component designed to address the one-to-many mapping problem in speech
+generation. This article breaks down the role of the variance adaptor,
+detailing how it models and predicts duration, pitch, and energy
+directly from phoneme representations to produce expressive,
+high-fidelity synthetic speech while giving users granular prosodic
+control.</p>
+<h3 id="resolving-the-one-to-many-mapping-problem">Resolving the
+One-to-Many Mapping Problem</h3>
+<p>In speech synthesis, a single sequence of text can be spoken in
+countless ways depending on speaking rate, pitch contours, and vocal
+intensity. When a model relies solely on text input to generate acoustic
+features, it faces a severe one-to-many mapping problem, often leading
+to over-smoothed, robotic mel-spectrograms.</p>
+<p>The variance adaptor in FastSpeech 2 resolves this by explicitly
+injecting acoustic variance information—duration, pitch, and energy—into
+the phoneme representations before they reach the mel-spectrogram
+decoder. Instead of relying on a complex teacher-student distillation
+process like its predecessor, FastSpeech 2 extracts these variance
+features directly from ground-truth speech during training, dramatically
+simplifying training and improving voice naturalness.</p>
+<h3 id="key-components-of-the-variance-adaptor">Key Components of the
+Variance Adaptor</h3>
+<p>The variance adaptor is positioned between the phoneme encoder and
+the mel-spectrogram decoder. It sequentially processes phoneme hidden
+states through three dedicated predictor networks:</p>
+<h4 id="1-duration-predictor-and-length-regulator">1. Duration Predictor
+and Length Regulator</h4>
+<p>The duration predictor determines the exact number of acoustic frames
+each phoneme should occupy.</p>
+<ul>
+<li><strong>Training:</strong> Ground-truth phoneme durations are
+extracted using Montreal Forced Alignment (MFA). The duration predictor
+is trained using mean squared error (MSE) loss against these
+targets.</li>
+<li><strong>Length Regulation:</strong> Once durations are determined
+(from ground truth during training or predicted during inference), the
+length regulator expands the phoneme hidden states according to their
+predicted duration values. This expands the sequence length from
+phoneme-level to frame-level, aligning it with the target
+mel-spectrogram temporal resolution.</li>
+</ul>
+<h4 id="2-pitch-predictor">2. Pitch Predictor</h4>
+<p>Pitch conveys intonation, emotion, and sentence structure.</p>
+<ul>
+<li><strong>Extraction:</strong> FastSpeech 2 extracts the continuous
+fundamental frequency (<span class="math inline">\(F_0\)</span>) contour
+from the audio signal using tools like PyWorld.</li>
+<li><strong>Embedding:</strong> To handle the high dynamic range of
+pitch, the continuous values are quantized into discrete bins (typically
+256 bins on an equidistant scale) and transformed into pitch
+embeddings.</li>
+<li><strong>Integration:</strong> The pitch predictor predicts the <span
+class="math inline">\(F_0\)</span> contour directly from the
+length-regulated hidden states, and the corresponding pitch embedding is
+added element-wise to the representations.</li>
+</ul>
+<h4 id="3-energy-predictor">3. Energy Predictor</h4>
+<p>Energy corresponds to vocal loudness and intensity.</p>
+<ul>
+<li><strong>Extraction:</strong> Energy is computed by calculating the
+L2-norm of the short-time Fourier transform (STFT) magnitude for each
+speech frame.</li>
+<li><strong>Embedding:</strong> Similar to pitch, the energy values are
+quantized into discrete bins and mapped to energy embeddings.</li>
+<li><strong>Integration:</strong> The energy predictor estimates the
+frame-level energy, and the resulting embedding is added directly to the
+hidden states, reinforcing the amplitude profile of the generated
+speech.</li>
+</ul>
+<h3 id="enabling-prosodic-control-and-voice-manipulation">Enabling
+Prosodic Control and Voice Manipulation</h3>
+<p>Beyond improving voice naturalness and training stability, the
+variance adaptor decouples acoustic attributes, enabling fine-grained
+manipulation at inference time:</p>
+<ul>
+<li><strong>Speaking Rate:</strong> Multiplying the predicted duration
+values by a scaling factor speeds up or slows down the overall speech
+rate, or alters specific phoneme lengths without altering pitch.</li>
+<li><strong>Pitch Shifting and Dynamic Range:</strong> Modifying the
+predicted pitch contour allows users to transpose the voice higher or
+lower, flatten it for a monotonous tone, or exaggerate contour peaks for
+higher emotional expressiveness.</li>
+<li><strong>Volume and Stress Control:</strong> Adjusting the predicted
+energy values allows direct control over speech loudness and emphasis on
+specific words or syllables.</li>
+</ul>
+<p>By explicitly providing these variance attributes as conditional
+inputs, the variance adaptor removes ambiguity from the acoustic feature
+generation process, enabling FastSpeech 2 to synthesize fast, stable,
+and highly expressive speech.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

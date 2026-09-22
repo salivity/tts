@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Text Forced Alignment Using HMM and CTC - tts</title>
+    <meta name="description" content="Forced alignment is a critical preprocessing technique in Text-to-Speech (TTS) workflows that automatically pairs spoken audio recordings with their written transcriptions down to the word or phoneme level. By establishing precise time boundaries for spe">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/audio-text-forced-alignment-using-hmm-and-ctc">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Audio Text Forced Alignment Using HMM and CTC - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/audio-text-forced-alignment-using-hmm-and-ctc" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Forced alignment is a critical preprocessing technique in Text-to-Speech (TTS) workflows that automatically pairs spoken audio recordings with their written transcriptions down to the word or phoneme level. By establishing precise time boundaries for spe" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="audio-text-forced-alignment-using-hmm-and-ctc">Audio Text Forced
+Alignment Using HMM and CTC</h1>
+<p>Forced alignment is a critical preprocessing technique in
+Text-to-Speech (TTS) workflows that automatically pairs spoken audio
+recordings with their written transcriptions down to the word or phoneme
+level. By establishing precise time boundaries for speech segments,
+alignment algorithms provide the supervised temporal data required to
+train neural acoustic models and vocoders. This article examines the
+mechanics of forced alignment, comparing traditional statistical methods
+using Hidden Markov Models (HMMs) with modern deep-learning approaches
+powered by Connectionist Temporal Classification (CTC) loss.</p>
+<h3 id="the-purpose-of-forced-alignment-in-tts">The Purpose of Forced
+Alignment in TTS</h3>
+<p>Modern TTS architectures, particularly non-autoregressive models like
+FastSpeech 2, require frame-level or phoneme-level duration information
+to learn how long each sound should be held during synthesis. Manually
+annotating thousands of hours of audio is impractical. Forced alignment
+automates this by taking a verified text transcript, converting it to
+phonemes via a pronunciation dictionary or grapheme-to-phoneme (G2P)
+model, and mapping those phonemic states to specific time intervals in
+the corresponding audio.</p>
+<h3 id="forced-alignment-using-hidden-markov-models-hmms">Forced
+Alignment Using Hidden Markov Models (HMMs)</h3>
+<p>Hidden Markov Models have historically formed the backbone of speech
+recognition and alignment toolkits like Kaldi and the Montreal Forced
+Aligner (MFA).</p>
+<ol type="1">
+<li><strong>Feature Extraction:</strong> Raw audio is sliced into short,
+overlapping windows (typically 20–25 milliseconds) to generate spectral
+features, such as Mel-Frequency Cepstral Coefficients (MFCCs) or filter
+bank energies.</li>
+<li><strong>Acoustic Modeling:</strong> Each phoneme is modeled as a
+sequence of hidden states (typically three states representing the
+beginning, middle, and end of the sound). In classical setups, Gaussian
+Mixture Models (GMMs) or Deep Neural Networks (DNNs) output the
+probability that a specific audio frame corresponds to an HMM
+state.</li>
+<li><strong>Constrained Search Space:</strong> Because the text
+transcript is already known, the system does not need to recognize
+unconstrained speech. Instead, the HMM transitions are strictly
+restricted to the linear sequence of phonemes defined by the
+transcript.</li>
+<li><strong>Viterbi Decoding:</strong> The Viterbi algorithm computes
+the most likely hidden state sequence through dynamic programming. It
+traverses the audio frames from start to finish, finding the single path
+that maximizes the joint acoustic and transition likelihood. The state
+transition points define the exact start and end timestamps for each
+phoneme.</li>
+</ol>
+<h3 id="forced-alignment-using-ctc-loss">Forced Alignment Using CTC
+Loss</h3>
+<p>Connectionist Temporal Classification eliminates the need for
+predefined state transitions by allowing neural networks to output
+sequence labels directly over variable-length inputs without
+frame-by-frame alignment annotations.</p>
+<ol type="1">
+<li><strong>Frame-Level Predictions:</strong> A neural network (such as
+a Conformer, BLSTM, or pretrained model like wav2vec 2.0) processes
+acoustic features and generates a probability distribution over the
+vocabulary for every frame. The vocabulary includes standard characters
+or phonemes plus a special "blank" token (<span
+class="math inline">\(\epsilon\)</span>), which indicates a lack of
+identifiable label emission or transitions between repeated tokens.</li>
+<li><strong>CTC Alignment Graph:</strong> A transcript like "CAT" can be
+represented by multiple valid frame sequences (e.g.,
+<code>C-C-A-A-T</code>, <code>C-ε-A-T-T</code>, or
+<code>ε-C-A-ε-T</code>). CTC loss computes the sum of probabilities
+across all valid alignment paths that collapse into the target
+transcript when blanks and duplicate adjacent labels are removed.</li>
+<li><strong>Finding Timestamps:</strong> During forced alignment,
+dynamic programming (similar to the forward-backward algorithm) is used
+to locate the path with the highest probability constrained to the
+ground-truth sequence. The moments where the model shifts probability
+mass from one non-blank character to another denote the precise temporal
+boundaries between sounds.</li>
+</ol>
+<h3 id="hmm-vs-ctc-for-tts-preparation">HMM vs. CTC for TTS
+Preparation</h3>
+<ul>
+<li><strong>Data Requirements:</strong> HMM-based aligners rely heavily
+on well-defined pronunciation lexicons and acoustic models, performing
+exceptionally well even on smaller, domain-specific corpora. CTC-based
+aligners rely on deep neural networks that typically require substantial
+pretraining data or existing foundational models to achieve peak
+accuracy.</li>
+<li><strong>Granularity and Robustness:</strong> HMMs explicitly enforce
+left-to-right state transitions, which prevents them from skipping
+segments of audio and makes them reliable for phoneme-level boundary
+precision. CTC networks tend to emit target tokens in compact bursts
+surrounded by blank tokens, which requires post-processing or
+specialized dynamic time warping to convert discrete emission spikes
+into continuous duration spans.</li>
+<li><strong>Speed and Modern Workflows:</strong> CTC-based alignment can
+run natively on GPUs within popular deep learning frameworks, allowing
+for rapid batch processing of large datasets. While HMM toolkits remain
+standard due to their battle-tested phoneme accuracy, CTC alignment
+provides a streamlined, fully differentiable alternative directly
+integrated into end-to-end Python pipelines.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

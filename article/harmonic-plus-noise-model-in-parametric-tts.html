@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonic-Plus-Noise Model in Parametric TTS - tts</title>
+    <meta name="description" content="The harmonic-plus-noise model (HNM) is a spectral decomposition framework used in parametric Text-to-Speech (TTS) engines to synthesize natural-sounding human speech. It operates by separating the speech signal into a deterministic (harmonic) part, which">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/harmonic-plus-noise-model-in-parametric-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Harmonic-Plus-Noise Model in Parametric TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/harmonic-plus-noise-model-in-parametric-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The harmonic-plus-noise model (HNM) is a spectral decomposition framework used in parametric Text-to-Speech (TTS) engines to synthesize natural-sounding human speech. It operates by separating the speech signal into a deterministic (harmonic) part, which" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="harmonic-plus-noise-model-in-parametric-tts">Harmonic-Plus-Noise
+Model in Parametric TTS</h1>
+<p>The harmonic-plus-noise model (HNM) is a spectral decomposition
+framework used in parametric Text-to-Speech (TTS) engines to synthesize
+natural-sounding human speech. It operates by separating the speech
+signal into a deterministic (harmonic) part, which models the
+quasi-periodic vibrations of the vocal cords, and a stochastic (noise)
+part, which models turbulence and aspiration. In parametric TTS, this
+division allows the engine to accurately analyze, modify, and
+reconstruct both periodic voiced sounds (such as vowels) and aperiodic
+fricative sounds (such as /s/ or /sh/) with high acoustic fidelity.</p>
+<h3 id="the-core-architecture-the-maximum-voiced-frequency">The Core
+Architecture: The Maximum Voiced Frequency</h3>
+<p>The foundation of the HNM approach relies on dividing the frequency
+spectrum of a speech frame into two bands separated by a time-varying
+boundary called the Maximum Voiced Frequency (<span
+class="math inline">\(F_m\)</span>).</p>
+<ul>
+<li>Frequencies below <span class="math inline">\(F_m\)</span> are
+treated as predominantly harmonic (voiced).</li>
+<li>Frequencies above <span class="math inline">\(F_m\)</span> are
+treated as purely stochastic (noise).</li>
+</ul>
+<p>For fully voiced sounds, <span class="math inline">\(F_m\)</span> can
+reach up to 4 kHz to 6 kHz, meaning most of the perceptible lower
+spectrum is modeled by harmonics. For unvoiced sounds, <span
+class="math inline">\(F_m\)</span> drops to 0 Hz, causing the entire
+frame to be rendered as noise.</p>
+<h3 id="representing-voiced-speech-components">Representing Voiced
+Speech Components</h3>
+<p>Voiced speech occurs when airflow from the lungs causes the vocal
+folds to vibrate quasi-periodically. The HNM represents this
+deterministic structure through additive sinusoidal modeling:</p>
+<ol type="1">
+<li><strong>Harmonic Sinusoids:</strong> Below the threshold <span
+class="math inline">\(F_m\)</span>, the signal is represented as a
+finite sum of harmonically related sinusoids. Each harmonic is defined
+by its frequency (an integer multiple of the fundamental frequency,
+<span class="math inline">\(F_0\)</span>), a time-varying amplitude
+derived from the spectral envelope, and a phase value.</li>
+<li><strong>Phase Modeling:</strong> To maintain natural timbre and
+avoid an artificial, metallic sound, parametric TTS engines estimate or
+predict regular phase tracks (often combining a linear phase linked to
+pitch marks with a minimum-phase vocal tract filter component).</li>
+<li><strong>High-Frequency Aspiration:</strong> Above <span
+class="math inline">\(F_m\)</span>, even voiced vowels contain minor
+turbulence caused by air rushing past the vocal folds. The model
+represents this upper band using Gaussian white noise shaped by an
+envelope matching the vocal tract's spectral tilt.</li>
+</ol>
+<h3 id="representing-fricative-speech-components">Representing Fricative
+Speech Components</h3>
+<p>Fricatives are produced when airflow is forced through a narrow
+constriction in the vocal tract (such as the tongue against the teeth or
+palate), creating continuous turbulent noise rather than a periodic
+waveform.</p>
+<ol type="1">
+<li><p><strong>Unvoiced Fricatives (e.g., /s/, /f/, /θ/):</strong></p>
+<ul>
+<li>In completely unvoiced fricatives, there is no vocal fold vibration,
+so <span class="math inline">\(F_0\)</span> is absent and <span
+class="math inline">\(F_m\)</span> is set to 0 Hz.</li>
+<li>The harmonic component is completely disabled.</li>
+<li>The stochastic component generates the sound by passing a random
+noise source (typically white Gaussian noise) through a time-varying
+filter. This filter matches the vocal tract transfer function, shaping
+the noise to produce specific spectral peaks (such as the high-frequency
+concentration characteristic of /s/).</li>
+<li>A time-domain energy envelope is applied to modulate the noise
+amplitude, capturing the sharp attack, sustain, and decay of the
+consonant.</li>
+</ul></li>
+<li><p><strong>Voiced Fricatives (e.g., /z/, /v/, /ð/):</strong></p>
+<ul>
+<li>Voiced fricatives contain both vocal cord vibration and aerodynamic
+turbulence.</li>
+<li>HNM handles this dual nature naturally via the intermediate
+placement of <span class="math inline">\(F_m\)</span>. The lower
+frequencies below <span class="math inline">\(F_m\)</span> are
+synthesized using harmonics to capture the underlying low-pitch "buzz"
+(the voice bar), while the higher frequencies above <span
+class="math inline">\(F_m\)</span> are synthesized using shaped noise to
+capture the continuous friction.</li>
+</ul></li>
+</ol>
+<h3 id="synthesis-in-parametric-tts">Synthesis in Parametric TTS</h3>
+<p>During parametric TTS synthesis, the engine's acoustic model (such as
+a neural network or hidden Markov model) outputs the acoustic
+parameters: <span class="math inline">\(F_0\)</span>, <span
+class="math inline">\(F_m\)</span>, harmonic spectral envelopes, and
+noise energy envelopes. The harmonic track is reconstructed using
+sinusoidal oscillators or Inverse Fast Fourier Transforms (IFFT), and
+the noise track is created through linear predictive filtering of white
+noise. Summing these two synchronized time-domain signals yields the
+final synthesized voiced or fricative speech.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

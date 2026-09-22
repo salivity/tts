@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>French Sandhi Rules in Text-to-Speech Systems - tts</title>
+    <meta name="description" content="French phonological sandhi—primarily comprising liaison, elision, and enchaînement—modifies word-boundary pronunciation dynamically based on adjacent sounds, grammatical relationships, and register. For Text-to-Speech (TTS) systems, these phenomena">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/french-sandhi-rules-in-text-to-speech-systems">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="French Sandhi Rules in Text-to-Speech Systems - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/french-sandhi-rules-in-text-to-speech-systems" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="French phonological sandhi—primarily comprising liaison, elision, and enchaînement—modifies word-boundary pronunciation dynamically based on adjacent sounds, grammatical relationships, and register. For Text-to-Speech (TTS) systems, these phenomena" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="french-sandhi-rules-in-text-to-speech-systems">French Sandhi
+Rules in Text-to-Speech Systems</h1>
+<p>French phonological sandhi—primarily comprising liaison, elision, and
+enchaînement—modifies word-boundary pronunciation dynamically based on
+adjacent sounds, grammatical relationships, and register. For
+Text-to-Speech (TTS) systems, these phenomena transform
+grapheme-to-phoneme (G2P) conversion from an isolated lookup process
+into a complex contextual prediction task. To generate natural French
+audio, synthesis engines must resolve multi-word phonetic interactions
+across varying syntactic hierarchies, register constraints, and lexical
+exceptions.</p>
+<h3 id="the-mechanisms-of-french-sandhi">The Mechanisms of French
+Sandhi</h3>
+<p>External sandhi refers to phonological alterations that take place
+across word boundaries. In French, this manifests through three primary
+mechanisms:</p>
+<ul>
+<li><strong>Liaison:</strong> A normally silent latent final consonant
+is articulated before a following word beginning with a vowel sound or a
+mute <em>h</em> (e.g., <em>les</em> /le/ + <em>amis</em> /a.mi/ becomes
+/le.za.mi/).</li>
+<li><strong>Enchaînement:</strong> A word-final consonant that is always
+pronounced resyllabifies to form the onset of the following word's
+initial vowel (e.g., <em>avec elle</em> /a.vɛ.kɛl/).</li>
+<li><strong>Elision:</strong> The deletion of an unstressed final
+vowel—typically /ə/, /a/, or /i/—before a vowel-initial word, marked
+orthographically with an apostrophe (e.g., <em>la</em> + <em>école</em>
+becomes <em>l'école</em>).</li>
+</ul>
+<p>While enchaînement and elision follow relatively strict phonetic and
+orthographic rules, liaison introduces significant ambiguity because the
+surface text does not explicitly indicate whether the latent consonant
+should surface.</p>
+<h3 id="liaison-classification-and-syntactic-dependencies">Liaison
+Classification and Syntactic Dependencies</h3>
+<p>Liaison realization is fundamentally context-dependent and falls into
+three categories:</p>
+<ol type="1">
+<li><strong>Mandatory (Obligatoire):</strong> Occurs within tightly knit
+syntactic units, such as determiners and nouns (<em>un‿arbre</em>),
+clitic pronouns and verbs (<em>ils‿arrivent</em>), or prenominal
+adjectives and nouns (<em>petit‿enfant</em>). Failing to pronounce these
+sounds robotic and grammatically incorrect.</li>
+<li><strong>Forbidden (Interdite):</strong> Blocked by specific
+syntactic or structural boundaries. Liaison is forbidden between a
+singular nominal subject and a following verb (<em>le chat /
+arrive</em>), across coordinated structures (<em>et / elle</em>), after
+the conjunction <em>et</em>, and before numerals like <em>onze</em> or
+<em>huit</em>. Realizing a forbidden liaison severely degrades
+intelligibility and naturalness.</li>
+<li><strong>Optional (Facultative):</strong> Found in mid-level
+syntactic cohesion, such as between forms of the copula <em>être</em>
+and predicates (<em>c'est‿impossible</em> vs. <em>c'est /
+impossible</em>) or plural nouns and post-posed adjectives (<em>des
+maisons‿anciennes</em>). Realization is governed by speaking style,
+tempo, and sociolinguistic register.</li>
+</ol>
+<p>Because liaison behavior is dictated by syntactic depth rather than
+flat word adjacency, TTS pipelines relying solely on n-gram language
+models frequently misclassify boundary types. Accurate realization
+requires deep syntactic parsing to evaluate dependency relations and
+part-of-speech (POS) tags.</p>
+<h3 id="lexical-irregularities-the-h-aspiré-challenge">Lexical
+Irregularities: The "H Aspiré" Challenge</h3>
+<p>A notorious edge case in French G2P conversion is the <em>h
+aspiré</em> (aspirated <em>h</em>). Despite its name, this segment is
+phonetically silent in modern standard French, but it functions as a
+phonological consonant at word boundaries.</p>
+<p>The presence of an <em>h aspiré</em> blocks both elision and liaison.
+For instance:</p>
+<ul>
+<li><em>Les héros</em> (/le.e.ʁo/) contains an <em>h aspiré</em>,
+prohibiting liaison.</li>
+<li><em>Les héroïnes</em> (/le.z‿e.ʁɔ.in/) contains an <em>h muet</em>
+(mute <em>h</em>), requiring liaison.</li>
+</ul>
+<p>Because orthography does not distinguish between an <em>h aspiré</em>
+and an <em>h muet</em>, TTS systems must rely on specialized lexicon
+lookups. If the front-end fails to retrieve the correct lexical flag,
+the system will incorrectly produce /le.z‿e.ʁo/ for <em>les héros</em>,
+which native speakers perceive as an egregious error.</p>
+<h3 id="prosody-and-boundary-interactions">Prosody and Boundary
+Interactions</h3>
+<p>Sandhi processes are strictly bounded by prosodic structure. A
+liaison or enchaînement cannot cross an intonational phrase boundary or
+a pause.</p>
+<p>In TTS architectures, a circular dependency often arises between the
+acoustic model and the phonemizer:</p>
+<ul>
+<li>The decision to insert a liaison consonant depends on whether the
+rhythm of the sentence permits a pause between the two words.</li>
+<li>The presence of a liaison consonant alters syllable counts and
+rhythmic duration, which in turn influences the acoustic model's
+prediction of phrase breaks.</li>
+</ul>
+<p>If the linguistic front-end assumes a liaison will occur, but the
+acoustic model predicts an intonational break at that boundary, the
+synthesizer produces an unnatural detached consonant preceding a
+pause.</p>
+<h3 id="architectural-approaches-in-tts">Architectural Approaches in
+TTS</h3>
+<p>Modern TTS engines address these sandhi challenges through two
+primary paradigms:</p>
+<ul>
+<li><strong>Neural G2P with Contextual Embeddings:</strong> Contemporary
+systems use Transformer-based front-ends (e.g., fine-tuned multilingual
+BERT architectures) that take entire sentences as input. These models
+learn syntactic dependencies and can predict context-sensitive phoneme
+sequences, dynamically inserting liaison phonemes like /z/, /t/, or /n/
+prior to feeding phonemic tokens into acoustic decoders.</li>
+<li><strong>End-to-End Character-to-Waveform Models:</strong> Direct
+text-to-speech models skip intermediate phonetic transcription entirely,
+mapping characters directly to mel-spectrograms or waveforms. While this
+avoids explicit rule engineering, these models require vast amounts of
+high-fidelity training data to implicitly capture the syntactic and
+stylistic variance of optional liaisons, often struggling with
+low-frequency <em>h aspiré</em> words without explicit phonetic
+conditioning.</li>
+</ul>
+<p>Achieving natural French speech synthesis requires robust front-end
+architectures capable of reconciling lexical exceptions, phrase-level
+syntactic parsing, and register consistency across word boundaries.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

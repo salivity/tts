@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Acoustic Standards for High-Fidelity TTS Datasets - tts</title>
+    <meta name="description" content="Training high-fidelity Text-to-Speech (TTS) models requires pristine source audio, as modern neural vocoders and acoustic models inherently amplify background noise, room reflections, and spectral inconsistencies. To build an optimal reference speech dat">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/studio-acoustic-standards-for-high-fidelity-tts-datasets">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Studio Acoustic Standards for High-Fidelity TTS Datasets - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/studio-acoustic-standards-for-high-fidelity-tts-datasets" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Training high-fidelity Text-to-Speech (TTS) models requires pristine source audio, as modern neural vocoders and acoustic models inherently amplify background noise, room reflections, and spectral inconsistencies. To build an optimal reference speech dat" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="studio-acoustic-standards-for-high-fidelity-tts-datasets">Studio
+Acoustic Standards for High-Fidelity TTS Datasets</h1>
+<p>Training high-fidelity Text-to-Speech (TTS) models requires pristine
+source audio, as modern neural vocoders and acoustic models inherently
+amplify background noise, room reflections, and spectral
+inconsistencies. To build an optimal reference speech dataset, recording
+environments must adhere to strict acoustic standards regarding ambient
+noise, reverberation, sound isolation, and hardware linearity. Failing
+to meet these baseline criteria results in synthetic voices
+characterized by phasing artifacts, high-frequency hiss, and robotic
+unnaturalness.</p>
+<h3 id="ambient-noise-floor-noise-criterion">Ambient Noise Floor (Noise
+Criterion)</h3>
+<p>The ambient noise floor of the recording booth must be exceptionally
+low to prevent machine learning algorithms from modeling background
+noise as part of the speaker's vocal characteristics.</p>
+<ul>
+<li><strong>Target Rating:</strong> The studio must achieve a Noise
+Criterion rating of <strong>NC-15 or lower</strong> (equivalent to
+roughly <strong>NR-15</strong> in Europe).</li>
+<li><strong>SPL Measurement:</strong> The equivalent continuous sound
+level (<span class="math inline">\(L_{Aeq}\)</span>) should not exceed
+<strong>18 to 20 dBA</strong> across the audible spectrum.</li>
+<li><strong>HVAC Mitigation:</strong> Air handling units must be
+externally located, heavily baffled, and run at ultra-low velocities to
+eliminate sub-bass rumble (&lt;80 Hz) and broadband airflow noise.</li>
+</ul>
+<h3 id="reverberation-time-rt_60">Reverberation Time (<span
+class="math inline">\(RT_{60}\)</span>)</h3>
+<p>Neural TTS architectures require dry, direct vocal sound. Any room
+coloration or early reflections will blur phoneme boundaries and induce
+comb filtering in generated speech.</p>
+<ul>
+<li><strong><span class="math inline">\(RT_{60}\)</span>
+Target:</strong> Decay time across the vocal range (125 Hz to 8 kHz)
+must remain between <strong>0.1 and 0.2 seconds</strong>.</li>
+<li><strong>Spectral Flatness:</strong> The decay curve must be linear
+across the frequency spectrum. Excess low-end build-up ("boxiness")
+caused by inadequate bass trapping alters the natural spectral tilt of
+the voice.</li>
+<li><strong>Treatment Type:</strong> Studios must use broadband
+absorption combined with targeted diffusion rather than thin acoustic
+foam, which selectively absorbs only high frequencies and skews tonal
+balance.</li>
+</ul>
+<h3 id="sound-isolation-sound-transmission-class">Sound Isolation (Sound
+Transmission Class)</h3>
+<p>To ensure long recording campaigns proceed without acoustic
+interruptions from external urban environments, structural isolation is
+mandatory.</p>
+<ul>
+<li><strong>Isolation Rating:</strong> Partitions, doors, and viewing
+windows must provide a minimum <strong>Sound Transmission Class (STC) of
+55 to 60</strong>.</li>
+<li><strong>Mechanical Decoupling:</strong> The studio requires a
+"room-within-a-room" construction with floating floors and resilient
+wall mounts to reject low-frequency ground-borne vibrations (e.g.,
+traffic, HVAC vibration, footsteps).</li>
+</ul>
+<h3 id="electroacoustic-signal-chain-purity">Electroacoustic Signal
+Chain Purity</h3>
+<p>Acoustic control extends to the interaction between the physical room
+and the capture chain. Equipment selection must emphasize neutrality
+over coloration.</p>
+<ul>
+<li><strong>Microphone Self-Noise:</strong> The primary microphone
+(typically a large-diaphragm condenser with a flat response) must have
+an equivalent noise level of <strong><span
+class="math inline">\(\le\)</span> 7 to 9 dBA</strong>.</li>
+<li><strong>Preamplification:</strong> Preamps must operate
+transparently with Total Harmonic Distortion plus Noise (THD+N) below
+<strong>-100 dB</strong> at operating levels, ensuring no analog warmth
+or saturation enters the dataset.</li>
+<li><strong>Format Standards:</strong> Audio must be digitized at
+uncompressed linear PCM, minimum <strong>24-bit depth</strong> and
+<strong>48 kHz or 96 kHz</strong> sampling rates, preserving
+high-frequency air bands required for modern vocoder upsampling.</li>
+</ul>
+<h3 id="consistency-and-spatial-control">Consistency and Spatial
+Control</h3>
+<p>Because dataset creation typically spans weeks, spatial relationships
+within the acoustic field must remain static to avoid variations that
+degrade model convergence.</p>
+<ul>
+<li><strong>Mic-to-Mouth Distance:</strong> Fixed mechanically (e.g.,
+using physical spacers or calibrated pop filters) at <strong>15 to 20
+cm</strong>, slightly off-axis to avoid plosive energy.</li>
+<li><strong>Thermal and Humidity Stability:</strong> Environmental
+controls must maintain steady temperature (20–22°C) and relative
+humidity (40–50%) to stabilize both the voice talent’s vocal folds and
+the velocity of sound in the acoustic chamber across sessions.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Algorithms for Heteronym Disambiguation - tts</title>
+    <meta name="description" content="Text-to-Speech (TTS) front-ends rely on Natural Language Processing (NLP) to convert raw text into accurate phonetic transcriptions. A major challenge in this process is resolving heteronyms—words spelled identically but pronounced differently dependin">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/tts-algorithms-for-heteronym-disambiguation">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="TTS Algorithms for Heteronym Disambiguation - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/tts-algorithms-for-heteronym-disambiguation" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Text-to-Speech (TTS) front-ends rely on Natural Language Processing (NLP) to convert raw text into accurate phonetic transcriptions. A major challenge in this process is resolving heteronyms—words spelled identically but pronounced differently dependin" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="tts-algorithms-for-heteronym-disambiguation">TTS Algorithms for
+Heteronym Disambiguation</h1>
+<p>Text-to-Speech (TTS) front-ends rely on Natural Language Processing
+(NLP) to convert raw text into accurate phonetic transcriptions. A major
+challenge in this process is resolving heteronyms—words spelled
+identically but pronounced differently depending on their grammatical
+function, such as the noun <em>project</em> (/ˈprɒdʒ.ɛkt/) versus the
+verb <em>project</em> (/prəˈdʒɛkt/). This article examines the core
+algorithms and modeling techniques TTS systems use to distinguish
+between noun and verb pronunciations to ensure correct acoustic
+synthesis.</p>
+<h3
+id="part-of-speech-pos-tagging-with-hidden-markov-models-hmms">Part-of-Speech
+(POS) Tagging with Hidden Markov Models (HMMs)</h3>
+<p>Historically, TTS front-ends handled heteronyms by routing text
+through explicit Part-of-Speech (POS) taggers. Hidden Markov Models
+determine the most likely sequence of grammatical categories for a
+sentence based on transition probabilities (the likelihood of a verb
+following a noun) and emission probabilities (the likelihood of a
+specific word given a POS tag).</p>
+<p>Once an HMM tags a token as a noun or a verb, the TTS front-end
+performs a dictionary lookup in a pronunciation lexicon (such as
+CMUdict) to retrieve the corresponding phoneme sequence and stress
+markers.</p>
+<h3
+id="maximum-entropy-markov-models-memms-and-conditional-random-fields-crfs">Maximum
+Entropy Markov Models (MEMMs) and Conditional Random Fields (CRFs)</h3>
+<p>While HMMs rely solely on generative probabilities, Conditional
+Random Fields (CRFs) are discriminative models that analyze broader
+contextual features. When evaluating a heteronym, a CRF evaluates
+surrounding tokens, capitalization, neighboring suffixes, and adjacent
+syntactic tags.</p>
+<p>CRFs eliminate the "label bias" problem present in older
+probabilistic models. By scoring the entire sequence globally using
+feature functions, CRFs significantly increase the accuracy of
+distinguishing between noun and verb forms in ambiguous sentence
+structures.</p>
+<h3
+id="bidirectional-long-short-term-memory-bilstm-networks">Bidirectional
+Long Short-Term Memory (BiLSTM) Networks</h3>
+<p>With the transition to deep learning, bidirectional recurrent
+networks became standard for heteronym resolution. Unlike traditional
+statistical models that examine limited context windows, a BiLSTM
+processes text in both forward and backward directions
+simultaneously.</p>
+<p>In a sentence like <em>"They will permit the permit to expire,"</em>
+the BiLSTM analyzes auxiliary verbs (<em>will</em>) preceding the first
+instance and determiners (<em>the</em>) preceding the second. The hidden
+states capture these long-range syntactic dependencies, outputting a
+high-accuracy classification vector that informs the phonetic
+transcriber whether each token operates as a verb or a noun.</p>
+<h3
+id="transformer-based-contextual-embeddings-bert-and-roberta">Transformer-Based
+Contextual Embeddings (BERT and RoBERTa)</h3>
+<p>Modern TTS front-ends increasingly use fine-tuned, lightweight
+Transformer architectures to perform heteronym disambiguation. Models
+based on BERT (Bidirectional Encoder Representations from Transformers)
+use self-attention mechanisms to evaluate the relationship between every
+word in a sentence concurrently.</p>
+<p>Instead of predicting an intermediate POS tag, these models can be
+trained to directly predict the correct pronunciation class ID or
+phoneme sequence. Self-attention layers identify deep semantic and
+syntactic nuances—such as passive versus active voice, subordinate
+clauses, and modal verb usage—yielding the highest accuracy rates for
+heteronym classification, even in complex or poorly punctuated text.</p>
+<h3 id="end-to-end-neural-grapheme-to-phoneme-g2p-models">End-to-End
+Neural Grapheme-to-Phoneme (G2P) Models</h3>
+<p>Modern neural G2P systems integrate heteronym disambiguation directly
+into the phonetic translation pipeline rather than treating it as a
+separate POS-tagging step. Sequence-to-sequence models with attention
+take an entire sentence as input and output the target phoneme string
+end-to-end.</p>
+<p>By bypassing explicit morphological categorization, these neural
+networks implicitly learn the phonetic divergence between nouns and
+verbs based on context, reducing the latency and error propagation
+common in multi-stage NLP pipelines.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causes of Metallic Artifacts in GAN Vocoders - tts</title>
+    <meta name="description" content="Generative Adversarial Network (GAN) vocoders, such as HiFi-GAN and MelGAN, generate high-fidelity speech rapidly by converting mel-spectrograms into time-domain waveforms. However, despite their speed and perceptual quality, these models frequently intr">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/causes-of-metallic-artifacts-in-gan-vocoders">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Causes of Metallic Artifacts in GAN Vocoders - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/causes-of-metallic-artifacts-in-gan-vocoders" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Generative Adversarial Network (GAN) vocoders, such as HiFi-GAN and MelGAN, generate high-fidelity speech rapidly by converting mel-spectrograms into time-domain waveforms. However, despite their speed and perceptual quality, these models frequently intr" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="causes-of-metallic-artifacts-in-gan-vocoders">Causes of Metallic
+Artifacts in GAN Vocoders</h1>
+<p>Generative Adversarial Network (GAN) vocoders, such as HiFi-GAN and
+MelGAN, generate high-fidelity speech rapidly by converting
+mel-spectrograms into time-domain waveforms. However, despite their
+speed and perceptual quality, these models frequently introduce
+unnatural metallic timbres, robotic buzzing, or high-frequency ringing
+into the synthesized audio. This article examines the primary
+architectural and mathematical causes of these artifacts, detailing how
+upsampling issues, phase generation errors, harmonic mismatches, and
+discriminator limitations degrade synthetic speech.</p>
+<h3
+id="checkerboard-artifacts-from-transposed-convolutions">Checkerboard
+Artifacts from Transposed Convolutions</h3>
+<p>GAN-based vocoders use transposed 1D convolutions to progressively
+upsample low-resolution mel-spectrogram frames into high-frequency raw
+audio samples. When the kernel size is not perfectly divisible by the
+stride, or when the convolutional weights do not overlap evenly,
+periodic patterns emerge in the output waveform. In audio, these
+periodic spikes—often called "checkerboard artifacts"—manifest directly
+as a persistent, high-frequency metallic hum or buzz.</p>
+<h3 id="sub-nyquist-aliasing">Sub-Nyquist Aliasing</h3>
+<p>The non-linear activation functions (such as LeakyReLU or Snake)
+applied after upsampling operations frequently introduce high-frequency
+components that exceed the Nyquist frequency of intermediate feature
+maps. When these frequencies fold back into the audible spectrum without
+proper anti-aliasing filtering, they produce intermodulation distortion.
+This distortion alters the upper harmonics of speech, giving fricatives,
+vowels, and voiced consonants an unnatural, tinny sheen.</p>
+<h3 id="phase-reconstruction-and-temporal-discontinuities">Phase
+Reconstruction and Temporal Discontinuities</h3>
+<p>Mel-spectrograms discard the phase information of the original audio
+signal, requiring the generator to reconstruct it from magnitude data
+alone. Because non-autoregressive GAN vocoders predict the entire
+waveform in parallel rather than sample-by-sample, small errors in local
+sample alignment lead to phase cancellation or sudden phase jumps
+between adjacent frames. When the ear detects rapid, inconsistent phase
+changes across frames, it perceives the result as a mechanical, raspy,
+or buzzing sensation rather than a smooth human voice.</p>
+<h3 id="harmonic-misalignment-and-f0-inconsistencies">Harmonic
+Misalignment and F0 Inconsistencies</h3>
+<p>Voiced speech consists of an excitation signal generated by the vocal
+cords, represented by a fundamental frequency (F0) and its integer
+harmonics. If the generator fails to precisely track the pitch contours
+embedded in the mel-spectrogram, the synthesized harmonics drift
+slightly out of tune with one another. This acoustic phenomenon mimics a
+comb filter or excessive chorus effect, smearing harmonic peaks and
+introducing an unmistakable metallic resonance to sustained vowel
+sounds.</p>
+<h3 id="discriminator-resolution-limits">Discriminator Resolution
+Limits</h3>
+<p>Most modern GAN vocoders rely on Multi-Scale Discriminators (MSD) and
+Multi-Period Discriminators (MPD) to evaluate audio across various
+frequency bands and periodic intervals. However, these discriminators
+operate on downsampled representations or specific sub-sampled periods,
+which can leave spectral "blind spots." If a discriminator cannot
+adequately evaluate the fine structures within narrow high-frequency
+bands, the generator will produce spurious, unpenalized acoustic noise
+in those regions, resulting in background buzzing.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

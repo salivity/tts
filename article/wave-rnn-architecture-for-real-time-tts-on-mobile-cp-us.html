@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaveRNN Architecture for Real-Time TTS on Mobile CPUs - tts</title>
+    <meta name="description" content="WaveRNN addresses the computational bottlenecks of autoregressive neural audio generation to achieve high-fidelity text-to-speech (TTS) on consumer-grade mobile CPUs. By replacing complex dilated convolutional networks with a streamlined recurrent neural">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/wave-rnn-architecture-for-real-time-tts-on-mobile-cp-us">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="WaveRNN Architecture for Real-Time TTS on Mobile CPUs - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/wave-rnn-architecture-for-real-time-tts-on-mobile-cp-us" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="WaveRNN addresses the computational bottlenecks of autoregressive neural audio generation to achieve high-fidelity text-to-speech (TTS) on consumer-grade mobile CPUs. By replacing complex dilated convolutional networks with a streamlined recurrent neural" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="wavernn-architecture-for-real-time-tts-on-mobile-cpus">WaveRNN
+Architecture for Real-Time TTS on Mobile CPUs</h1>
+<p>WaveRNN addresses the computational bottlenecks of autoregressive
+neural audio generation to achieve high-fidelity text-to-speech (TTS) on
+consumer-grade mobile CPUs. By replacing complex dilated convolutional
+networks with a streamlined recurrent neural network and combining
+dual-softmax sample prediction, structured block sparsity, and subscale
+generation, WaveRNN dramatically cuts memory bandwidth demands and
+floating-point operations. These targeted architectural modifications
+allow standard mobile hardware to generate 24 kHz, 16-bit audio in real
+time.</p>
+<h3 id="dual-split-softmax-output">Dual-Split Softmax Output</h3>
+<p>Autoregressive audio synthesis requires modeling 16-bit scalar audio
+samples, which corresponds to 65,536 distinct quantization levels.
+Predicting a categorical distribution over this full space requires an
+enormous 65,536-way softmax layer, creating severe memory and compute
+bottlenecks.</p>
+<p>WaveRNN replaces this single massive output layer with a split
+categorical prediction:</p>
+<ul>
+<li>The 16-bit sample is divided into two 8-bit bytes: a coarse byte
+(high-order bits) and a fine byte (low-order bits).</li>
+<li>The network uses two consecutive 256-way softmax distributions. The
+model predicts the coarse byte first, and then conditions the prediction
+of the fine byte on both the hidden state and the predicted coarse
+byte.</li>
+<li>This reduces the output computational complexity from <span
+class="math inline">\(\mathcal{O}(2^{16})\)</span> down to <span
+class="math inline">\(\mathcal{O}(2^8 + 2^8) =
+\mathcal{O}(512)\)</span>, removing the primary output-layer bottleneck
+on constrained processors.</li>
+</ul>
+<h3 id="structured-block-sparsity">Structured Block Sparsity</h3>
+<p>Recurrent neural networks require reloading weight matrices into
+cache at every time step. For sequential audio generation at 24 kHz,
+repeatedly moving large matrices between memory and CPU registers limits
+throughput due to memory bandwidth constraints.</p>
+<p>To eliminate this memory bandwidth bottleneck:</p>
+<ul>
+<li>WaveRNN implements non-uniform structured weight pruning, inducing
+block sparsity (such as 16x1 or 4x4 blocks of weights).</li>
+<li>Pruning up to 96% of the recurrent parameters reduces the number of
+operations and memory footprints without degrading audio fidelity.</li>
+<li>Because the pruning is structured in discrete blocks rather than
+individual random weights, the non-zero parameters align with SIMD
+(Single Instruction, Multiple Data) execution units, such as ARM NEON
+registers on mobile CPUs. This enables direct hardware vectorization
+without the latency overhead of sparse-matrix indexing.</li>
+</ul>
+<h3 id="subscale-generation-and-parallelism">Subscale Generation and
+Parallelism</h3>
+<p>Standard autoregressive generation advances one sample at a time,
+preventing multi-core utilization. WaveRNN introduces subscale
+generation to introduce data-level parallelism into the generation
+loop.</p>
+<ul>
+<li>The model splits a target audio sequence of length <span
+class="math inline">\(T\)</span> into <span
+class="math inline">\(B\)</span> interleaved sub-sequences, each of
+length <span class="math inline">\(T / B\)</span>.</li>
+<li>The recurrent cell maintains <span class="math inline">\(B\)</span>
+parallel hidden streams, advancing all streams collectively
+step-by-step.</li>
+<li>Instead of running <span class="math inline">\(T\)</span> individual
+sequential iterations, the CPU processes <span class="math inline">\(T /
+B\)</span> steps over a batch size of <span
+class="math inline">\(B\)</span>.</li>
+<li>This allows mobile multi-core architectures to run multiple sample
+updates in parallel, maximizing instruction pipelining and preventing
+pipeline stalls inherent to purely scalar step-by-step recurrence.</li>
+</ul>
+<h3 id="decoupled-conditioning-hierarchy">Decoupled Conditioning
+Hierarchy</h3>
+<p>High-fidelity TTS requires conditioning the waveform generator on
+auxiliary features such as mel-spectrograms or linguistic alignments. In
+earlier systems, the dense autoregressive loop frequently re-encoded
+these conditional features at every sample.</p>
+<p>WaveRNN separates the network into two distinct functional
+hierarchies:</p>
+<ol type="1">
+<li><strong>Conditioning Network:</strong> A non-autoregressive
+feed-forward or convolutional subnetwork that processes low-frequency
+conditioning features at frame rates (typically 200 Hz). It computes
+conditioning vectors up front.</li>
+<li><strong>Autoregressive Core:</strong> A minimal, lightweight gated
+recurrent unit (GRU) running at 24 kHz that consumes the pre-computed
+conditioning tensors via simple linear projections.</li>
+</ol>
+<p>By offloading heavy feature transformations to the frame-rate
+network, the sample-level recurrent core is left with only the bare
+minimum operations necessary to guarantee temporal coherence, preserving
+critical CPU cycles during generation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

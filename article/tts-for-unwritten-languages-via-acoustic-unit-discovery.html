@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS for Unwritten Languages via Acoustic Unit Discovery - tts</title>
+    <meta name="description" content="Unsupervised acoustic unit discovery plays a foundational role in developing text-to-speech (TTS) and speech synthesis systems for unwritten oral languages by extracting discrete, pseudo-phonetic units directly from continuous audio without requiring tex">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/tts-for-unwritten-languages-via-acoustic-unit-discovery">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="TTS for Unwritten Languages via Acoustic Unit Discovery - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/tts-for-unwritten-languages-via-acoustic-unit-discovery" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Unsupervised acoustic unit discovery plays a foundational role in developing text-to-speech (TTS) and speech synthesis systems for unwritten oral languages by extracting discrete, pseudo-phonetic units directly from continuous audio without requiring tex" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="tts-for-unwritten-languages-via-acoustic-unit-discovery">TTS for
+Unwritten Languages via Acoustic Unit Discovery</h1>
+<p>Unsupervised acoustic unit discovery plays a foundational role in
+developing text-to-speech (TTS) and speech synthesis systems for
+unwritten oral languages by extracting discrete, pseudo-phonetic units
+directly from continuous audio without requiring text transcriptions.
+Because nearly half of the world's languages lack a standardized writing
+system, traditional TTS pipelines that map graphemes or phonemes to
+speech cannot function. Acoustic unit discovery bridges this gap by
+automatically segmenting speech into reusable, phoneme-like tokens,
+effectively creating a machine-learned "orthography" that downstream
+synthesis models can use to generate natural, intelligible speech.</p>
+<h2 id="the-challenge-of-unwritten-oral-languages">The Challenge of
+Unwritten Oral Languages</h2>
+<p>Conventional TTS systems rely on massive corpora of paired text and
+audio data. Models learn the statistical relationships between letters,
+phonemes, and acoustic waveforms. For purely oral or endangered
+languages, no such paired datasets exist. Even when field recordings of
+spoken language are available, hiring expert linguists to manually
+transcribe and annotate phonetic boundaries is time-consuming,
+expensive, and difficult to scale across thousands of dialects.</p>
+<h2 id="how-unsupervised-acoustic-unit-discovery-works">How Unsupervised
+Acoustic Unit Discovery Works</h2>
+<p>Unsupervised acoustic unit discovery (AUD) eliminates the need for
+human annotation by treating speech as an information stream containing
+repetitive structural patterns. The process relies on modern
+self-supervised learning (SSL) architectures:</p>
+<ol type="1">
+<li><strong>Representation Learning:</strong> Self-supervised audio
+encoders—such as wav2vec 2.0, HuBERT, or discrete Vector-Quantized
+Variational Autoencoders (VQ-VAE)—are trained on raw, unlabeled audio
+recordings. These models learn continuous latent representations of
+speech sounds by predicting masked regions of the audio signal.</li>
+<li><strong>Vector Quantization and Clustering:</strong> To convert
+continuous representations into discrete symbols, the latent space is
+clustered (typically using k-means or codebook quantization). Each
+cluster represents a distinct recurring acoustic unit, roughly analogous
+to a sub-phonemic or phonetic sound.</li>
+<li><strong>Pseudo-Text Generation:</strong> Once trained, the system
+assigns a unique integer ID to each cluster. Continuous speech can then
+be serialized into a sequence of discrete tokens (e.g.,
+<code>unit_42</code>, <code>unit_107</code>, <code>unit_12</code>),
+functioning as a surrogate writing system.</li>
+</ol>
+<h2 id="enabling-tts-and-speech-to-speech-translation">Enabling TTS and
+Speech-to-Speech Translation</h2>
+<p>Once discrete units are discovered, standard sequence-to-sequence
+neural architectures can be applied:</p>
+<ul>
+<li><strong>Unit-to-Speech Synthesis:</strong> A neural vocoder or
+unit-based acoustic decoder learns to reconstruct natural-sounding
+speech directly from sequences of discrete acoustic units. The model
+learns acoustic features, speaker timbre, and prosody directly from the
+discovered units.</li>
+<li><strong>Direct Speech-to-Unit Translation:</strong> For applications
+like cross-lingual translation, a source language (text or audio) can be
+translated directly into the target language’s discovered units. The
+unit-to-speech model then synthesizes the translated units into audible
+speech, bypassing text entirely.</li>
+<li><strong>Unit-Based Language Modeling:</strong> Generative audio
+language models (such as AudioLM or SpeechGPT) can model the
+distribution of these discrete units autoregressively, allowing systems
+to produce coherent sentences in the oral language from semantic
+prompts.</li>
+</ul>
+<h2 id="key-benefits-for-low-resource-communities">Key Benefits for
+Low-Resource Communities</h2>
+<p>Acoustic unit discovery drastically lowers the barrier to entry for
+digital language preservation. It enables:</p>
+<ul>
+<li><strong>Democratization of Voice Interfaces:</strong> Communities
+with exclusively oral traditions can access voice assistants,
+educational tools, and emergency broadcast systems in their native
+tongue.</li>
+<li><strong>Preservation of Nuance:</strong> Traditional phonetic
+alphabets often fail to capture subtle tonal variations, clicks, or
+co-articulation patterns present in indigenous languages.
+Self-supervised acoustic units derive their boundaries from actual
+acoustics, retaining native phonological traits.</li>
+<li><strong>Scalable Data Collection:</strong> Systems can improve
+simply by ingesting more raw audio, such as radio broadcasts, community
+recordings, and oral histories, without requiring transcription
+workflows.</li>
+</ul>
+<p>Unsupervised acoustic unit discovery shifts speech synthesis from a
+text-dependent paradigm to a purely acoustic one, providing a viable
+technological pathway to preserve, synthesize, and revitalize unwritten
+languages across the globe.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metrics for Emotional LLM Text-to-Speech - tts</title>
+    <meta name="description" content="Integrating Large Language Models (LLMs) with Text-to-Speech (TTS) synthesis enables audio engines to interpret dramatic context and produce emotionally nuanced narration. Evaluating whether an LLM-driven TTS system effectively translates dramatic cues">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/metrics-for-emotional-llm-text-to-speech">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Metrics for Emotional LLM Text-to-Speech - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/metrics-for-emotional-llm-text-to-speech" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Integrating Large Language Models (LLMs) with Text-to-Speech (TTS) synthesis enables audio engines to interpret dramatic context and produce emotionally nuanced narration. Evaluating whether an LLM-driven TTS system effectively translates dramatic cues" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="metrics-for-emotional-llm-text-to-speech">Metrics for Emotional
+LLM Text-to-Speech</h1>
+<p>Integrating Large Language Models (LLMs) with Text-to-Speech (TTS)
+synthesis enables audio engines to interpret dramatic context and
+produce emotionally nuanced narration. Evaluating whether an LLM-driven
+TTS system effectively translates dramatic cues—such as tension, grief,
+sarcasm, or subtext—into appropriate vocal performance requires a hybrid
+evaluation framework. This article outlines the essential subjective,
+objective, and cross-modal metrics used to measure emotional
+contextualization in narrative speech synthesis.</p>
+<h2 id="subjective-human-evaluation-metrics">Subjective Human Evaluation
+Metrics</h2>
+<p>Human perception remains the benchmark for evaluating emotional
+authenticity in dramatic audio, as nuanced narrative interpretation
+often defies rigid algorithmic scoring.</p>
+<ul>
+<li><strong>Emotional Mean Opinion Score (E-MOS):</strong> Evaluators
+rate synthesized speech on a 1-to-5 Likert scale based strictly on how
+appropriately the vocal delivery reflects the surrounding narrative
+context, rather than general audio fidelity.</li>
+<li><strong>Comparative Contextual MOS (CC-MOS):</strong> Listeners
+compare two distinct audio generations (e.g., with and without LLM
+contextual prompting) side-by-side against the written text to determine
+which version delivers a more fitting emotional performance.</li>
+<li><strong>Emotion Identification Accuracy (Human SER):</strong> In a
+forced-choice evaluation, human judges identify the primary emotion
+conveyed in the audio clip. The percentage of human-identified emotions
+matching the dramatic text’s intent reflects the system’s expressive
+precision.</li>
+<li><strong>Dramatic Believability and Engagement Score:</strong>
+Specific to audiobooks and roleplay engines, this metric assesses
+broader narrative coherence, evaluating whether changes in pacing,
+breathiness, and pitch shift naturally across emotional peaks and
+valleys over multi-sentence passages.</li>
+</ul>
+<h2 id="automated-and-objective-acoustic-metrics">Automated and
+Objective Acoustic Metrics</h2>
+<p>Objective metrics quantify acoustic properties directly, measuring
+whether vocal features systematically change in response to dramatic
+prompts.</p>
+<ul>
+<li><strong>Speech Emotion Recognition (SER) Alignment:</strong> A
+pre-trained, independent SER model classifies the emotional category or
+valence/arousal dimensions of the generated audio. This output is
+mathematically compared against the emotional labels extracted from the
+narrative text, yielding an Emotion Match Accuracy or F1-score.</li>
+<li><strong>Valence and Arousal Concordance:</strong> Using dimensional
+emotion frameworks (Russell's Circumplex Model), text-based sentiment
+models and audio-based acoustic models independently predict valence
+(positivity/negativity) and arousal (energy). Metrics like Concordance
+Correlation Coefficient (CCC) or Mean Squared Error (MSE) evaluate the
+alignment between text-predicted arousal/valence and audio-generated
+arousal/valence.</li>
+<li><strong>Prosodic Feature Variance (F0, Energy, Duration):</strong>
+Dramatic shifts require dynamic acoustic changes. Calculating the
+fundamental frequency (<span class="math inline">\(F_0\)</span>)
+trajectory, intensity (energy dynamic range), and phoneme duration
+distributions indicates whether the LLM is steering the acoustic model
+toward appropriate expressiveness rather than monotonous standard
+delivery.</li>
+</ul>
+<h2 id="cross-modal-and-latent-space-metrics">Cross-Modal and Latent
+Space Metrics</h2>
+<p>Advanced evaluation compares representation spaces across modalities
+to confirm that acoustic features share high mutual information with
+textual subtext.</p>
+<ul>
+<li><strong>Audio-Text Embedding Cosine Similarity:</strong> Embeddings
+generated from audio representations (such as WavLM or Emotion2Vec) are
+mapped into a shared semantic space with text embeddings (such as
+contextual sentence transformers). High cosine similarity indicates that
+the synthesized audio carries semantic and affective features
+corresponding to the input passage.</li>
+<li><strong>Emotional Transition Smoothness:</strong> Measured by
+computing the Wasserstein distance or Euclidean distance between
+acoustic vectors across dialogue boundaries. This metric detects whether
+transitions between contrasting narrative emotions (e.g., calm dialogue
+suddenly interrupted by panic) occur with appropriate prosodic contrast
+or fail to register contextual shifts.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

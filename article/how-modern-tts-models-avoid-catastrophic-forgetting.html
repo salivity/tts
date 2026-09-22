@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Modern TTS Models Avoid Catastrophic Forgetting - tts</title>
+    <meta name="description" content="Modern end-to-end (E2E) Text-to-Speech (TTS) models face significant performance degradation—known as catastrophic forgetting—when incrementally trained on new speaker voices. In continual learning scenarios, updating model weights to capture new voc">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-modern-tts-models-avoid-catastrophic-forgetting">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Modern TTS Models Avoid Catastrophic Forgetting - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-modern-tts-models-avoid-catastrophic-forgetting" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern end-to-end (E2E) Text-to-Speech (TTS) models face significant performance degradation—known as catastrophic forgetting—when incrementally trained on new speaker voices. In continual learning scenarios, updating model weights to capture new voc" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-modern-tts-models-avoid-catastrophic-forgetting">How Modern
+TTS Models Avoid Catastrophic Forgetting</h1>
+<p>Modern end-to-end (E2E) Text-to-Speech (TTS) models face significant
+performance degradation—known as catastrophic forgetting—when
+incrementally trained on new speaker voices. In continual learning
+scenarios, updating model weights to capture new vocal characteristics
+often overwrites the acoustic and prosodic representations of previously
+learned speakers. To combat this, modern architectures utilize a
+combination of decoupled speaker conditioning, parameter-efficient
+fine-tuning (PEFT), rehearsal and generative replay strategies, and
+regularization constraints to ensure high-fidelity voice synthesis
+across both old and newly acquired speakers.</p>
+<h3 id="decoupled-speaker-encodings-and-modular-embeddings">Decoupled
+Speaker Encodings and Modular Embeddings</h3>
+<p>The most common defense against forgetting is the strict
+architectural separation between linguistic-acoustic modeling and
+speaker identity. Modern models (such as VITS, NaturalSpeech, or
+FastSpeech variants) use distinct speaker encoders—such as d-vectors,
+x-vectors, or learnable lookup tables—to inject voice characteristics
+into the synthesizer via cross-attention, AdaIN (Adaptive Instance
+Normalization), or feature concatenation.</p>
+<p>When a new voice is introduced, the core text-to-feature generation
+network can be completely frozen. Only the new speaker embedding vector
+or a tiny conditioning projection layer is optimized. Because the
+underlying weights that govern phoneme alignment, duration modeling, and
+audio synthesis remain unchanged, the model cannot degrade on previous
+voices.</p>
+<h3
+id="parameter-efficient-fine-tuning-peft-and-adapters">Parameter-Efficient
+Fine-Tuning (PEFT) and Adapters</h3>
+<p>When an unseen voice requires adaptation that a static embedding
+cannot provide—such as capturing unique accents, speech impairments, or
+specific emotional registers—models turn to modular adapters and
+low-rank adaptation (LoRA).</p>
+<p>Instead of updating the full network:</p>
+<ul>
+<li><strong>Residual Adapters:</strong> Lightweight feed-forward layers
+are inserted into the attention and transformer blocks. When training
+for a new voice, only these residual layers are trained, keeping base
+weights untouched.</li>
+<li><strong>LoRA (Low-Rank Adaptation):</strong> Low-rank decomposition
+matrices are added to specific attention layers. A unique adapter matrix
+can be stored per speaker or cluster of speakers, mathematically
+isolating the parameter updates of new voices from the original system
+weights.</li>
+</ul>
+<h3 id="rehearsal-and-generative-replay">Rehearsal and Generative
+Replay</h3>
+<p>When fine-tuning the entire model is unavoidable, modern pipelines
+implement rehearsal techniques to stabilize network parameters:</p>
+<ol type="1">
+<li><strong>Experience Replay:</strong> A small, balanced exemplar
+dataset containing a fraction of reference audio from previous speakers
+is maintained. During training on new voices, batches are interleaved
+with these historical samples to continually anchor the weights
+associated with earlier voices.</li>
+<li><strong>Generative Pseudo-Rehearsal:</strong> In scenarios with
+strict data privacy constraints, raw historical audio cannot be
+permanently stored. Instead, the model itself generates synthetic speech
+samples using previous speaker IDs. These synthetic samples serve as
+rehearsal data, effectively teaching the model its own prior knowledge
+in parallel with new target voice updates.</li>
+</ol>
+<h3 id="regularization-and-knowledge-distillation">Regularization and
+Knowledge Distillation</h3>
+<p>To explicitly penalize the degradation of prior knowledge during
+gradient updates, modern TTS training pipelines use advanced loss
+constraints:</p>
+<ul>
+<li><strong>Elastic Weight Consolidation (EWC):</strong> EWC calculates
+a Fisher information matrix to identify which parameters are most
+critical to the synthesis of previously seen speakers. During
+optimization on new data, weight updates that severely alter these
+critical parameters incur heavy loss penalties, forcing the optimizer
+into parameter regions that accommodate the new voice without disrupting
+established representations.</li>
+<li><strong>Teacher-Student Distillation:</strong> A snapshot of the
+model prior to training serves as a frozen "teacher." When the updated
+"student" model processes linguistic input for existing speakers, it is
+penalized (via L1, L2, or Mel-spectrogram loss) if its intermediate
+representations or output acoustic features deviate from the teacher's
+outputs.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

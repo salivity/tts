@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Audio Language Models Hallucinate Words in TTS - tts</title>
+    <meta name="description" content="Modern text-to-speech (TTS) systems increasingly rely on autoregressive audio language models, which occasionally generate words, filler sounds, or entire sentences that never existed in the input prompt. This phenomenon, known as semantic hallucination,">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-audio-language-models-hallucinate-words-in-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Audio Language Models Hallucinate Words in TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-audio-language-models-hallucinate-words-in-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern text-to-speech (TTS) systems increasingly rely on autoregressive audio language models, which occasionally generate words, filler sounds, or entire sentences that never existed in the input prompt. This phenomenon, known as semantic hallucination," />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-audio-language-models-hallucinate-words-in-tts">Why Audio
+Language Models Hallucinate Words in TTS</h1>
+<p>Modern text-to-speech (TTS) systems increasingly rely on
+autoregressive audio language models, which occasionally generate words,
+filler sounds, or entire sentences that never existed in the input
+prompt. This phenomenon, known as semantic hallucination, undermines the
+fidelity of speech synthesis. This article examines the core technical
+causes behind these phantom vocalizations, focusing on autoregressive
+decoding mechanics, cross-attention drift, training data contamination,
+and stochastic sampling parameters.</p>
+<h2 id="the-shift-to-generative-autoregressive-architectures">The Shift
+to Generative Autoregressive Architectures</h2>
+<p>Traditional TTS architectures relied on deterministic alignments,
+such as duration predictors in non-autoregressive acoustic models (e.g.,
+FastSpeech). These systems mapped phonemes directly to spectrogram
+frames, making it structurally impossible to generate extra words.</p>
+<p>Modern systems, such as VALL-E, Bark, and other discrete-token audio
+language models, frame speech synthesis as a conditional
+sequence-to-sequence language modeling task. In this paradigm, acoustic
+tokens are generated sequentially based on probabilities. Because the
+architecture behaves like a large language model (LLM), it is inherently
+generative rather than strictly deterministic. If the predictive
+confidence of the text conditioning weakens during generation, the
+model's internal language prior takes over, predicting what sounds
+natural to say next rather than adhering to the source text.</p>
+<h2 id="predictive-completion-and-linguistic-prior">Predictive
+Completion and Linguistic Prior</h2>
+<p>Audio language models are trained on massive text and audio corpora,
+absorbing natural linguistic flow and conversational conventions. When
+an input text prompt feels pragmatically incomplete or structurally
+conversational, the underlying model may attempt to "complete the
+thought."</p>
+<p>For example, if an input sentence ends abruptly, the model may
+hallucinate closing phrases like "thank you," "goodbye," or affirmative
+acknowledgments ("yeah," "okay"). The model's language prior overrides
+the text conditioning constraint because the statistical probability of
+a conversational sign-off following a spoken utterance is high in the
+training distribution.</p>
+<h2 id="cross-attention-breakdown-and-alignment-drift">Cross-Attention
+Breakdown and Alignment Drift</h2>
+<p>Most audio language models use cross-attention layers to condition
+the generation of audio tokens on input text tokens. Semantic
+hallucinations frequently occur when this attention mechanism loses
+tracking:</p>
+<ul>
+<li><strong>Attention Slippage:</strong> As the output sequence grows
+longer, the attention weights between the generated audio tokens and the
+input text tokens can disperse or collapse.</li>
+<li><strong>Loss of Monotonicity:</strong> Speech naturally progresses
+monotonically through text. Standard multi-head attention does not
+strictly enforce monotonic alignment. If the model fails to attend to
+the appropriate remaining text tokens, the decoder continues to emit
+speech tokens based entirely on its own previous audio outputs,
+generating ungrounded semantic content.</li>
+</ul>
+<h2 id="training-data-imperfections-and-label-noise">Training Data
+Imperfections and Label Noise</h2>
+<p>Audio language models require thousands of hours of speech paired
+with transcripts. These datasets are often scraped from audiobooks,
+podcasts, and video platforms, with text generated via automated speech
+recognition (ASR) or loosely matched subtitles.</p>
+<p>This introduces label noise:</p>
+<ul>
+<li><strong>Unlabeled Audio:</strong> If the training audio contains
+conversational fillers ("um," "uh"), throat clearing, or trailing
+sentences that were omitted from the paired transcript, the model learns
+that producing spoken words from "silent" or non-existent text tokens is
+acceptable.</li>
+<li><strong>Mismatched Endings:</strong> Cutoffs where audio continues
+past the final transcribed word condition the model to hallucinate
+trailing audio at the end of synthesis runs.</li>
+</ul>
+<h2 id="exposure-bias-and-autoregressive-sampling">Exposure Bias and
+Autoregressive Sampling</h2>
+<p>During training, models typically use teacher forcing, where each
+step receives the ground-truth previous token. During inference,
+however, the model conditions on its own previously predicted
+tokens.</p>
+<p>If the model produces a slight phonetic error or an unintended
+micro-pause, this unexpected token is fed back into the context window.
+This divergence from the training distribution—known as exposure
+bias—can snowball. The model enters an out-of-distribution state where
+its text-conditioning breaks down, leading the decoder into a
+self-reinforcing loop of generating coherent-sounding, hallucinated
+speech.</p>
+<p>Furthermore, inference sampling strategies like high temperature,
+Top-K, or Top-P (nucleus) sampling introduce randomness to make speech
+sound more expressive and less robotic. Higher entropy during decoding
+increases the statistical likelihood of sampling unexpected semantic
+tokens, turning acoustic variance into hallucinated words.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

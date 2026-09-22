@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti-Aliasing for High-Frequency Neural TTS Vocoders - tts</title>
+    <meta name="description" content="Neural vocoders frequently suffer from aliasing artifacts when generating high-frequency audio, leading to metallic distortion and degraded vocal fidelity. This article explores how anti-aliasing techniques eliminate frequency folding errors introduced d">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/anti-aliasing-for-high-frequency-neural-tts-vocoders">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Anti-Aliasing for High-Frequency Neural TTS Vocoders - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/anti-aliasing-for-high-frequency-neural-tts-vocoders" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Neural vocoders frequently suffer from aliasing artifacts when generating high-frequency audio, leading to metallic distortion and degraded vocal fidelity. This article explores how anti-aliasing techniques eliminate frequency folding errors introduced d" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="anti-aliasing-for-high-frequency-neural-tts-vocoders">Anti-Aliasing
+for High-Frequency Neural TTS Vocoders</h1>
+<p>Neural vocoders frequently suffer from aliasing artifacts when
+generating high-frequency audio, leading to metallic distortion and
+degraded vocal fidelity. This article explores how anti-aliasing
+techniques eliminate frequency folding errors introduced during
+upsampling and non-linear activation steps, allowing neural
+Text-to-Speech (TTS) models to synthesize crisp, natural high-frequency
+sounds like fricatives and breath tones at high sample rates.</p>
+<h3 id="the-origin-of-aliasing-in-neural-vocoders">The Origin of
+Aliasing in Neural Vocoders</h3>
+<p>Neural vocoders, such as HiFi-GAN, WaveGlow, and BigVGAN, generate
+continuous-time audio waveforms from discrete linguistic or acoustic
+features (like mel-spectrograms). This transformation relies heavily on
+two operations: transposed convolutions for upsampling and non-linear
+activation functions (such as LeakyReLU, Snake, or SIREN).</p>
+<p>Both operations inherently expand the spectral bandwidth of the
+intermediate feature maps:</p>
+<ul>
+<li><strong>Transposed Convolutions (Upsampling):</strong> Expanding the
+sampling rate without adequate filtering introduces imaging artifacts,
+reflecting spectral copies above the original Nyquist frequency.</li>
+<li><strong>Non-Linear Activations:</strong> Applying non-linear
+functions to an audio signal generates harmonic overtones. If these
+generated harmonics exceed the Nyquist frequency (half the sampling rate
+of the current layer), they reflect back across the Nyquist threshold
+into lower frequency bands, a phenomenon known as frequency
+folding.</li>
+</ul>
+<p>In the final audio output, this folded energy manifests as harsh,
+metallic buzzes, phase incoherence, and muffled or robotic
+high-frequency sounds.</p>
+<h3 id="anti-aliasing-mechanisms-in-neural-vocoders">Anti-Aliasing
+Mechanisms in Neural Vocoders</h3>
+<p>To prevent spectral folding, modern neural vocoders incorporate
+digital signal processing (DSP) principles directly into their deep
+learning architectures. The primary techniques include:</p>
+<h4 id="1-low-pass-filtering-in-upsampling">1. Low-Pass Filtering in
+Upsampling</h4>
+<p>Traditional transposed convolution upsamples by interleaving zeros or
+applying unconstrained learned kernels, which often fail to completely
+suppress mirror spectra. Anti-aliasing replaces or augments these layers
+with polyphase resampling filters or integrated low-pass Finite Impulse
+Response (FIR) filters. These filters strictly attenuate energy above
+the target Nyquist cutoff, ensuring that only valid, non-redundant
+acoustic information is passed to subsequent layers.</p>
+<h4 id="2-anti-aliased-non-linearities">2. Anti-Aliased
+Non-Linearities</h4>
+<p>Because activations generate harmonics that violate the
+Nyquist-Shannon sampling theorem, anti-aliased architectures filter the
+signal around the activation:</p>
+<ol type="1">
+<li><strong>Local Upsampling:</strong> The feature representation is
+temporarily upsampled to a higher intermediate sampling rate (creating
+headroom).</li>
+<li><strong>Activation Application:</strong> The non-linear function is
+applied in this higher-resolution space, allowing generated harmonics to
+exist without exceeding the temporary Nyquist limit.</li>
+<li><strong>Low-Pass Filtering and Downsampling:</strong> A steep FIR
+low-pass filter (often designed using Kaiser or sinc windows) suppresses
+frequencies that would fold over before downsampling the signal back to
+the working resolution.</li>
+</ol>
+<h4 id="3-alias-free-convolutions">3. Alias-Free Convolutions</h4>
+<p>Recent vocoder architectures, inspired by Alias-Free GAN concepts,
+introduce continuous representations to guarantee scale and translation
+equivariance. By ensuring that every layer limits its frequency response
+relative to the current feature resolution, high-frequency energy
+generated in deep layers cannot reflect into the audible human speech
+spectrum.</p>
+<h3 id="impact-on-high-frequency-audio-quality">Impact on High-Frequency
+Audio Quality</h3>
+<p>Implementing anti-aliasing directly improves the perceptual quality
+and technical fidelity of synthesized speech in several key areas:</p>
+<ul>
+<li><strong>Clear Fricatives and Sibilants:</strong> Unvoiced speech
+sounds—such as /s/, /sh/, /f/, and /th/—rely on broad, chaotic
+high-frequency noise bands ranging from 4 kHz up to 16 kHz.
+Anti-aliasing preserves the natural, airy distribution of this noise
+without turning it into harsh, tonal ringing.</li>
+<li><strong>Elimination of "Phase Buzz":</strong> By preventing folded
+spectral copies from interfering with fundamental frequencies and low
+harmonics, the synthesized voice retains warm, clear tonal
+characteristics without a robotic overlay.</li>
+<li><strong>Robust High-Resolution Synthesis:</strong> Anti-aliasing
+makes high-fidelity sampling rates (such as 44.1 kHz and 48 kHz)
+practical in neural vocoders, allowing out-of-distribution pitch ranges
+and wide dynamic variations to sound transparent and
+production-ready.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimizing TTS for Hearing-Impaired Listeners - tts</title>
+    <meta name="description" content="Standard Text-to-Speech (TTS) systems are typically trained on clear speech intended for normal-hearing individuals, which often lacks the acoustic features necessary for those with auditory deficits. To improve speech intelligibility for hearing-impaire">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/optimizing-tts-for-hearing-impaired-listeners">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Optimizing TTS for Hearing-Impaired Listeners - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/optimizing-tts-for-hearing-impaired-listeners" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Standard Text-to-Speech (TTS) systems are typically trained on clear speech intended for normal-hearing individuals, which often lacks the acoustic features necessary for those with auditory deficits. To improve speech intelligibility for hearing-impaire" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="optimizing-tts-for-hearing-impaired-listeners">Optimizing TTS
+for Hearing-Impaired Listeners</h1>
+<p>Standard Text-to-Speech (TTS) systems are typically trained on clear
+speech intended for normal-hearing individuals, which often lacks the
+acoustic features necessary for those with auditory deficits. To improve
+speech intelligibility for hearing-impaired listeners, researchers and
+engineers modify acoustic models by altering spectral balance,
+manipulating phoneme durations, enhancing formant contrasts, and
+integrating hearing-loss simulation directly into the training loss
+functions. These adjustments ensure that synthesized speech retains
+critical linguistic cues despite reduced frequency selectivity and
+temporal resolution in the listener's auditory system.</p>
+<h3 id="spectral-modification-and-high-frequency-boosting">Spectral
+Modification and High-Frequency Boosting</h3>
+<p>Sensorineural hearing loss most commonly degrades high-frequency
+sensitivity, making it difficult to distinguish voiceless fricatives,
+stops, and plosives (such as /s/, /t/, and /f/). Acoustic models are
+adjusted to alter the generated spectral tilt:</p>
+<ul>
+<li><strong>High-Frequency Emphasis:</strong> The model is biased during
+mel-spectrogram generation to allocate greater acoustic energy to
+frequencies above 2 kHz to 4 kHz.</li>
+<li><strong>Reduction of Upward Spread of Masking:</strong> Intense
+low-frequency vowel sounds can obscure weaker, subsequent high-frequency
+consonants. Acoustic models are conditioned to attenuate low-frequency
+energy (below 500 Hz) to prevent masking effects within the impaired
+cochlea.</li>
+</ul>
+<h3 id="temporal-adjustments-and-consonant-lengthening">Temporal
+Adjustments and Consonant Lengthening</h3>
+<p>Impaired temporal processing makes rapid acoustic transitions hard to
+resolve. TTS duration predictors—such as those used in FastSpeech or
+VITS architectures—are modified to address this:</p>
+<ul>
+<li><strong>Phoneme-Specific Duration Scaling:</strong> Rather than
+simply slowing down the entire utterance, duration predictors
+selectively prolong transient sounds, unvoiced consonants, and
+transition boundaries while leaving stable vowel nuclei relatively
+unchanged.</li>
+<li><strong>Pause Insertion and Articulation Rate:</strong> Acoustic
+models are tuned to insert slightly longer inter-word pauses and reduce
+overall speaking rates to give the auditory cortex more processing time,
+significantly reducing cognitive load.</li>
+</ul>
+<h3 id="formant-and-spectral-contrast-enhancement">Formant and Spectral
+Contrast Enhancement</h3>
+<p>Reduced frequency selectivity causes the auditory filters of
+hearing-impaired individuals to broaden, blurring neighboring
+frequencies and formant peaks.</p>
+<ul>
+<li><strong>Formant Sharpening:</strong> Acoustic models are adapted to
+increase the peak-to-valley ratio of speech formants (particularly F1
+and F2).</li>
+<li><strong>Dynamic Spectral Flattening and Peaking:</strong> By
+sharpening the spectral envelope in the generated representations, the
+phonetic identity of vowels and vowel-consonant transitions remains
+distinct even after passing through degraded physiological auditory
+filters.</li>
+</ul>
+<h3 id="integrated-dynamic-range-compression-drc">Integrated Dynamic
+Range Compression (DRC)</h3>
+<p>Listeners with sensorineural loss often experience recruitment—an
+abnormal growth in loudness where soft sounds are inaudible, but loud
+sounds quickly become uncomfortably loud.</p>
+<ul>
+<li>Rather than applying dynamic range compression as a post-processing
+step (which can introduce artifacts and noise amplification), modern
+acoustic models generate speech with a naturally narrower dynamic
+range.</li>
+<li>Energy predictors are constrained to ensure low-energy phonetic
+segments are raised above typical hearing thresholds while high-energy
+peaks are managed to stay below discomfort levels.</li>
+</ul>
+<h3 id="auditory-informed-loss-functions">Auditory-Informed Loss
+Functions</h3>
+<p>Modern deep learning-based TTS systems use loss functions that
+optimize for human perception rather than purely mathematical
+convergence (like mean squared error).</p>
+<ul>
+<li><strong>Hearing Aid Speech Perception Index (HASPI):</strong> Models
+can be fine-tuned using reinforcement learning or perceptual loss
+functions based on metrics like HASPI, directly optimizing the
+synthesized audio for predicted intelligibility scores rather than
+standard naturalness (MOS).</li>
+<li><strong>Cochlear Model Integration:</strong> Differentiable models
+of the impaired human ear are placed downstream of the acoustic
+generator during training. The generator learns to output acoustic
+features specifically adapted to remain intelligible after undergoing
+the simulated degradation of outer hair cell damage and auditory filter
+broadening.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How TTS Pipelines Handle Geminate Consonants - tts</title>
+    <meta name="description" content="Modern Text-to-Speech (TTS) systems must accurately synthesize geminate (doubled or prolonged) consonants to ensure intelligibility and naturalness in quantity-sensitive languages such as Italian and Finnish. This article examines how modern TTS pipeline">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-tts-pipelines-handle-geminate-consonants">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How TTS Pipelines Handle Geminate Consonants - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-tts-pipelines-handle-geminate-consonants" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern Text-to-Speech (TTS) systems must accurately synthesize geminate (doubled or prolonged) consonants to ensure intelligibility and naturalness in quantity-sensitive languages such as Italian and Finnish. This article examines how modern TTS pipeline" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-tts-pipelines-handle-geminate-consonants">How TTS Pipelines
+Handle Geminate Consonants</h1>
+<p>Modern Text-to-Speech (TTS) systems must accurately synthesize
+geminate (doubled or prolonged) consonants to ensure intelligibility and
+naturalness in quantity-sensitive languages such as Italian and Finnish.
+This article examines how modern TTS pipelines process orthographic
+geminates, tracing their journey through text normalization,
+grapheme-to-phoneme (G2P) conversion, acoustic duration modeling, and
+neural vocoding to produce phonemically distinct long consonants.</p>
+<h3 id="phonemic-significance-of-geminates">Phonemic Significance of
+Geminates</h3>
+<p>In both Italian and Finnish, consonant length is phonemically
+contrastive; altering duration changes the meaning of a word.</p>
+<ul>
+<li>In Italian, the distinction separates words like <em>fato</em>
+(fate) and <em>fatto</em> (fact), or <em>pala</em> (shovel) and
+<em>palla</em> (ball). Italian also exhibits <em>raddoppiamento
+fonosintattico</em>, where word-initial consonants geminate after
+specific lexical and stress environments across word boundaries.</li>
+<li>In Finnish, consonant quantity is structurally embedded throughout
+the grammar, distinguishing minimal pairs like <em>tuli</em> (fire),
+<em>tulli</em> (customs), and <em>tuuli</em> (wind), with gemination
+occurring across nearly all consonant classes.</li>
+</ul>
+<p>Because gemination directly impacts lexical identity rather than just
+stylistic cadence, TTS engines cannot treat double letters as simple
+orthographic redundancies.</p>
+<h3 id="front-end-processing-grapheme-to-phoneme-g2p">Front-End
+Processing: Grapheme-to-Phoneme (G2P)</h3>
+<p>The TTS front-end resolves raw text into phonetic transcriptions.
+Handling orthographic geminates relies on how the G2P system interprets
+double consonants:</p>
+<ol type="1">
+<li><strong>Phonetic Representation:</strong> Most TTS front-ends
+represent geminates either by using the International Phonetic Alphabet
+(IPA) length mark (e.g., <code>/tː/</code>) or by emitting two identical
+phonetic tokens sequentially (e.g., <code>/t/ /t/</code>). The explicit
+length mark <code>/ː/</code> is generally preferred in modern systems
+because it treats the sound as a single prolonged segment rather than
+two separate articulations.</li>
+<li><strong>Rule-Based and Neural G2P:</strong> For Finnish, where
+orthography is highly transparent, rule-based mappings or finite-state
+transducers (FSTs) reliably map double letters directly to long
+phonemes. Italian requires hybrid approaches: while internal
+orthographic geminates (<em>anno</em> → <code>/ˈan.no/</code> or
+<code>/ˈanːo/</code>) are straightforward, <em>raddoppiamento
+fonosintattico</em> (e.g., <em>a casa</em> pronounced as <em>/a
+kˈka.sa/</em>) requires context-sensitive neural G2P models or syntactic
+parsing rules to insert gemination markers at word boundaries.</li>
+</ol>
+<h3 id="acoustic-and-duration-modeling">Acoustic and Duration
+Modeling</h3>
+<p>Once phonemes are determined, the acoustic model converts the
+sequence into time-aligned representations, typically mel-spectrograms.
+The handling of geminates at this stage depends on the architecture:</p>
+<ul>
+<li><strong>Explicit Duration Predictors (Non-Autoregressive
+Models):</strong> In architectures like FastSpeech 2, VITS, or Glow-TTS,
+an explicit duration predictor assigns a frame length to each input
+token. When trained on aligned audio corpora of Italian or Finnish, the
+duration predictor learns that phonemes tagged with a length marker
+require substantially higher frame counts (often 1.5 to 2.5 times the
+length of their singleton counterparts).</li>
+<li><strong>Internal Alignment (Autoregressive Models):</strong> In
+older sequence-to-sequence models like Tacotron 2, attention mechanisms
+dynamically align phonemes to spectrogram frames. For geminates, the
+attention mechanism learns to dwell on the consonant's token across
+multiple decoding steps, generating an extended period of silence (for
+stops) or prolonged resonance (for fricatives, nasals, and
+liquids).</li>
+</ul>
+<p>For stop consonants (such as /p/, /t/, /k/), the acoustic model
+primarily extends the silent closure phase prior to the release burst,
+rather than extending the burst itself. For continuous consonants (such
+as /s/, /m/, /l/), the model sustains the steady-state formant structure
+or frication noise over the extended duration.</p>
+<h3 id="neural-vocoding-and-waveform-generation">Neural Vocoding and
+Waveform Generation</h3>
+<p>The final stage uses a neural vocoder (such as HiFi-GAN or
+diffusion-based vocoders) to convert the generated mel-spectrogram into
+raw audio.</p>
+<p>Because the acoustic model provides the vocoder with a spectrogram
+containing an extended closure or extended continuous energy, the
+vocoder reconstructs the precise temporal phase of the sound. It
+preserves the clean, silent hold required for geminate stops without
+introducing phase artifacts or unnatural breathiness, followed by a
+crisp burst that signals the end of the lengthened constriction to the
+human ear.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

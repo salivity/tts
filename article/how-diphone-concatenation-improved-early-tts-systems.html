@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Diphone Concatenation Improved Early TTS Systems - tts</title>
+    <meta name="description" content="Diphone concatenation marked a major breakthrough in early concatenative Text-to-Speech (TTS) synthesis by resolving the severe boundary distortions inherent in basic phoneme-based systems. This article examines how shifting the splice points from phonem">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-diphone-concatenation-improved-early-tts-systems">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Diphone Concatenation Improved Early TTS Systems - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-diphone-concatenation-improved-early-tts-systems" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Diphone concatenation marked a major breakthrough in early concatenative Text-to-Speech (TTS) synthesis by resolving the severe boundary distortions inherent in basic phoneme-based systems. This article examines how shifting the splice points from phonem" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-diphone-concatenation-improved-early-tts-systems">How
+Diphone Concatenation Improved Early TTS Systems</h1>
+<p>Diphone concatenation marked a major breakthrough in early
+concatenative Text-to-Speech (TTS) synthesis by resolving the severe
+boundary distortions inherent in basic phoneme-based systems. This
+article examines how shifting the splice points from phoneme boundaries
+to phoneme centers allowed synthesizers to preserve natural
+coarticulation, significantly smoothing acoustic transitions and
+boosting the intelligibility of synthetic speech.</p>
+<h3 id="the-failure-of-monophone-concatenation">The Failure of Monophone
+Concatenation</h3>
+<p>Early concatenative synthesizers attempted to assemble speech using
+individual phonemes (monophones) as the basic building blocks. While
+theoretically simple, this approach produced robotic, jarring speech
+filled with audible clicks, pops, and unnatural spectral jumps.</p>
+<p>The primary cause of this poor quality was coarticulation—the
+continuous phonetic blending that occurs in natural human speech, where
+the vocal tract shapes one sound while anticipating the next. In
+monophone synthesis, cutting and splicing audio at the boundary between
+two adjacent phonemes meant severing these critical transitional
+dynamics. Because speech features change most rapidly at the borders
+between sounds, mismatching the spectral shapes and energy levels at
+these junctures caused severe acoustic discontinuities.</p>
+<h3 id="the-diphone-solution-shifting-the-splice-point">The Diphone
+Solution: Shifting the Splice Point</h3>
+<p>A diphone is an acoustic unit that extends from the center of one
+phoneme to the center of the next phoneme. Instead of dividing speech at
+the boundaries between sounds, diphone synthesis shifts the boundaries
+into the middle of the phones themselves.</p>
+<pre><code>Individual Phones:  [  Phone A  ] [  Phone B  ]
+                                ^
+                     Harsh splice boundary
+
+Diphone Unit:              [ Phone A -&gt; Phone B ]
+                                  ^
+                        Natural coarticulation preserved</code></pre>
+<p>By defining the unit this way, diphone concatenation fundamentally
+improved acoustic transitions through two primary mechanisms:</p>
+<ol type="1">
+<li><strong>Preserving Coarticulation Dynamics:</strong> The transition
+between Phone A and Phone B is contained entirely <em>inside</em> the
+pre-recorded diphone unit. Because this transitional segment was
+recorded from a continuous human utterance, all the natural formant
+transitions, spectral trajectories, and consonant-vowel interactions
+remain intact.</li>
+<li><strong>Concatenating at Steady States:</strong> The splice points
+are moved to the midpoint of each phoneme, which represents its most
+acoustically stable, "steady-state" region. Splicing two audio segments
+together where spectral change is minimal makes acoustic mismatches far
+less audible to the human ear. Signal processing algorithms, such as
+Pitch-Synchronous Overlap and Add (PSOLA), could then easily smooth out
+minor differences in pitch and amplitude across these stable points
+without degrading the perception of the sound.</li>
+</ol>
+<h3 id="practical-impact-on-speech-synthesis">Practical Impact on Speech
+Synthesis</h3>
+<p>By capturing the transition rather than cutting through it, diphone
+concatenation created speech that was substantially more intelligible,
+consistent, and natural than monophone systems. It offered a manageable
+inventory size—typically requiring between 1,500 and 2,500 units to
+cover all possible sound pairings in a language like English. This made
+it computationally viable on early hardware while establishing the
+foundational principles of concatenative synthesis that paved the way
+for modern, large-scale unit-selection systems.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

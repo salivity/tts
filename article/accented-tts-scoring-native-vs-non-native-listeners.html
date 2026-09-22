@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accented TTS Scoring: Native vs Non-Native Listeners - tts</title>
+    <meta name="description" content="Subjective evaluation of Text-to-Speech (TTS) systems relies heavily on human perception, but the linguistic background of the evaluator introduces significant variance into the results. This article explores how a listener's native-speaker status influe">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/accented-tts-scoring-native-vs-non-native-listeners">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Accented TTS Scoring: Native vs Non-Native Listeners - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/accented-tts-scoring-native-vs-non-native-listeners" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Subjective evaluation of Text-to-Speech (TTS) systems relies heavily on human perception, but the linguistic background of the evaluator introduces significant variance into the results. This article explores how a listener's native-speaker status influe" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="accented-tts-scoring-native-vs-non-native-listeners">Accented
+TTS Scoring: Native vs Non-Native Listeners</h1>
+<p>Subjective evaluation of Text-to-Speech (TTS) systems relies heavily
+on human perception, but the linguistic background of the evaluator
+introduces significant variance into the results. This article explores
+how a listener's native-speaker status influences the scoring of
+accented synthetic speech. It details the mechanisms behind perceptual
+differences, including phonological sensitivity, shared-accent
+intelligibility benefits, and varying criteria for naturalness versus
+comprehensibility, providing key insights for building more accurate TTS
+evaluation benchmarks.</p>
+<h3 id="the-role-of-listener-background-in-speech-evaluation">The Role
+of Listener Background in Speech Evaluation</h3>
+<p>Subjective evaluation methods—such as Mean Opinion Score (MOS), Word
+Error Rate (WER) via transcription tasks, and degradation category
+ratings—serve as standard benchmarks for measuring TTS quality. These
+tests assess characteristics like naturalness, intelligibility, and
+overall user preference.</p>
+<p>However, speech perception is inherently subjective and shaped by a
+listener's native language (L1). When synthetic voices exhibit regional,
+foreign, or non-standard accents, a listener's native-speaker status
+directly alters how speech errors, prosodic irregularities, and acoustic
+artifacts are perceived and penalized.</p>
+<h3 id="perceptual-sensitivity-and-scoring-strictness">Perceptual
+Sensitivity and Scoring Strictness</h3>
+<p>Native listeners typically demonstrate higher sensitivity to subtle
+phonological and prosodic deviations. Because they possess deeply
+ingrained internal models of their language's standard phonetics,
+rhythm, and intonation, native speakers readily detect unnatural stress
+placement, improper vowel elongation, or inaccurate pitch contours
+produced by accented TTS models.</p>
+<p>Consequently, native listeners tend to assign lower naturalness and
+acceptability scores to accented TTS output. While they can often
+understand the message, the cognitive friction caused by unexpected
+acoustic patterns leads to harsher subjective penalties. Non-native (L2)
+listeners, in contrast, frequently rely on broader contextual cues and
+may be less critical of subtle prosodic flaws, provided the speech
+remains functionally comprehensible.</p>
+<h3 id="the-interlanguage-speech-intelligibility-benefit">The
+Interlanguage Speech Intelligibility Benefit</h3>
+<p>A significant factor in subjective scoring is the "matched-accent" or
+interlanguage speech intelligibility benefit. When an L2 listener
+evaluates a TTS system that features an accent matching their own native
+language, their comprehension and subjective ratings often increase.</p>
+<p>This occurs because the listener and the accented synthetic voice
+share similar underlying phonetic categories and phonological rules. For
+example:</p>
+<ul>
+<li>A Spanish-accented English TTS system may be rated as more
+intelligible and pleasant by native Spanish speakers than by native
+English speakers.</li>
+<li>Native English listeners, lacking familiarity with these specific
+phonetic substitutions, may struggle more with word recognition and
+assign lower scores.</li>
+</ul>
+<p>Conversely, if the synthetic accent does not match the non-native
+listener's L1, the cognitive load doubles. The listener must process
+both non-native speech patterns and an unfamiliar accent, which can
+drive subjective intelligibility scores even lower than those reported
+by native listeners.</p>
+<h3 id="differing-criteria-naturalness-vs-intelligibility">Differing
+Criteria: Naturalness vs. Intelligibility</h3>
+<p>Listener status also impacts how distinct evaluation dimensions are
+weighted:</p>
+<ol type="1">
+<li><strong>Intelligibility (Can the speech be understood?):</strong>
+Non-native listeners often prioritize intelligibility over acoustic
+realism. If the synthesized voice is clear enough to convey meaning
+without ambiguity, L2 evaluators are more likely to award favorable
+scores, even if the accent sounds synthetic or mismatched.</li>
+<li><strong>Naturalness (Does the speech sound human and
+authentic?):</strong> Native listeners weigh naturalness heavily. Even
+if an accented TTS system achieves near-perfect intelligibility, native
+raters will significantly downgrade the voice if the accent feels
+artificial, inconsistent, or caricatured.</li>
+</ol>
+<h3 id="implications-for-tts-testing-and-system-design">Implications for
+TTS Testing and System Design</h3>
+<p>The divergence between native and non-native listener scores
+highlights the danger of using uncharacterized crowdsourced listener
+pools. If a TTS benchmark fails to balance or record the native-speaker
+status of its evaluators, the resulting scores can be misleadingly high
+or unduly critical.</p>
+<p>For speech synthesis developers, evaluating accented TTS requires
+targeting the listener pool to the intended use case. If an accented
+synthetic voice is deployed for local language learners or regional
+services, evaluations must incorporate representative L1 and L2 groups.
+Establishing distinct scoring cohorts ensures that naturalness
+optimizations do not mask underlying intelligibility barriers across
+diverse user populations.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

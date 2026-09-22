@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semi-Supervised Audio Scraping for Podcast TTS - tts</title>
+    <meta name="description" content="Semi-supervised data scraping allows developers to transform raw, unstructured podcast audio into clean, high-fidelity voice datasets for Text-to-Speech (TTS) models. By combining automated web scraping with machine learning techniques—specifically Voi">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/semi-supervised-audio-scraping-for-podcast-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Semi-Supervised Audio Scraping for Podcast TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/semi-supervised-audio-scraping-for-podcast-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Semi-supervised data scraping allows developers to transform raw, unstructured podcast audio into clean, high-fidelity voice datasets for Text-to-Speech (TTS) models. By combining automated web scraping with machine learning techniques—specifically Voi" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="semi-supervised-audio-scraping-for-podcast-tts">Semi-Supervised
+Audio Scraping for Podcast TTS</h1>
+<p>Semi-supervised data scraping allows developers to transform raw,
+unstructured podcast audio into clean, high-fidelity voice datasets for
+Text-to-Speech (TTS) models. By combining automated web scraping with
+machine learning techniques—specifically Voice Activity Detection,
+speaker diarization, automated speech-to-text pseudo-labeling, and
+confidence-based filtering—this pipeline isolates single-speaker speech,
+removes noise, and aligns transcripts without requiring tedious manual
+annotation.</p>
+<h3 id="1-automated-harvesting-and-pre-filtering">1. Automated
+Harvesting and Pre-Filtering</h3>
+<p>The extraction pipeline begins by scraping public podcast
+directories, RSS feeds, or media hosting platforms for audio files.
+Metadata such as guest lists, episode descriptions, and file formats are
+scraped simultaneously. To optimize efficiency, the system applies
+heuristic filters at the ingestion stage, prioritizing high-bitrate,
+lossless, or uncompressed audio files (e.g., FLAC or high-quality
+MP3/AAC) while discarding low-bitrate streams that suffer from
+compression artifacts.</p>
+<h3 id="2-voice-activity-detection-and-audio-slicing">2. Voice Activity
+Detection and Audio Slicing</h3>
+<p>Raw podcast files are typically long (30 to 120 minutes) and contain
+substantial non-speech segments, such as intro music, sound effects, and
+silent pauses. Voice Activity Detection (VAD) models scan the raw audio
+to detect human vocal presence, slicing continuous audio into manageable
+chunks—typically between 2 and 15 seconds. Chunks containing music beds,
+heavy background noise, or prolonged silence are automatically flagged
+and discarded.</p>
+<h3 id="3-speaker-diarization-and-target-voice-isolation">3. Speaker
+Diarization and Target Voice Isolation</h3>
+<p>Most podcasts feature multiple hosts or guests talking
+simultaneously. Semi-supervised pipelines apply speaker diarization
+algorithms to answer the question, "who spoke when?" Diarization systems
+extract acoustic embeddings (such as x-vectors or d-vectors) to cluster
+speech segments by individual identity. Once the dominant target
+speaker's cluster is identified, speech segments containing cross-talk,
+interruptions, or secondary speakers are stripped away, leaving only
+isolated clips of the target voice.</p>
+<h3 id="4-acoustic-cleaning-and-quality-scoring">4. Acoustic Cleaning
+and Quality Scoring</h3>
+<p>Before text alignment, the isolated speech clips pass through an
+audio-enhancement and quality-assurance layer:</p>
+<ul>
+<li><strong>Denoising and Dereverberation:</strong> Deep learning models
+suppress low-level ambient noise, electrical hum, and room acoustics
+(reverb).</li>
+<li><strong>Signal-to-Noise Ratio (SNR) Metrics:</strong> Clips failing
+a pre-defined SNR threshold are pruned.</li>
+<li><strong>Clipping and Distortion Detection:</strong> Clips with
+digital clipping, distortion, or heavy dynamic range compression are
+filtered out.</li>
+</ul>
+<h3 id="5-pseudo-labeling-via-automatic-speech-recognition-asr">5.
+Pseudo-Labeling via Automatic Speech Recognition (ASR)</h3>
+<p>Because scraped data lacks ground-truth transcriptions, the pipeline
+uses a pre-trained Automatic Speech Recognition (ASR) model (such as
+Whisper or Conformer) to generate "pseudo-labels." The ASR model
+transcribes each sliced, single-speaker audio chunk.</p>
+<h3 id="6-confidence-scoring-and-text-normalization">6. Confidence
+Scoring and Text Normalization</h3>
+<p>To ensure dataset reliability, the generated transcripts undergo
+semi-supervised validation:</p>
+<ul>
+<li><strong>Confidence Filtering:</strong> ASR models output token-level
+probability scores. If a segment’s average confidence score falls below
+a set threshold (e.g., 90%), the sample is discarded to prevent training
+the TTS model on misaligned or hallucinated text.</li>
+<li><strong>Dual-Model Cross-Validation:</strong> Some pipelines pass
+the audio through two independent ASR systems; if the transcriptions
+differ significantly, the clip is rejected.</li>
+<li><strong>Text Normalization:</strong> Remaining transcripts are
+normalized by expanding numbers, currency, dates, and abbreviations into
+their full phonetic or written equivalents (e.g., transforming "$5" into
+"five dollars").</li>
+</ul>
+<h3 id="7-dataset-packaging-for-tts-training">7. Dataset Packaging for
+TTS Training</h3>
+<p>The surviving audio-text pairs are formatted into standard TTS
+training datasets. The audio is resampled to a uniform sampling rate
+(typically 22.05 kHz, 24 kHz, or 48 kHz), normalized for loudness
+(typically around -23 LUFS), and mapped into metadata manifests
+containing relative audio file paths alongside their normalized
+transcriptions.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

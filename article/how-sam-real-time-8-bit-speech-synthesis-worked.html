@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How SAM Real-Time 8-Bit Speech Synthesis Worked - tts</title>
+    <meta name="description" content="Released in 1982 by Don't Ask Software and programmed by Mark Barton, the Software Automatic Mouth (SAM) was a breakthrough in computer audio that produced real-time text-to-speech entirely in software on 8-bit microprocessors. Operating on microcomputer">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-sam-real-time-8-bit-speech-synthesis-worked">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How SAM Real-Time 8-Bit Speech Synthesis Worked - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-sam-real-time-8-bit-speech-synthesis-worked" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Released in 1982 by Don't Ask Software and programmed by Mark Barton, the Software Automatic Mouth (SAM) was a breakthrough in computer audio that produced real-time text-to-speech entirely in software on 8-bit microprocessors. Operating on microcomputer" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-sam-real-time-8-bit-speech-synthesis-worked">How SAM
+Real-Time 8-Bit Speech Synthesis Worked</h1>
+<p>Released in 1982 by Don't Ask Software and programmed by Mark Barton,
+the Software Automatic Mouth (SAM) was a breakthrough in computer audio
+that produced real-time text-to-speech entirely in software on 8-bit
+microprocessors. Operating on microcomputers like the Apple II,
+Commodore 64, and Atari 8-bit family, SAM bypassed the era's need for
+expensive, dedicated speech-synthesis hardware chips. It achieved this
+feat by combining a rule-based English-to-phoneme parser with an
+ultra-lightweight formant synthesis engine written in cycle-exact 6502
+assembly language and driven entirely by precalculated lookup
+tables.</p>
+<h3 id="the-8-bit-processing-challenge">The 8-Bit Processing
+Challenge</h3>
+<p>In the early 1980s, microcomputers were driven by microprocessors
+like the MOS 6502 running at roughly 1 MHz. These CPUs lacked hardware
+multiplication, floating-point units, and dedicated Digital Signal
+Processors (DSPs). Traditional digital audio playback was impractical
+because digitized voice samples required more RAM and disk space than
+the computers possessed, while standard Linear Predictive Coding (LPC)
+algorithms were too computationally demanding to decode in real time
+without specialized coprocessors. SAM overcame this by abandoning
+recorded samples altogether and synthesizing human vocal tract
+resonances from mathematical models on the fly.</p>
+<h3 id="two-stage-architecture">Two-Stage Architecture</h3>
+<p>SAM executed its text-to-speech pipeline in two distinct phases:</p>
+<ol type="1">
+<li><strong>Text-to-Phoneme Translation:</strong> SAM read raw English
+text and filtered it through a compact parser containing hundreds of
+contextual spelling rules. This stage parsed irregular English
+orthography into a phonetic script known as SAM Phonetic Alphabet (SPA).
+Each phoneme token contained metadata defining pitch, length, and
+stress. Users could also bypass this parser to feed raw phonemes
+directly into the engine for tighter control.</li>
+<li><strong>Phonetic Parameter Generation:</strong> The engine
+interpolated between phonemes to calculate smooth transitions, known as
+formant tracks. Human speech relies on shifting resonant frequencies, so
+SAM calculated these parameter values at uniform time frames (pitches
+and durations) and queued them for the acoustic synthesizer.</li>
+</ol>
+<h3 id="cascade-formant-synthesis">Cascade Formant Synthesis</h3>
+<p>To turn parameters into sound, SAM modeled the human vocal tract
+using cascade formant synthesis. The human voice produces sounds
+primarily through three resonant vocal tract frequencies (designated F1,
+F2, and F3):</p>
+<ul>
+<li><strong>Formant Modeling:</strong> Instead of calculating complex
+trigonometric equations in real time, SAM used small, precomputed lookup
+tables representing simplified waveforms.</li>
+<li><strong>Voiced vs. Unvoiced Sound:</strong> For voiced sounds (such
+as vowels like "ah" or "ee"), the engine blended waveforms corresponding
+to the fundamental frequency (pitch) alongside the three dominant
+formant frequencies. For unvoiced sounds (such as fricatives and
+plosives like "s", "sh", and "t"), SAM substituted formant sine waves
+with a pseudo-random noise generator to simulate turbulent air passing
+through teeth and lips.</li>
+</ul>
+<h3 id="extreme-assembly-optimization">Extreme Assembly
+Optimization</h3>
+<p>The core synthesis routine had to produce thousands of samples per
+second while leaving enough CPU cycles to handle the system timing. Mark
+Barton accomplished this via aggressive 6502 assembly optimization:</p>
+<ul>
+<li><strong>Elimination of Multiplication:</strong> Real-time
+multiplication was replaced entirely with bit-shifting and
+pre-calculated amplitude scaling tables.</li>
+<li><strong>Direct Table Lookups:</strong> Phase accumulators indexed
+directly into small 256-byte waveform tables, maximizing execution speed
+through the 6502's zero-page addressing modes.</li>
+<li><strong>Deterministic Timing:</strong> The audio generation loop
+executed in deterministic cycle counts. By counting individual clock
+cycles for every assembly instruction, the code ensured that digital
+audio samples were pushed to the sound generator at perfectly uniform
+intervals, avoiding audio jitter.</li>
+</ul>
+<h3 id="hardware-specific-sound-generation">Hardware-Specific Sound
+Generation</h3>
+<p>Because microcomputer audio architectures varied widely, SAM adapted
+its output stage to suit the target machine:</p>
+<ul>
+<li><strong>Commodore 64:</strong> SAM leveraged the MOS 6581 SID chip,
+modulating its internal volume register or digital filter channels as a
+primitive 4-bit digital-to-analog converter (DAC).</li>
+<li><strong>Atari 8-bit:</strong> SAM configured the POKEY audio chip's
+four semi-independent audio channels into forced-output modes to output
+multi-bit PCM samples.</li>
+<li><strong>Apple II:</strong> Because the Apple II only possessed a
+1-bit digital toggle connected to a speaker, SAM was originally packaged
+with an 8-bit digital-to-analog converter expansion card that plugged
+directly into an Apple II slot. A secondary, lower-quality software
+routine used Pulse-Width Modulation (PWM) to toggle the built-in 1-bit
+speaker rapidly, approximating multi-bit sound.</li>
+</ul>
+<p>By substituting heavy mathematical computation with compact tables,
+rule-based phonetics, and hand-tuned assembly loops, SAM compressed the
+complex mechanics of human speech into a self-contained 8-bit software
+package.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

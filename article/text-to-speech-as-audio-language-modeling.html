@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech as Audio Language Modeling - tts</title>
+    <meta name="description" content="This article explores how transformer-based autoregressive models like Bark and AudioLM revolutionize text-to-speech (TTS) synthesis by framing speech generation as an audio language modeling problem. Rather than relying on traditional two-stage pipeline">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/text-to-speech-as-audio-language-modeling">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Text-to-Speech as Audio Language Modeling - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/text-to-speech-as-audio-language-modeling" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores how transformer-based autoregressive models like Bark and AudioLM revolutionize text-to-speech (TTS) synthesis by framing speech generation as an audio language modeling problem. Rather than relying on traditional two-stage pipeline" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="text-to-speech-as-audio-language-modeling">Text-to-Speech as
+Audio Language Modeling</h1>
+<p>This article explores how transformer-based autoregressive models
+like Bark and AudioLM revolutionize text-to-speech (TTS) synthesis by
+framing speech generation as an audio language modeling problem. Rather
+than relying on traditional two-stage pipelines that generate
+intermediate representations like mel-spectrograms, these systems
+discretize continuous audio waveforms into discrete tokens using neural
+audio codecs. By organizing these tokens into hierarchical sequences,
+decoder-only transformers can generate expressive, natural speech,
+complete with realistic prosody, ambient sounds, and non-verbal
+vocalizations using standard next-token prediction techniques.</p>
+<h2 id="the-paradigm-shift-from-acoustic-features-to-audio-tokens">The
+Paradigm Shift: From Acoustic Features to Audio Tokens</h2>
+<p>Traditional neural TTS architectures typically decompose speech
+synthesis into two distinct stages: converting text to intermediate
+acoustic features (such as mel-spectrograms) via models like Tacotron or
+FastSpeech, followed by a separate neural vocoder (such as HiFi-GAN) to
+synthesize raw audio waveforms. While effective, this pipeline often
+struggles with zero-shot voice cloning, complex acoustic environments,
+and spontaneous, non-verbal vocal nuances.</p>
+<p>Audio language modeling bypasses intermediate continuous
+representations entirely. It reconceptualizes audio as a sequence of
+discrete symbols, analogous to words or subword units in natural
+language processing (NLP). By compressing continuous audio into discrete
+representations using deep neural codecs, systems like Bark and AudioLM
+treat speech generation identically to text generation: predicting the
+next token in a sequence conditioned on preceding context.</p>
+<h2 id="discretizing-audio-with-neural-codecs">Discretizing Audio with
+Neural Codecs</h2>
+<p>To treat audio like text, continuous 1D audio signals must be
+transformed into a compact, discrete token space. This is achieved using
+neural audio codecs, predominantly based on Residual Vector Quantization
+(RVQ), such as SoundStream or EnCodec.</p>
+<ul>
+<li><strong>Residual Vector Quantization (RVQ):</strong> A single vector
+quantizer cannot compress high-fidelity audio into a small codebook
+without significant quality loss. RVQ resolves this by applying multiple
+stages of vector quantization. The first quantizer encodes the input
+feature vector, and each subsequent quantizer encodes the residual error
+from the previous stage. This yields a multi-stream sequence of discrete
+tokens per audio frame.</li>
+<li><strong>Semantic vs. Acoustic Tokens:</strong> Systems like AudioLM
+distinguish between two types of audio information:
+<ul>
+<li><strong>Semantic Tokens:</strong> Derived from self-supervised
+speech representations (such as w2v-BERT or HuBERT), these tokens strip
+out background noise, channel acoustics, and speaker identity, capturing
+pure linguistic meaning, phonetic context, and high-level prosody.</li>
+<li><strong>Acoustic Tokens:</strong> Extracted directly from RVQ-based
+neural codecs (such as SoundStream or EnCodec), these tokens retain
+speaker timbre, recording acoustics, room impulse response, and fine
+temporal details necessary for high-fidelity reconstruction.</li>
+</ul></li>
+</ul>
+<h2 id="the-hierarchical-architecture-of-audiolm-and-bark">The
+Hierarchical Architecture of AudioLM and Bark</h2>
+<p>Generating high-fidelity audio autoregressively presents a
+dimensional challenge: processing hundreds or thousands of tokens per
+second rapidly exhausts the context window of standard transformers. To
+mitigate this, models employ a hierarchical, multi-stage autoregressive
+framework.</p>
+<h3 id="the-audiolm-approach">The AudioLM Approach</h3>
+<p>AudioLM structures the generation process into three sequential
+stages, factorizing the joint probability distribution of the speech
+tokens:</p>
+<ol type="1">
+<li><strong>Text/Audio to Semantic:</strong> The model maps the input
+prompt to a sequence of semantic tokens, capturing the broad linguistic
+content and structure.</li>
+<li><strong>Semantic to Coarse Acoustic:</strong> A transformer
+conditions on the generated semantic tokens to predict the first few
+levels of the RVQ acoustic codebook. These coarse acoustic tokens
+capture speaker identity, fundamental frequency (<span
+class="math inline">\(F_0\)</span>), and general tonal
+characteristics.</li>
+<li><strong>Coarse to Fine Acoustic:</strong> A final non-autoregressive
+or masked language model conditions on the coarse acoustic tokens to
+predict the remaining fine RVQ levels. Fine tokens represent
+high-frequency details that do not require long-term context, making
+fully autoregressive generation unnecessary at this stage.</li>
+<li><strong>Decoding:</strong> The final token streams are passed
+directly into the neural codec's decoder to reconstruct the raw
+continuous waveform.</li>
+</ol>
+<h3 id="the-bark-approach">The Bark Approach</h3>
+<p>Suno's Bark utilizes a conceptually similar multi-tiered transformer
+structure that operates over EnCodec token streams:</p>
+<ol type="1">
+<li><strong>Text to Semantic:</strong> A GPT-style transformer converts
+input text tokens directly into high-level semantic tokens (often
+quantized from HuBERT-like feature spaces).</li>
+<li><strong>Semantic to Coarse Acoustic:</strong> A second transformer
+generates the first two codebooks of EnCodec tokens based on the
+semantic sequence. This step determines voice characteristics, emotion,
+timing, and non-verbal vocalizations (such as laughing, sighing, or
+gasping).</li>
+<li><strong>Coarse to Fine Acoustic:</strong> A third transformer
+(typically an autoregressive or sequence-to-sequence model) expands the
+two coarse codebooks into the full eight codebooks required by
+EnCodec.</li>
+<li><strong>Waveform Synthesis:</strong> The full set of quantized
+acoustic vectors is fed into the EnCodec decoder to output the finished
+waveform.</li>
+</ol>
+<h2
+id="autoregressive-generation-and-in-context-learning">Autoregressive
+Generation and In-Context Learning</h2>
+<p>By adopting the standard decoder-only transformer architecture
+(identical to models like GPT-4), audio language models inherit
+fundamental properties of large language models:</p>
+<ul>
+<li><strong>In-Context Learning:</strong> Speaker adaptation, emotion,
+and acoustic environment can be conditioned without fine-tuning. By
+prepending a short audio prompt (represented as semantic and acoustic
+tokens) to the input sequence, the model natively continues the pattern,
+preserving the prompt's timbre, speaking rate, and background
+acoustics.</li>
+<li><strong>Unified Multimodal Conditioning:</strong> Because text,
+semantic audio, and acoustic audio are all expressed as discrete tokens
+within a shared or interconnected vocabulary, conditioning on text,
+voice prompts, or style descriptors requires no specialized
+architectures—only token concatenation and attention masking.</li>
+<li><strong>Emergent Non-Verbal Capabilities:</strong> Because training
+sets comprise unconstrained raw audio rather than isolated studio voice
+recordings, autoregressive models learn to sample non-speech human
+sounds natively, such as hesitation pauses ("um," "uh"), breathing
+patterns, laughter, and contextual throat clearing.</li>
+</ul>
+<h2 id="key-trade-offs">Key Trade-offs</h2>
+<p>While audio language modeling delivers unprecedented naturalness and
+zero-shot voice cloning capabilities, it introduces specific engineering
+trade-offs compared to non-autoregressive TTS systems:</p>
+<ul>
+<li><strong>Inference Latency:</strong> Sequential token generation
+requires running the transformer forward pass for every single token
+step, making real-time streaming more computationally expensive than
+non-autoregressive diffusion or feed-forward models.</li>
+<li><strong>Hallucinations and Stability:</strong> Much like text LLMs,
+autoregressive audio models can occasionally skip words, invent
+non-existent phonemes, loop repetitive audio artifacts, or abruptly
+drift in speaker timbre over long sequence generations.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

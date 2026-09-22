@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intonation Declination in Long-Form Text-to-Speech - tts</title>
+    <meta name="description" content="Realistic sentence-final intonation declination across long paragraphs requires Text-to-Speech (TTS) systems to manage pitch trends at both the local sentence level and the global discourse level. Rather than treating each sentence as an isolated acousti">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/intonation-declination-in-long-form-text-to-speech">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Intonation Declination in Long-Form Text-to-Speech - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/intonation-declination-in-long-form-text-to-speech" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Realistic sentence-final intonation declination across long paragraphs requires Text-to-Speech (TTS) systems to manage pitch trends at both the local sentence level and the global discourse level. Rather than treating each sentence as an isolated acousti" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="intonation-declination-in-long-form-text-to-speech">Intonation
+Declination in Long-Form Text-to-Speech</h1>
+<p>Realistic sentence-final intonation declination across long
+paragraphs requires Text-to-Speech (TTS) systems to manage pitch trends
+at both the local sentence level and the global discourse level. Rather
+than treating each sentence as an isolated acoustic unit, modern systems
+use hierarchical prosody modeling, long-context text encoders, and
+continuous acoustic feature prediction. This article explains the
+architectural and acoustic techniques used to prevent repetitive pitch
+resets and maintain natural declination across multi-sentence
+passages.</p>
+<h3 id="the-challenge-of-isolated-sentence-synthesis">The Challenge of
+Isolated Sentence Synthesis</h3>
+<p>In natural human speech, fundamental frequency (<span
+class="math inline">\(F_0\)</span>) generally drifts downward across an
+utterance—a phenomenon known as intonation declination. In long-form
+reading, this declination is hierarchical:</p>
+<ol type="1">
+<li><strong>Local declination:</strong> Pitch drops toward the end of an
+individual phrase or sentence.</li>
+<li><strong>Global declination:</strong> The overall pitch baseline and
+pitch range gradually compress from the start of a paragraph to its
+conclusion.</li>
+</ol>
+<p>Traditional and early neural TTS systems suffer from the
+"list-reading" effect because they process text sentence by sentence.
+When each sentence is generated in isolation, the acoustic model resets
+the pitch to a neutral baseline at every full stop. This results in an
+unnatural, cyclic pitch contour where every sentence shares an identical
+falling intonation curve, destroying paragraph-level cohesion.</p>
+<h3 id="hierarchical-prosody-modeling">Hierarchical Prosody
+Modeling</h3>
+<p>To mirror natural speech, modern architectures decouple local
+phonetic pitch variations from global paragraph envelopes. This is
+achieved by structuring the prosodic target into distinct layers:</p>
+<ul>
+<li><strong>Phoneme/Syllable Layer:</strong> Governs micro-prosody, such
+as lexical stress and tone accents.</li>
+<li><strong>Sentence Layer:</strong> Controls intermediate declination
+and boundary tones (e.g., continuative rises versus final falls).</li>
+<li><strong>Paragraph/Discourse Layer:</strong> Dictates the macroscopic
+downward tilt of both the <em>topline</em> (peak pitch points) and
+<em>baseline</em> (valleys) across several sentences.</li>
+</ul>
+<p>By predicting an overarching paragraph contour, the acoustic model
+can modulate the sentence-level pitch predictions. A sentence located
+near the end of a paragraph will inherit a lower baseline, a narrower
+pitch dynamic range, and a steeper final downward slope than a sentence
+at the beginning.</p>
+<h3 id="long-context-neural-conditioning">Long-Context Neural
+Conditioning</h3>
+<p>Generating coherent long-form declination requires giving the
+acoustic model access to broad textual context. Current architectures
+accomplish this using two primary approaches:</p>
+<ul>
+<li><strong>Cross-Sentence Encoders:</strong> Instead of passing only
+the current sentence to the phoneme encoder, the system passes preceding
+and succeeding context (often 2–3 sentences or an entire paragraph).
+Transformer-based architectures use cross-attention to attend to
+discourse markers, topic continuity, and relative paragraph
+position.</li>
+<li><strong>Explicit Positional and Discourse Embeddings:</strong>
+Models incorporate explicit tokens that represent the sentence index
+within a paragraph, the distance to the paragraph boundary, and
+syntactic dependencies across sentence breaks. These embeddings directly
+bias the pitch-predictor networks toward lower baseline frequencies as
+the end of the paragraph approaches.</li>
+</ul>
+<h3 id="acoustic-realization-pitch-duration-and-voice-quality">Acoustic
+Realization: Pitch, Duration, and Voice Quality</h3>
+<p>Sentence-final declination is rarely an isolated pitch drop; it is
+co-dependent with several other acoustic cues that signify discourse
+completion:</p>
+<ul>
+<li><strong>Pitch Range Compression:</strong> As a paragraph progresses,
+the difference between pitch peaks and troughs shrinks. The acoustic
+model progressively limits the variance of predicted <span
+class="math inline">\(F_0\)</span> values.</li>
+<li><strong>Final Lengthening:</strong> Syllables directly preceding a
+major discourse boundary undergo prolonged duration scaling, signaling
+finality more heavily than standard intra-sentence pauses.</li>
+<li><strong>Energy Decay:</strong> Concurrently with <span
+class="math inline">\(F_0\)</span> declination, the subglottal pressure
+naturally drops in human speakers, leading to a gradual decline in
+root-mean-square (RMS) energy. Modern variance adaptors predict coupled
+drops in both pitch and energy.</li>
+<li><strong>Non-Modal Phonation (Vocal Fry):</strong> At the extreme end
+of paragraph declination, the vocal folds often transition into a creaky
+voice or vocal fry due to very low fundamental frequencies. Advanced
+neural vocoders (such as diffusion-based or flow-matching models)
+synthesize this roughness accurately when provided with sufficiently
+low, decaying pitch and energy trajectories.</li>
+</ul>
+<h3 id="controlled-prosodic-reset-mechanisms">Controlled Prosodic Reset
+Mechanisms</h3>
+<p>A crucial aspect of realistic paragraph declination is knowing when
+<em>not</em> to decline, and by how much to reset:</p>
+<ul>
+<li><strong>Partial Resets:</strong> Between closely linked sentences
+(e.g., coordinate clauses or sentences joined by cohesive discourse
+markers), the pitch baseline resets only partially, starting lower than
+the paragraph’s opening sentence.</li>
+<li><strong>Full Resets:</strong> Occur strictly at major semantic
+shifts, dialogue turn changes, or structural paragraph breaks.</li>
+</ul>
+<p>By dynamically computing the strength of prosodic boundaries based on
+deep semantic representations, long-context TTS systems determine the
+exact height of the subsequent pitch reset, ensuring the synthesized
+speech flows naturally throughout extended narrations.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

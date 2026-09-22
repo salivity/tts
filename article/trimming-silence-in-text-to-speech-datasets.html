@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trimming Silence in Text-to-Speech Datasets - tts</title>
+    <meta name="description" content="Carefully trimming and standardizing silence and ambient room tone at the boundaries of Text-to-Speech (TTS) training audio is vital for producing natural, stable, and responsive synthetic voices. Inconsistent or excessive padding at the start and end of">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/trimming-silence-in-text-to-speech-datasets">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Trimming Silence in Text-to-Speech Datasets - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/trimming-silence-in-text-to-speech-datasets" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Carefully trimming and standardizing silence and ambient room tone at the boundaries of Text-to-Speech (TTS) training audio is vital for producing natural, stable, and responsive synthetic voices. Inconsistent or excessive padding at the start and end of" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="trimming-silence-in-text-to-speech-datasets">Trimming Silence in
+Text-to-Speech Datasets</h1>
+<p>Carefully trimming and standardizing silence and ambient room tone at
+the boundaries of Text-to-Speech (TTS) training audio is vital for
+producing natural, stable, and responsive synthetic voices. Inconsistent
+or excessive padding at the start and end of training utterances
+confuses duration predictors, destabilizes attention mechanisms,
+introduces acoustic artifacts, and leads to unnatural pauses during
+inference. Establishing a consistent, minimal silence threshold ensures
+that acoustic models and vocoders learn precise speech timing rather
+than unpredictable ambient noise.</p>
+<h3 id="attention-alignment-and-model-stability">Attention Alignment and
+Model Stability</h3>
+<p>Modern TTS architectures, whether autoregressive models or
+non-autoregressive duration-based models, rely on mapping text tokens
+directly to acoustic representations. When training clips contain random
+lengths of leading or trailing silence, the model struggles to align
+text tokens with the acoustic stream.</p>
+<p>If the model cannot predict exactly when speech begins or ends, it
+may suffer from alignment failures. This manifests as skipped words,
+repeated phonemes, or truncated sentence endings during inference.
+Consistent boundary trimming provides a stable anchor point, allowing
+the duration predictor to learn precise phoneme-to-frame mappings.</p>
+<h3 id="minimizing-latency-and-concatenation-delays">Minimizing Latency
+and Concatenation Delays</h3>
+<p>In production environments, TTS engines frequently synthesize speech
+on a sentence-by-sentence basis to deliver real-time streaming output.
+If each synthesized audio chunk contains uncontrolled silence at its
+boundaries, these silences compound sequentially.</p>
+<p>The resulting audio contains long, unnatural gaps between sentences
+that disrupt the cadence of speech and degrade the user experience. By
+standardizing boundary silences to a fixed, minimal duration (typically
+between 50 to 100 milliseconds), developers ensure seamless transitions
+when stitching multiple generated phrases together.</p>
+<h3 id="preventing-hallucinations-and-acoustic-artifacts">Preventing
+Hallucinations and Acoustic Artifacts</h3>
+<p>Neural vocoders generate audio waveforms by learning the underlying
+spectral characteristics of the training data. If boundary silences
+contain varying levels of room tone, background hiss, or low-frequency
+rumble, the vocoder treats that noise as intentional signal.</p>
+<p>During synthesis, this causes the vocoder to hallucinate unwanted
+sounds at the edges of phrases, such as:</p>
+<ul>
+<li>Popping, clicking, or digital static right before speech
+begins.</li>
+<li>Distorted trailing breaths or noise bursts after speech ends.</li>
+<li>Inconsistent room acoustics that cut abruptly between
+sentences.</li>
+</ul>
+<h3
+id="improving-generalization-across-prosody-and-punctuation">Improving
+Generalization Across Prosody and Punctuation</h3>
+<p>Acoustic models learn prosodic cues from punctuation marks like
+periods, commas, and question marks. If an utterance ending in a period
+contains 500 milliseconds of silence in one sample and zero milliseconds
+in another, the model receives contradictory signals about what a period
+sounds like in terms of pause duration.</p>
+<p>Standardizing boundary silences decouples sentence-ending punctuation
+from arbitrary dataset cuts. This enables the model to accurately learn
+true linguistic pauses directly from the text and prosody rather than
+from dataset inconsistencies.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

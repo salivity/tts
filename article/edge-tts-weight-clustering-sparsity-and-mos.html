@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edge TTS: Weight Clustering, Sparsity, and MOS - tts</title>
+    <meta name="description" content="Deploying Text-to-Speech (TTS) models to edge devices requires aggressive compression to reduce memory footprint and latency while maintaining natural-sounding audio. This article examines how two primary compression methods—weight-clustering and struc">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/edge-tts-weight-clustering-sparsity-and-mos">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Edge TTS: Weight Clustering, Sparsity, and MOS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/edge-tts-weight-clustering-sparsity-and-mos" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Deploying Text-to-Speech (TTS) models to edge devices requires aggressive compression to reduce memory footprint and latency while maintaining natural-sounding audio. This article examines how two primary compression methods—weight-clustering and struc" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="edge-tts-weight-clustering-sparsity-and-mos">Edge TTS: Weight
+Clustering, Sparsity, and MOS</h1>
+<p>Deploying Text-to-Speech (TTS) models to edge devices requires
+aggressive compression to reduce memory footprint and latency while
+maintaining natural-sounding audio. This article examines how two
+primary compression methods—weight-clustering and structured
+sparsity—impact the perceptual Mean Opinion Score (MOS) of modern neural
+edge TTS architectures, identifying the trade-offs between hardware
+acceleration and speech quality degradation.</p>
+<h3 id="the-compression-challenge-in-edge-tts">The Compression Challenge
+in Edge TTS</h3>
+<p>Neural TTS pipelines typically consist of an acoustic model (such as
+FastSpeech 2 or a lightweight diffusion architecture) and a neural
+vocoder (such as HiFi-GAN or MB-MelGAN). Running both on
+resource-constrained microcontrollers, smartphones, or IoT devices
+demands strict constraints on compute cycles, cache utilization, and
+power draw. The standard metric for audio naturalness is the Mean
+Opinion Score (MOS), graded on a 1-to-5 scale. Even minor degradation in
+model parameters can introduce metallic artifacts, unnatural pitch, or
+phonetic blurring that sharply decreases MOS ratings.</p>
+<h3 id="weight-clustering-and-perceptual-mos">Weight-Clustering and
+Perceptual MOS</h3>
+<p>Weight-clustering (also known as vector or weight quantization)
+groups the weights of each layer into a predefined number of clusters,
+replacing individual floating-point values with cluster centroid
+indices. This significantly compresses the model's storage footprint by
+enabling low bit-width representations.</p>
+<p>Because weight-clustering preserves the overall architecture and
+continuous parameter pathways, its impact on perceptual MOS is
+relatively benign at moderate compression levels (e.g., 8-bit to 6-bit
+equivalent representations). The spectral balance, cadence, and prosodic
+curves of acoustic models largely remain intact.</p>
+<p>Degradation in MOS typically emerges when clustering goes below 4
+bits or when applied carelessly to sensitive components like the
+attention mechanisms or the final layers of neural vocoders. In those
+cases, the reduced parameter diversity limits the model’s ability to
+reconstruct subtle high-frequency details, introducing muffled
+consonants, robotic cadence, and background buzz, often dropping MOS
+scores by 0.3 to 0.7 points.</p>
+<h3 id="structured-sparsity-and-perceptual-mos">Structured Sparsity and
+Perceptual MOS</h3>
+<p>Structured sparsity systematically eliminates entire physical
+structures within the network—such as channels, attention heads, or
+filter blocks—yielding regular tensor shapes that can be directly
+accelerated by edge hardware (CPUs, DSPs, and NPUs) without requiring
+specialized sparse matrix engines.</p>
+<p>While structured sparsity delivers real-world latency improvements,
+its impact on MOS is far more severe than weight-clustering. Neural
+speech generation relies heavily on high-dimensional representations to
+capture speaker identity, phoneme duration, and nuanced intonation.
+Zeroing out entire channels or heads creates catastrophic
+representational loss:</p>
+<ul>
+<li><strong>Acoustic Models:</strong> Pruning channels leads to degraded
+phoneme transitions, mispronunciations, and flat, monotone prosody.</li>
+<li><strong>Neural Vocoders:</strong> Pruning convolutional channels
+destabilizes the multi-receptive field fusion, manifesting as phase
+inconsistencies, clicks, and audible harmonic distortions.</li>
+</ul>
+<p>Unmitigated structured pruning can easily degrade MOS scores by 0.8
+to 1.5 points, effectively rendering a once-natural voice distinctly
+artificial.</p>
+<h3 id="comparing-perceptual-degradation">Comparing Perceptual
+Degradation</h3>
+<p>When comparing the two techniques at equivalent parameter-reduction
+ratios, weight-clustering consistently yields higher MOS scores than
+structured sparsity.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Metric / Dimension</th>
+<th style="text-align: left;">Weight-Clustering</th>
+<th style="text-align: left;">Structured Sparsity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Primary Benefit</strong></td>
+<td style="text-align: left;">Minimal memory footprint, high
+compression</td>
+<td style="text-align: left;">High on-device latency reduction</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MOS Sensitivity</strong></td>
+<td style="text-align: left;">Low-to-moderate; gradual degradation</td>
+<td style="text-align: left;">High; steep degradation threshold</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Common Artifacts</strong></td>
+<td style="text-align: left;">Muffled high frequencies, background
+hiss</td>
+<td style="text-align: left;">Phonation loss, robotic pitch, glottal
+clicks</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Most Sensitive
+Layers</strong></td>
+<td style="text-align: left;">Vocoder output projection, attention
+projections</td>
+<td style="text-align: left;">Vocoder upsampling layers, duration
+predictors</td>
+</tr>
+</tbody>
+</table>
+<h3 id="preserving-mos-during-optimization">Preserving MOS During
+Optimization</h3>
+<p>To minimize perceptual MOS loss when preparing TTS models for the
+edge, practitioners rely on two key recovery strategies:</p>
+<ol type="1">
+<li><strong>Knowledge Distillation:</strong> Using the uncompressed
+full-precision model as a teacher to guide the pruned or clustered
+student model preserves prosody and high-frequency phonemes.</li>
+<li><strong>Iterative Pruning and Cluster-Aware Fine-Tuning:</strong>
+Applying sparsity or clustering progressively across training epochs
+allows downstream layers to adapt to missing features or discretized
+values before freezing the graph.</li>
+</ol>
+<p>By combining structured sparsity on the most compute-heavy layers
+with fine-grained weight-clustering across the rest of the network, edge
+TTS systems can achieve significant latency and storage reductions while
+maintaining a MOS close to the baseline naturalness threshold.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

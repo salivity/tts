@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formant Preservation: Singing Synthesis vs Speech TTS - tts</title>
+    <meta name="description" content="Formant preservation during pitch shifting is a fundamental requirement in acoustic signal processing, but its precision is far more critical in singing voice synthesis (SVS) than in standard text-to-speech (TTS). While speech synthesis operates within n">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/formant-preservation-singing-synthesis-vs-speech-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Formant Preservation: Singing Synthesis vs Speech TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/formant-preservation-singing-synthesis-vs-speech-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Formant preservation during pitch shifting is a fundamental requirement in acoustic signal processing, but its precision is far more critical in singing voice synthesis (SVS) than in standard text-to-speech (TTS). While speech synthesis operates within n" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="formant-preservation-singing-synthesis-vs-speech-tts">Formant
+Preservation: Singing Synthesis vs Speech TTS</h1>
+<p>Formant preservation during pitch shifting is a fundamental
+requirement in acoustic signal processing, but its precision is far more
+critical in singing voice synthesis (SVS) than in standard
+text-to-speech (TTS). While speech synthesis operates within narrow
+fundamental frequency ranges where minor acoustic distortions often pass
+unnoticed, singing voice synthesis demands wide-range, dynamic pitch
+shifts over sustained periods. Without strict formant preservation,
+pitch-shifted singing immediately exhibits the unnatural "munchkin" or
+"giant" effects, compromises vowel intelligibility, and alters the
+perceived anatomical identity of the singer.</p>
+<h2 id="source-filter-independence-and-vocal-anatomy">Source-Filter
+Independence and Vocal Anatomy</h2>
+<p>Human vocal production relies on the source-filter model: the vocal
+folds generate a fundamental frequency (<span
+class="math inline">\(F_0\)</span>) along with harmonics (the source),
+and the vocal tract acts as a resonant acoustic cavity that filters this
+sound (the filter). The resonant frequency peaks created by this cavity
+are formants (<span class="math inline">\(F_1, F_2, F_3\)</span>,
+etc.).</p>
+<p>When a human sings higher or lower, they stretch or relax their vocal
+folds to change <span class="math inline">\(F_0\)</span>; their vocal
+tract length remains relatively static. Therefore, their formants stay
+relatively fixed regardless of the pitch. If a pitch-shifting algorithm
+scales the entire spectral envelope uniformly alongside <span
+class="math inline">\(F_0\)</span>, it alters the formants, effectively
+modeling an impossible physical transformation where the singer's throat
+expands or contracts with every note.</p>
+<h2 id="extreme-dynamic-pitch-ranges">Extreme Dynamic Pitch Ranges</h2>
+<ul>
+<li><strong>Speech TTS:</strong> Natural speech intonation involves
+modest fundamental frequency fluctuations, typically spanning only a few
+semitones or a fraction of an octave. Pitch adjustments in speech-based
+TTS are usually subtle intonation curves. Even if formant preservation
+is slightly imperfect, the shift is rarely large enough to distort the
+acoustic characteristics significantly.</li>
+<li><strong>Singing Voice Synthesis:</strong> Singing commonly spans two
+to three octaves. Moving an acoustic sample or synthesized phone up or
+down by an octave doubles or halves the frequencies. If the spectral
+envelope shifts proportionally with a 12-semitone jump, the formants
+shift by an entire octave, completely breaking the realism of the vocal
+tract and destroying natural vocal timbre.</li>
+</ul>
+<h2 id="sustained-notes-vs-transient-phonemes">Sustained Notes vs.
+Transient Phonemes</h2>
+<p>Speech is characterized by rapid transitions between consonants and
+vowels. The transient nature of conversational speech masks minor
+acoustic artifacts, phase errors, and slight spectral envelope shifts
+because the listener's brain prioritizes linguistic decoding over
+acoustic purity.</p>
+<p>Singing, conversely, emphasizes sustained vowels held over beats or
+measures. During these prolonged states, listeners have ample time to
+evaluate the timbre, warmth, and naturalness of the voice. Any unnatural
+drift in formant positions during sustained notes stands out immediately
+as artificial, robotic, or metallic.</p>
+<h2 id="vowel-intelligibility-and-formant-positioning">Vowel
+Intelligibility and Formant Positioning</h2>
+<p>Formant locations—specifically the relationship between the first two
+formants (<span class="math inline">\(F_1\)</span> and <span
+class="math inline">\(F_2\)</span>)—define vowel identity in human
+language.</p>
+<p>In SVS, if pitch shifting forces formants to shift proportionally
+with the musical score:</p>
+<ol type="1">
+<li>High-pitched notes shift lower formants into frequency bands
+designated for completely different vowels (e.g., an /ɑ/ turning into an
+/o/ or /u/).</li>
+<li>High fundamental frequencies may exceed the natural frequency of the
+first formant, causing severe acoustic dropouts if the filter is not
+carefully decoupled and preserved.</li>
+</ol>
+<p>Trained singers often perform subtle "formant tuning" to align tract
+resonances with individual harmonics for vocal projection. To synthesize
+realistic singing, an engine must maintain precise control over these
+resonant boundaries, ensuring that changes in pitch do not degrade
+linguistic comprehension.</p>
+<h2 id="timbral-consistency-and-singer-identity">Timbral Consistency and
+Singer Identity</h2>
+<p>A vocal tract's fixed formant profile is the primary acoustic
+fingerprint defining a specific vocalist. In speech TTS, subtle shifts
+in timbre still sound like an acceptable human speaker, even if slightly
+varied. In music, a singer’s unique timbre must remain completely
+coherent across the entire range of a song. Formant preservation ensures
+that a synthetic vocalist sounds like the exact same person whether they
+are singing a low bass note or a high belt.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Neural Vocoders Struggle with Unvoiced Fricatives - tts</title>
+    <meta name="description" content="Neural vocoders in modern text-to-speech (TTS) systems have achieved near-human naturalness for voiced speech, yet they consistently encounter difficulties when synthesizing unvoiced fricatives such as /s/, /f/, and /ʃ/. This article examines the core r">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-neural-vocoders-struggle-with-unvoiced-fricatives">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Neural Vocoders Struggle with Unvoiced Fricatives - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-neural-vocoders-struggle-with-unvoiced-fricatives" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Neural vocoders in modern text-to-speech (TTS) systems have achieved near-human naturalness for voiced speech, yet they consistently encounter difficulties when synthesizing unvoiced fricatives such as /s/, /f/, and /ʃ/. This article examines the core r" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-neural-vocoders-struggle-with-unvoiced-fricatives">Why
+Neural Vocoders Struggle with Unvoiced Fricatives</h1>
+<p>Neural vocoders in modern text-to-speech (TTS) systems have achieved
+near-human naturalness for voiced speech, yet they consistently
+encounter difficulties when synthesizing unvoiced fricatives such as
+/s/, /f/, and /ʃ/. This article examines the core reasons behind this
+disparity, contrasting the predictable, periodic nature of harmonic
+vowels with the stochastic, high-frequency turbulence of unvoiced
+fricatives. It breaks down how differences in acoustic properties,
+intermediate representations, loss functions, and network architectures
+combine to make unvoiced fricatives a distinct challenge in speech
+synthesis.</p>
+<h3
+id="acoustic-divergence-periodicity-vs-stochastic-turbulence">Acoustic
+Divergence: Periodicity vs. Stochastic Turbulence</h3>
+<p>Vowels are voiced sounds produced by the regular vibration of the
+vocal folds, which creates a rich harmonic spectrum characterized by a
+distinct fundamental frequency (<span
+class="math inline">\(F_0\)</span>) and clear formant structures. Deep
+learning models excel at learning and reproducing these periodic
+waveforms because their phase and amplitude relationships follow highly
+correlated, predictable patterns over time.</p>
+<p>In contrast, unvoiced fricatives are produced without vocal fold
+vibration. Instead, turbulent airflow is forced through a narrow
+constriction in the vocal tract. Acoustically, these sounds are not
+periodic; they are stochastic, continuous-spectrum noise. Generating
+believable noise requires neural networks to output quasi-random,
+uncorrelated values rather than the structured, sinusoidal trajectories
+typical of harmonic sounds.</p>
+<h3 id="information-loss-in-mel-spectrograms">Information Loss in
+Mel-Spectrograms</h3>
+<p>Most neural vocoders reconstruct raw audio from mel-spectrograms, an
+intermediate representation designed around human auditory perception.
+The mel scale allocates fine frequency resolution to lower bands while
+compressing higher bands.</p>
+<ul>
+<li><strong>Vowels:</strong> Formants typically sit below 4 kHz, where
+the mel-spectrogram retains high spectral resolution. This allows the
+vocoder to easily capture fundamental frequencies and lower
+resonances.</li>
+<li><strong>Fricatives:</strong> Acoustic energy for
+fricatives—especially the sibilants /s/ and /z/—often extends from 4 kHz
+well above 8 kHz, reaching up to 16 kHz or higher. The heavy compression
+of the mel scale at these higher frequencies discards subtle spectral
+cues and shape details, leaving the vocoder with insufficient structural
+information to synthesize crisp, distinct noise profiles.</li>
+</ul>
+<h3 id="the-penalty-of-deterministic-loss-functions">The Penalty of
+Deterministic Loss Functions</h3>
+<p>Neural vocoders are commonly trained using deterministic loss
+functions, such as L1 or L2 spectral distances and multi-resolution
+Short-Time Fourier Transform (STFT) losses.</p>
+<p>For harmonic vowels, minimizing spectral differences encourages the
+model to align fundamental frequencies and formants accurately. For
+unvoiced fricatives, however, matching exact target waveforms or
+deterministic phase components is impossible due to their random nature.
+When forced to minimize error on inherently non-deterministic signals,
+regression losses cause the model to output the statistical mean of all
+possible noise patterns. This regression-to-the-mean effect yields
+blurred, muffled, or low-energy sound, often perceived by listeners as a
+"lisp," unnatural whispering, or dull articulation.</p>
+<h3 id="architectural-biases-toward-periodicity">Architectural Biases
+Toward Periodicity</h3>
+<p>State-of-the-art neural vocoders rely on architectures optimized for
+resonant signals. Many employ dilated convolutions, periodic activation
+functions, or source-filter decompositions specifically designed to
+model repeating pitch patterns efficiently.</p>
+<p>While these inductive biases enable models to generate pristine
+harmonic series with low parameter counts, they inherently resist the
+generation of pure, uncorrelated white or pink noise. When a
+periodic-biased network attempts to synthesize an unvoiced segment, it
+often introduces subtle tonal artifacts, buzzing, or metallic timbre
+into the output, breaking the illusion of natural turbulence.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

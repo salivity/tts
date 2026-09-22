@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PESQ and POLQA in Text-to-Speech Evaluation - tts</title>
+    <meta name="description" content="Perceptual Evaluation of Speech Quality (PESQ) and Perceptual Objective Listening Quality Analysis (POLQA) are standardized objective metrics originally engineered to predict human Mean Opinion Scores (MOS) in telecommunications. While researchers freque">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/pesq-and-polqa-in-text-to-speech-evaluation">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="PESQ and POLQA in Text-to-Speech Evaluation - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/pesq-and-polqa-in-text-to-speech-evaluation" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Perceptual Evaluation of Speech Quality (PESQ) and Perceptual Objective Listening Quality Analysis (POLQA) are standardized objective metrics originally engineered to predict human Mean Opinion Scores (MOS) in telecommunications. While researchers freque" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="pesq-and-polqa-in-text-to-speech-evaluation">PESQ and POLQA in
+Text-to-Speech Evaluation</h1>
+<p>Perceptual Evaluation of Speech Quality (PESQ) and Perceptual
+Objective Listening Quality Analysis (POLQA) are standardized objective
+metrics originally engineered to predict human Mean Opinion Scores (MOS)
+in telecommunications. While researchers frequently attempt to use them
+to benchmark Text-to-Speech (TTS) systems, their utility in this domain
+is highly constrained. PESQ and POLQA apply effectively only to isolated
+subcomponents of a synthesis pipeline—such as vocoder reconstruction
+against known ground-truth audio—but fundamentally fail as end-to-end
+TTS metrics due to their reliance on time-aligned reference signals,
+inability to score prosody or expressiveness, and insensitivity to
+generative synthesis artifacts.</p>
+<h3 id="the-design-purpose-of-pesq-and-polqa">The Design Purpose of PESQ
+and POLQA</h3>
+<p>PESQ (ITU-T P.862) and its successor POLQA (ITU-T P.863) are
+full-reference perceptual quality algorithms. They compare a degraded
+audio signal against an original, pristine reference signal to quantify
+quality degradation introduced by telecommunication networks, speech
+codecs (such as AMR or Opus), packet loss, and jitter. Both models
+simulate human psychoacoustics—mapping signals into loudness and pitch
+representations to calculate perceptual distance scores that correlate
+with subjective listening tests.</p>
+<h3 id="where-pesq-and-polqa-apply-to-tts">Where PESQ and POLQA Apply to
+TTS</h3>
+<p>Because these algorithms require a reference signal, their
+application to TTS is limited strictly to scenarios featuring a direct
+acoustic ground truth:</p>
+<ul>
+<li><strong>Vocoder Quality Assessment:</strong> Neural vocoders (such
+as HiFi-GAN or WaveGlow) synthesize time-domain waveforms directly from
+intermediate representations like mel-spectrograms. When evaluating a
+vocoder in an "analysis-synthesis" loop, the input mel-spectrogram is
+extracted from an actual human recording. The vocoder's reconstructed
+audio can then be directly compared to the original human recording. In
+this specific setup, PESQ and POLQA measure the spectral fidelity and
+distortion introduced purely by the vocoder.</li>
+<li><strong>Acoustic Codec and Compression Benchmarking:</strong> When
+deploying TTS engines into telecommunications applications (such as
+Interactive Voice Response systems), PESQ and POLQA can evaluate how
+downstream audio compression and transmission protocols affect the
+intelligibility and degradation of the synthesized audio stream.</li>
+</ul>
+<h3 id="where-pesq-and-polqa-fail-to-apply">Where PESQ and POLQA Fail to
+Apply</h3>
+<p>Despite their success in network telephony, PESQ and POLQA break down
+when applied to general or end-to-end TTS evaluation:</p>
+<ul>
+<li><strong>The Lack of a Ground Truth:</strong> Generating speech from
+raw text creates an acoustic realization from scratch. There is no
+natural, uncompressed reference recording for an arbitrary text prompt.
+Without a direct acoustic counterpart, full-reference metrics cannot
+function.</li>
+<li><strong>Intolerance to Temporal and Prosodic Variation:</strong>
+Even if a human reference speaker records the same text prompt, normal
+variations in pacing, phoneme duration, pauses, and intonation cause
+massive temporal misalignments. Although POLQA features improved
+time-alignment algorithms over PESQ, neither model can distinguish
+between acceptable expressive variation and destructive signal timing
+errors. An entirely natural-sounding synthetic sentence with a slightly
+slower cadence will receive an artificially low quality score.</li>
+<li><strong>Inability to Evaluate Naturalness and
+Expressiveness:</strong> PESQ and POLQA evaluate signal degradation, not
+human-likeness. A robotic, flat, or emotionally disjointed voice can
+exhibit pristine spectral clarity and receive a near-perfect POLQA
+score, despite sounding unnatural to human listeners.</li>
+<li><strong>Irrelevant Distortion Models:</strong> Telephony metrics
+look for specific artifacts: clipping, background noise, bandwidth
+restrictions, and packet drops. Modern neural TTS models produce
+entirely different failure modes, such as phoneme hallucinations,
+unnatural pitch transitions, metallic buzz, phase smearing, or unnatural
+breathing patterns. Full-reference telecom models are not weighted to
+penalize these generative errors accurately.</li>
+</ul>
+<h3 id="preferred-alternatives-for-tts-quality-evaluation">Preferred
+Alternatives for TTS Quality Evaluation</h3>
+<p>Due to the architectural limitations of PESQ and POLQA, TTS
+assessment relies on other methods:</p>
+<ul>
+<li><strong>Subjective Testing:</strong> Human listening
+evaluations—specifically MOS (Mean Opinion Score), MUSHRA
+(MUlti-Stimulus test with Hidden Reference and Anchor), and side-by-side
+preference tests—remain the benchmark for naturalness, intelligibility,
+and speaker similarity.</li>
+<li><strong>No-Reference (Non-Intrusive) Objective Models:</strong> Deep
+learning-based metrics such as NISQA, UTMOS, and MOSNet assess speech
+quality and naturalness directly from the synthesized audio without
+requiring a reference signal.</li>
+<li><strong>ASR-Driven Metrics:</strong> Automated Speech Recognition
+systems transcribing generated speech to calculate Word Error Rate (WER)
+or Character Error Rate (CER) serve as objective, reliable proxies for
+intelligibility.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

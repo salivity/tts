@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diffusion-Based Voice Inpainting in Text-to-Speech - tts</title>
+    <meta name="description" content="Diffusion-based voice inpainting provides an efficient, localized framework for correcting acoustic artifacts, unnatural pitch contours, and mispronunciations in synthetic speech without regenerating entire audio tracks. By adapting the concept of image">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/diffusion-based-voice-inpainting-in-text-to-speech">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Diffusion-Based Voice Inpainting in Text-to-Speech - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/diffusion-based-voice-inpainting-in-text-to-speech" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Diffusion-based voice inpainting provides an efficient, localized framework for correcting acoustic artifacts, unnatural pitch contours, and mispronunciations in synthetic speech without regenerating entire audio tracks. By adapting the concept of image" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="diffusion-based-voice-inpainting-in-text-to-speech">Diffusion-Based
+Voice Inpainting in Text-to-Speech</h1>
+<p>Diffusion-based voice inpainting provides an efficient, localized
+framework for correcting acoustic artifacts, unnatural pitch contours,
+and mispronunciations in synthetic speech without regenerating entire
+audio tracks. By adapting the concept of image restoration to
+spectrograms and raw audio waveforms, this approach isolates corrupted
+audio segments, analyzes surrounding context, and iteratively denoises
+replacement audio conditioned on the correct text. The result is
+seamless, acoustically coherent speech correction that preserves speaker
+identity, emotion, and prosodic flow across edited boundaries.</p>
+<h3 id="the-challenge-of-imperfect-synthetic-speech">The Challenge of
+Imperfect Synthetic Speech</h3>
+<p>Traditional Text-to-Speech (TTS) models often produce localized
+defects, such as robotic glottal stops, metallic buzzing, unnatural
+prosodic peaks, or mispronounced phonemes. Correcting these issues
+typically requires regenerating the complete sentence or paragraph.
+However, because modern neural vocoders and acoustic models introduce
+stochastic variations during each run, full regeneration alters the
+timing, inflection, and pacing of parts of the sentence that were
+already acceptable. This creates substantial friction in professional
+audio production, audiobooks, and interactive voice systems.</p>
+<h3 id="what-is-voice-inpainting">What is Voice Inpainting?</h3>
+<p>Voice inpainting treats an audio representation—typically a
+mel-spectrogram or latent representation—similarly to a damaged visual
+image. An operator or automated error-detection system masks out the
+defective time-frequency window, leaving the surrounding audio intact.
+The inpainting system's objective is to fill the masked gap using
+acoustic cues from the adjacent unmasked frames, along with phonetic and
+semantic conditioning from the underlying transcript.</p>
+<h3 id="how-diffusion-models-enhance-the-inpainting-process">How
+Diffusion Models Enhance the Inpainting Process</h3>
+<p>Diffusion models operate by progressively removing noise from a
+randomized signal to reconstruct data according to target distributions.
+When applied to voice inpainting, this probabilistic architecture offers
+distinct advantages over older generative adversarial networks (GANs) or
+autoregressive models:</p>
+<ul>
+<li><strong>Bidirectional Contextual Conditioning:</strong> Unlike
+causal autoregressive models that only generate left-to-right audio,
+diffusion models evaluate both preceding and succeeding audio frames
+simultaneously. This bidirectional awareness ensures that phoneme
+transitions and pitch contours naturally bridge the unmasked edges into
+the repaired segment.</li>
+<li><strong>Fine-Grained Acoustic Texture:</strong> Diffusion models
+excel at reproducing high-frequency details, micro-prosody, and subtle
+room acoustics. This prevents the "blurred" or muffled spectral
+signatures that frequently plague GAN-based spectrogram
+interpolations.</li>
+<li><strong>Flexible Mask Lengths:</strong> Diffusion-based
+architectures handle variable-sized masks without architectural
+adjustments, allowing for surgical fixes ranging from a 50-millisecond
+plosive correction to multi-second phrase replacements.</li>
+</ul>
+<h3 id="seamless-boundary-alignment">Seamless Boundary Alignment</h3>
+<p>The primary metric of success for speech inpainting is boundary
+transparency—the listener must not detect the transition between
+untouched audio and generated audio. Diffusion models accomplish this
+through score-based guidance along the edges of the masked area. During
+the reverse denoising steps, the latent states at the boundaries are
+constrained by the actual values of the surrounding frames. This
+enforcement minimizes phase mismatches, prevents abrupt spectral jumps,
+and maintains consistent background noise levels.</p>
+<h3 id="operational-advantages-in-production">Operational Advantages in
+Production</h3>
+<p>Using diffusion-based voice inpainting significantly reduces latency
+and computational costs in automated quality-control pipelines. Instead
+of dedicating compute resources to recalculate long-form context
+representations, the system targets only problematic phonemes or words.
+For human editors, this technology enables non-destructive, targeted
+audio editing that blends seamlessly with the original synthetic
+performance.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

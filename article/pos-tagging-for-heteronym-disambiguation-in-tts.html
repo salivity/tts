@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Tagging for Heteronym Disambiguation in TTS - tts</title>
+    <meta name="description" content="Heteronyms present a major challenge in Text-to-Speech (TTS) systems because identically spelled words require distinct pronunciations based on context. Part-of-speech (POS) tagging functions as a critical disambiguation layer within the TTS front-end pi">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/pos-tagging-for-heteronym-disambiguation-in-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="POS Tagging for Heteronym Disambiguation in TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/pos-tagging-for-heteronym-disambiguation-in-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Heteronyms present a major challenge in Text-to-Speech (TTS) systems because identically spelled words require distinct pronunciations based on context. Part-of-speech (POS) tagging functions as a critical disambiguation layer within the TTS front-end pi" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="pos-tagging-for-heteronym-disambiguation-in-tts">POS Tagging for
+Heteronym Disambiguation in TTS</h1>
+<p>Heteronyms present a major challenge in Text-to-Speech (TTS) systems
+because identically spelled words require distinct pronunciations based
+on context. Part-of-speech (POS) tagging functions as a critical
+disambiguation layer within the TTS front-end pipeline, assigning
+grammatical categories to words so that the system selects the correct
+phonetic transcription. By analyzing the syntactic structure of an input
+sentence, POS tagging bridges the gap between raw text normalization and
+accurate grapheme-to-phoneme conversion, ensuring the downstream
+acoustic model produces natural, intelligible speech.</p>
+<h3 id="the-heteronym-problem-in-speech-synthesis">The Heteronym Problem
+in Speech Synthesis</h3>
+<p>In written language, heteronyms share the exact same spelling
+(graphemes) but diverge in sound (phonemes) and meaning. Examples
+include:</p>
+<ul>
+<li><strong>"Record"</strong>: Pronounced /ˈrɛkərd/ as a noun, but
+/rɪˈkɔːrd/ as a verb.</li>
+<li><strong>"Lead"</strong>: Pronounced /lɛd/ as a noun (the metal), but
+/liːd/ as a verb (to guide).</li>
+<li><strong>"Close"</strong>: Pronounced /kloʊs/ as an adjective, but
+/kloʊz/ as a verb.</li>
+</ul>
+<p>A human reader infers the correct pronunciation effortlessly by
+interpreting sentence structure and semantics. A TTS pipeline, however,
+must convert text into phonemes deterministically. If the system relies
+purely on an unconditioned pronunciation dictionary, it cannot determine
+which phonetic representation to select.</p>
+<h3 id="where-pos-tagging-fits-in-the-tts-pipeline">Where POS Tagging
+Fits in the TTS Pipeline</h3>
+<p>A standard TTS pipeline consists of three core stages:</p>
+<ol type="1">
+<li><strong>Text Front-End</strong>: Ingests raw text, performs text
+normalization (expanding abbreviations and numbers), tokenization, POS
+tagging, and Grapheme-to-Phoneme (G2P) conversion.</li>
+<li><strong>Acoustic Model</strong>: Takes the phonetic sequence and
+linguistic features from the front-end to generate intermediate acoustic
+representations, such as mel-spectrograms.</li>
+<li><strong>Vocoder</strong>: Converts the acoustic representations into
+an audible waveform.</li>
+</ol>
+<p>POS tagging operates immediately after tokenization and text
+normalization. Before the G2P engine consults a lexicon or runs a neural
+conversion model, the POS tagger evaluates the sentence to label each
+token with a syntactic tag (such as noun, verb, adjective, or
+adverb).</p>
+<h3 id="how-pos-tagging-resolves-heteronyms">How POS Tagging Resolves
+Heteronyms</h3>
+<p>Most heteronyms in languages like English divide along grammatical
+boundaries. For example, alternating stress patterns frequently
+distinguish nouns from verbs (e.g., <em>object</em>, <em>present</em>,
+<em>permit</em>).</p>
+<p>When the POS tagger processes a sentence, it applies syntactic
+context to assign tags:</p>
+<ul>
+<li><em>"She will <strong>read</strong> [VERB] the book."</em> <span
+class="math inline">\(\rightarrow\)</span> G2P yields /riːd/</li>
+<li><em>"She has <strong>read</strong> [VERB, past participle] the
+book."</em> <span class="math inline">\(\rightarrow\)</span> G2P yields
+/rɛd/</li>
+<li><em>"The <strong>tear</strong> [NOUN] ran down his cheek."</em>
+<span class="math inline">\(\rightarrow\)</span> G2P yields /tɪər/</li>
+<li><em>"Do not <strong>tear</strong> [VERB] the paper."</em> <span
+class="math inline">\(\rightarrow\)</span> G2P yields /tɛər/</li>
+</ul>
+<p>The lexicon used by the G2P engine is indexed not just by spelling,
+but by word-tag pairs (e.g., <code>lead_NN</code> vs.
+<code>lead_VB</code>). Once the POS tag is resolved, the lookup returns
+an unambiguous phoneme string.</p>
+<p>Modern TTS systems utilize statistical models (like Hidden Markov
+Models) or neural sequence-to-sequence models (like BiLSTMs or
+Transformer-based architectures like BERT) for tagging. These models
+evaluate surrounding words and dependency structures to calculate the
+most probable part of speech for ambiguous tokens.</p>
+<h3 id="impact-on-downstream-acoustic-synthesis">Impact on Downstream
+Acoustic Synthesis</h3>
+<p>Accurate POS tagging directly dictates speech quality:</p>
+<ul>
+<li><strong>Segmental Accuracy</strong>: Pronouncing the wrong phoneme
+(saying /wʊnd/ instead of /waʊnd/ for "wound") results in immediate
+misinterpretation.</li>
+<li><strong>Prosodic and Suprasegmental Realization</strong>: Heteronyms
+often change lexical stress based on their part of speech. Incorrect
+tagging leads to misplaced emphasis, causing unnatural rhythm and
+cadence even if the basic vowels remain close.</li>
+</ul>
+<h3 id="limitations-of-pure-pos-tagging">Limitations of Pure POS
+Tagging</h3>
+<p>While POS tagging resolves the majority of heteronyms, it fails when
+two pronunciations share the exact same part of speech. For
+instance:</p>
+<ul>
+<li><strong>"Bass"</strong>: Can refer to a fish (/bæs/) or a low
+musical pitch (/beɪs/), both of which are nouns.</li>
+<li><strong>"Bow"</strong>: Can refer to a weapon for shooting arrows
+(/boʊ/) or the front of a ship (/baʊ/), both functioning as nouns.</li>
+</ul>
+<p>In these instances, basic syntactic categorization is insufficient.
+Advanced TTS pipelines augment POS tagging with word-sense
+disambiguation (WSD) and deep contextual semantic embeddings to resolve
+intra-category phonetic differences. Nevertheless, POS tagging remains
+the foundational, computationally efficient first line of defense for
+linguistic disambiguation in speech generation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

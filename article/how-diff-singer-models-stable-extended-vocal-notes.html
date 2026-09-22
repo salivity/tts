@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How DiffSinger Models Stable Extended Vocal Notes - tts</title>
+    <meta name="description" content="Neural singing voice synthesis systems struggle to sustain long vocal notes, frequently suffering from pitch instability, spectral blur, and audible voice cracking. Dedicated singing architectures like DiffSinger overcome these challenges through archite">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-diff-singer-models-stable-extended-vocal-notes">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How DiffSinger Models Stable Extended Vocal Notes - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-diff-singer-models-stable-extended-vocal-notes" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Neural singing voice synthesis systems struggle to sustain long vocal notes, frequently suffering from pitch instability, spectral blur, and audible voice cracking. Dedicated singing architectures like DiffSinger overcome these challenges through archite" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-diffsinger-models-stable-extended-vocal-notes">How
+DiffSinger Models Stable Extended Vocal Notes</h1>
+<p>Neural singing voice synthesis systems struggle to sustain long vocal
+notes, frequently suffering from pitch instability, spectral blur, and
+audible voice cracking. Dedicated singing architectures like DiffSinger
+overcome these challenges through architectural modifications designed
+for acoustic stability over extended time horizons. By decoupling pitch
+and duration representations, employing shallow diffusion decoders
+conditioned on explicit musical priors, utilizing duration-normalized
+positional encodings, and integrating harmonic-plus-noise vocoder
+paradigms, these systems maintain acoustic consistency across
+long-duration phonemes.</p>
+<h3 id="decoupled-explicit-f0-and-vibrato-predictors">Decoupled Explicit
+F0 and Vibrato Predictors</h3>
+<p>Standard Text-to-Speech (TTS) models typically rely on implicit pitch
+generation or frame-level acoustic averaging, which degrades when a
+phoneme extends significantly beyond normal speech durations. Singing
+models isolate the fundamental frequency (<span
+class="math inline">\(F_0\)</span>) into an explicit, dedicated
+sub-network.</p>
+<p>Instead of generating pitch end-to-end within the spectrogram
+decoder, DiffSinger utilizes an independent pitch predictor that models
+note-level pitch targets alongside micro-variations, such as vibrato and
+portamento. By modeling continuous <span
+class="math inline">\(F_0\)</span> as a distinct conditioning input, the
+system prevents pitch drift—where the predicted frequency gradually
+collapses toward an unvoiced or mean state over time—thus eliminating
+the pitch dropouts responsible for voice cracking.</p>
+<h3 id="shallow-diffusion-decoders-and-acoustic-priors">Shallow
+Diffusion Decoders and Acoustic Priors</h3>
+<p>Autoregressive models accumulate exposure bias over long temporal
+sequences, while non-autoregressive GAN-based models often collapse to
+over-smoothed representations when generating repetitive, sustained
+frames. DiffSinger addresses this by using a score-based diffusion model
+combined with a shallow step boundary.</p>
+<ol type="1">
+<li><strong>Prior Grounding:</strong> A feed-forward acoustic model
+generates an initial mean mel-spectrogram based on the phoneme inputs,
+explicit durations, and pitch contours.</li>
+<li><strong>Shallow Noise Addition:</strong> Instead of beginning the
+reverse diffusion process from complete Gaussian noise, noise is added
+only up to a shallow step <span class="math inline">\(k\)</span>.</li>
+<li><strong>Iterative Denoising:</strong> The diffusion decoder
+iteratively removes this noise, conditioned directly on the musical
+score representations.</li>
+</ol>
+<p>This hybrid approach restricts the solution space. By anchoring the
+generation to an initial acoustic template, the model prevents the
+variance explosion and spectral decay that typically occur in standard
+diffusion models operating over abnormally long frame counts.</p>
+<h3 id="duration-normalized-positional-encodings">Duration-Normalized
+Positional Encodings</h3>
+<p>Traditional sinusoidal or learned absolute positional encodings fail
+during extended notes because the positional indices scale far beyond
+the typical values seen in conversational datasets. This leads to
+out-of-distribution artifacts where the attention layers lose temporal
+context.</p>
+<p>To sustain long notes, singing architectures replace or augment
+absolute positional markers with relative or duration-normalized
+encodings:</p>
+<ul>
+<li><strong>Phoneme-Relative Progress:</strong> Each frame is mapped to
+a normalized progress value from <span
+class="math inline">\(0.0\)</span> to <span
+class="math inline">\(1.0\)</span> representing its completion rate
+within the specific phoneme.</li>
+<li><strong>Note-Relative Phasing:</strong> The model tracks cyclic
+phase information (critical for natural vibrato), ensuring that the
+periodic oscillation remains coherent regardless of how long the note is
+held.</li>
+</ul>
+<p>By normalizing the temporal representation, the attention mechanisms
+and convolutional layers operate within a bounded numerical range,
+avoiding out-of-distribution drift.</p>
+<h3
+id="harmonic-plus-noise-and-neural-source-filter-vocoders">Harmonic-plus-Noise
+and Neural Source-Filter Vocoders</h3>
+<p>Voice cracking at the end-stage audio waveform synthesis is often an
+artifact of phase mismatch in general-purpose neural vocoders (like
+standard HiFi-GAN) when presented with steady-state, highly resonant
+vowels.</p>
+<p>Architectures integrated with DiffSinger resolve this by adopting
+Neural Source-Filter (NSF) or harmonic-plus-noise frameworks. The
+vocoder explicitly splits the generation pipeline into:</p>
+<ul>
+<li><strong>Periodic Source:</strong> A deterministic sine-wave
+excitation signal driven strictly by the explicit <span
+class="math inline">\(F_0\)</span> contour.</li>
+<li><strong>Aperiodic Source:</strong> Filtered Gaussian noise to
+represent breathiness and aspiration.</li>
+</ul>
+<p>Because the periodic component is mathematically enforced rather than
+entirely learned from neural representations, the synthesized harmonic
+structure cannot collapse midway through a note. The neural filter then
+shapes this stable excitation into the final vocal timbre, ensuring that
+sustained notes remain clear, resonant, and crack-free.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

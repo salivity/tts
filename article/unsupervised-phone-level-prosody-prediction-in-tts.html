@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsupervised Phone-Level Prosody Prediction in TTS - tts</title>
+    <meta name="description" content="Training fine-grained phone-level prosody predictors without manual annotations is accomplished by combining self-supervised acoustic extraction, latent variable modeling, and automated alignment tools. Modern Text-to-Speech (TTS) frameworks eliminate th">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/unsupervised-phone-level-prosody-prediction-in-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Unsupervised Phone-Level Prosody Prediction in TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/unsupervised-phone-level-prosody-prediction-in-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Training fine-grained phone-level prosody predictors without manual annotations is accomplished by combining self-supervised acoustic extraction, latent variable modeling, and automated alignment tools. Modern Text-to-Speech (TTS) frameworks eliminate th" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="unsupervised-phone-level-prosody-prediction-in-tts">Unsupervised
+Phone-Level Prosody Prediction in TTS</h1>
+<p>Training fine-grained phone-level prosody predictors without manual
+annotations is accomplished by combining self-supervised acoustic
+extraction, latent variable modeling, and automated alignment tools.
+Modern Text-to-Speech (TTS) frameworks eliminate the need for human
+labeling by deriving pseudo-ground-truth features directly from raw
+speech audio through digital signal processing, forced aligners, and
+pre-trained speech representation models. These extracted features
+supervise neural prosody predictors during training, allowing models to
+generate expressive, natural-sounding pitch, energy, and rhythm directly
+from text input at inference time.</p>
+<h3 id="automated-acoustic-extraction-and-forced-alignment">Automated
+Acoustic Extraction and Forced Alignment</h3>
+<p>The foundational step in label-free prosody modeling relies on
+automated feature extraction pipelines. Instead of human annotators
+marking stress or rhythm, algorithms compute deterministic acoustic
+metrics directly from speech waveforms:</p>
+<ul>
+<li><strong>Duration:</strong> Hidden Markov Model (HMM)-based forced
+aligners, Montreal Forced Aligner (MFA), or dynamic time warping (DTW)
+map text phonemes to corresponding temporal boundaries in the
+audio.</li>
+<li><strong>Fundamental Frequency (<span
+class="math inline">\(F_0\)</span>):</strong> Pitch tracking algorithms
+(such as YIN, pYIN, or harvest) extract frame-level pitch contours,
+which are subsequently aggregated across the aligned phoneme boundaries
+to produce phone-level pitch averages or contours.</li>
+<li><strong>Energy:</strong> The root mean square (RMS) amplitude or
+short-term frame energy is computed across the waveform and averaged
+over phone intervals.</li>
+</ul>
+<p>These continuous, phone-level targets serve as direct supervision
+signals for regression modules, such as the duration, pitch, and energy
+predictors commonly implemented in non-autoregressive architectures like
+FastSpeech 2.</p>
+<h3 id="latent-representation-via-variational-autoencoders-vaes">Latent
+Representation via Variational Autoencoders (VAEs)</h3>
+<p>To capture nuanced prosodic elements beyond basic pitch and
+energy—such as voice quality, micro-intonations, and localized
+emphasis—reference encoders with information bottlenecks are utilized.
+During training, a reference speech encoder extracts a high-dimensional
+continuous representation from the target audio.</p>
+<p>By applying phone-level temporal pooling or cross-attention with the
+phoneme sequence, the model projects the audio representation to the
+phone domain. A Variational Autoencoder (VAE) structure introduces a
+Gaussian prior, forcing the latent space to remain smooth and compact. A
+separate prosody predictor is then trained to predict these latent
+prosodic vectors conditioned solely on text encodings, ensuring the
+model avoids relying on target audio during inference.</p>
+<h3 id="discretization-with-vector-quantization">Discretization with
+Vector Quantization</h3>
+<p>Continuous prosodic targets often suffer from regression-to-the-mean,
+resulting in flat, overly generalized speech output. Vector Quantization
+(VQ), as seen in VQ-VAEs, discretizes continuous acoustic spaces into
+codebooks of learned prosodic tokens.</p>
+<p>Frame-level speech features are quantized into discrete indices that
+represent distinct intonational and rhythmic patterns. A
+sequence-to-sequence network or an autoregressive language model can
+then be trained to predict these discrete prosodic tokens directly from
+input phonemes via cross-entropy loss, entirely bypassing the need for
+manual categorization.</p>
+<h3 id="self-supervised-speech-models-ssl">Self-Supervised Speech Models
+(SSL)</h3>
+<p>Pre-trained speech representations from models such as HuBERT, WavLM,
+or wav2vec 2.0 contain rich, multi-layered phonetic and acoustic
+hierarchies learned from thousands of hours of unlabeled audio. By
+extracting embeddings from intermediate layers of these networks,
+practitioners obtain dense prosodic information that captures speaking
+style, tempo, and emotion.</p>
+<p>Because these representations are aligned temporally with the audio,
+phoneme alignment boundaries can be used to average-pool the SSL
+embeddings per phone. These pooled vectors function as comprehensive
+prosodic representations, supervised via contrastive loss or mean
+squared error (MSE) against the text-driven prosody predictor.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

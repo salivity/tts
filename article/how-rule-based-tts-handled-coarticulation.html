@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Rule-Based TTS Handled Coarticulation - tts</title>
+    <meta name="description" content="Historical rule-based text-to-speech (TTS) systems, primarily utilizing formant synthesis, faced the fundamental challenge of turning discrete symbolic text into continuous, natural-sounding speech. In human speech, adjacent phonemes blend together becau">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-rule-based-tts-handled-coarticulation">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Rule-Based TTS Handled Coarticulation - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-rule-based-tts-handled-coarticulation" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Historical rule-based text-to-speech (TTS) systems, primarily utilizing formant synthesis, faced the fundamental challenge of turning discrete symbolic text into continuous, natural-sounding speech. In human speech, adjacent phonemes blend together becau" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-rule-based-tts-handled-coarticulation">How Rule-Based TTS
+Handled Coarticulation</h1>
+<p>Historical rule-based text-to-speech (TTS) systems, primarily
+utilizing formant synthesis, faced the fundamental challenge of turning
+discrete symbolic text into continuous, natural-sounding speech. In
+human speech, adjacent phonemes blend together because the physical
+articulators—such as the tongue, lips, and jaw—move continuously from
+one position to the next, a phenomenon known as coarticulation. To
+simulate this digitally without relying on large pre-recorded audio
+databases, early systems like the Klatt synthesizer and MITalk relied on
+acoustic locus theory, context-sensitive rewrite rules, and mathematical
+smoothing functions to dynamically compute formant trajectories between
+sounds.</p>
+<h2 id="the-challenge-of-coarticulation-in-early-synthesis">The
+Challenge of Coarticulation in Early Synthesis</h2>
+<p>In pure phonetic transcription, phonemes are represented as isolated,
+static units. However, human vocal production cannot instantaneously
+jump from the acoustic profile of a consonant to that of a vowel. If a
+synthesizer plays static phoneme targets sequentially, the result is
+robotic, disjointed, and largely unintelligible.</p>
+<p>To overcome this, rule-based systems had to calculate continuous
+changes in acoustic parameters—such as the fundamental frequency (<span
+class="math inline">\(F_0\)</span>), formant frequencies (<span
+class="math inline">\(F_1, F_2, F_3\)</span>), bandwidths, and
+nasal/fricative resonances—over time.</p>
+<h2 id="locus-theory-and-formant-transitions">Locus Theory and Formant
+Transitions</h2>
+<p>The primary framework used to model coarticulation between consonants
+and vowels was the <strong>acoustic locus theory</strong>, developed at
+Haskins Laboratories in the 1950s.</p>
+<ul>
+<li><strong>Virtual Targets:</strong> Researchers observed that for many
+stop consonants, the second formant (<span
+class="math inline">\(F_2\)</span>) transitions appear to originate from
+a fixed, imaginary frequency point—called the "locus"—regardless of
+which vowel follows. For example, alveolar stops like /d/ have an <span
+class="math inline">\(F_2\)</span> locus around 1800 Hz.</li>
+<li><strong>Trajectory Calculation:</strong> Instead of jumping to the
+vowel's steady-state formant frequency, rule engines calculated a
+transition curve from the consonant's locus toward the vowel's target
+frequency.</li>
+<li><strong>Variable Extent:</strong> Because the articulators rarely
+reach the true locus before the vowel begins, the algorithm calculated
+the transition starting from an intermediate point, determined by the
+duration and intensity of the consonant.</li>
+</ul>
+<h2 id="context-dependent-phonetic-rules">Context-Dependent Phonetic
+Rules</h2>
+<p>Before computing acoustic trajectories, rule-based systems applied
+phonological rewrite rules (often based on Chomsky and Halle's <em>The
+Sound Pattern of English</em> framework). These rules selected
+context-specific variants of phonemes, known as allophones, depending on
+surrounding sounds.</p>
+<p>Rules followed conditional logic:</p>
+<ul>
+<li><strong>Anticipatory Coarticulation (Right-to-Left):</strong>
+Modifying a sound in anticipation of the upcoming sound (e.g., rounding
+the lips for the /s/ in "suit" because the following /u/ is
+rounded).</li>
+<li><strong>Perseverative Coarticulation (Left-to-Right):</strong>
+Carrying over physical configurations from the preceding sound (e.g.,
+nasalizing a vowel that follows a nasal consonant like /m/ or /n/).</li>
+</ul>
+<p>These rules determined the target values, segment durations, and
+transition boundaries used by the synthesis engine.</p>
+<h2 id="mathematical-smoothing-and-target-interpolation">Mathematical
+Smoothing and Target Interpolation</h2>
+<p>Once the engine selected the allophones and their acoustic targets,
+it generated continuous parameter tracks using mathematical
+interpolation rather than linear steps.</p>
+<ol type="1">
+<li><strong>Target-and-Transition Models:</strong> Each phoneme was
+assigned an inherent target value and an inherent duration. If a phoneme
+was short, the interpolation algorithm would not allow the formant
+parameters enough time to reach their targets, naturally modeling
+"target undershoot"—a major aspect of natural fast speech.</li>
+<li><strong>Filtering and Smoothing:</strong> Rather than drawing
+straight lines between targets, systems like Dennis Klatt's synthesizer
+routed parameter steps through low-pass filters or critically damped
+second-order differential equations. This simulated the physical inertia
+of human articulators, producing smooth, S-shaped transitions between
+contrasting acoustic states.</li>
+</ol>
+<h2 id="the-transition-to-diphone-units">The Transition to Diphone
+Units</h2>
+<p>While purely rule-based formant synthesis successfully established
+continuous transitions, crafting rules for every possible phonetic
+combination proved prohibitively complex. By the late 1970s and 1980s,
+the limits of manually tuned coarticulation rules led researchers to
+diphone synthesis.</p>
+<p>Instead of generating transitions via mathematical equations, diphone
+systems recorded speech segments cut from the steady-state center of one
+phoneme to the steady-state center of the next. By shifting the
+coarticulatory boundary into the middle of the recorded unit, the
+complex transition was captured physically, marking the transition from
+pure rule-based synthesis to concatenative methods.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

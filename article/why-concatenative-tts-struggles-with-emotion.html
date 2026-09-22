@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Concatenative TTS Struggles with Emotion - tts</title>
+    <meta name="description" content="Concatenative text-to-speech (TTS) was a landmark technology in speech synthesis that created spoken audio by stitching together pre-recorded snippets of human voice. Despite achieving high intelligibility and natural-sounding timbre in neutral contexts,">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-concatenative-tts-struggles-with-emotion">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Concatenative TTS Struggles with Emotion - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-concatenative-tts-struggles-with-emotion" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Concatenative text-to-speech (TTS) was a landmark technology in speech synthesis that created spoken audio by stitching together pre-recorded snippets of human voice. Despite achieving high intelligibility and natural-sounding timbre in neutral contexts," />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-concatenative-tts-struggles-with-emotion">Why Concatenative
+TTS Struggles with Emotion</h1>
+<p>Concatenative text-to-speech (TTS) was a landmark technology in
+speech synthesis that created spoken audio by stitching together
+pre-recorded snippets of human voice. Despite achieving high
+intelligibility and natural-sounding timbre in neutral contexts, the
+technology consistently struggled to produce convincing, consistent
+emotional inflection across synthesized utterances. This failure was
+rooted in the structural reliance on static audio databases, the
+mathematical impossibility of recording every emotional permutation, the
+degradation caused by digital signal processing, and the inability to
+maintain suprasegmental prosody across fragmented acoustic units.</p>
+<p>Concatenative synthesis—most notably unit selection
+synthesis—functions by searching a massive database of recorded speech
+to find phonetic segments (such as phones, diphones, or syllables) that
+match the target text. The system then splices these segments together
+to form complete words and sentences. Because these recordings were
+typically captured in controlled studio environments with voice actors
+reading in a consistent, neutral reading style, the base material
+inherently lacked emotional variance.</p>
+<p>Capturing emotional inflection requires altering fundamental
+frequency (pitch), speech rate, duration, volume, and spectral tilt. To
+achieve this within a concatenative framework, developers faced a
+combinatorial explosion. A voice actor would need to record the entire
+linguistic corpus not just once, but dozens of times to cover anger,
+sadness, excitement, sarcasm, and subtle degrees of each emotion across
+all possible phonetic contexts. The recording time, financial expense,
+and data storage requirements made building a comprehensive
+multi-emotional database practically unfeasible.</p>
+<p>When the required emotional units were missing from the database,
+systems relied on Digital Signal Processing (DSP) algorithms, such as
+Pitch-Synchronous Overlap and Add (PSOLA), to artificially manipulate
+the pitch and duration of neutral segments. While DSP can alter pitch
+contours, pushing a neutral sample into an excited or somber pitch range
+introduces severe acoustic degradation. The results frequently suffered
+from robotic buzzing, phase distortions, and unnatural timbral shifts,
+stripping the voice of human warmth and making emotional delivery sound
+synthetic and disjointed.</p>
+<p>Emotional inflection is fundamentally suprasegmental, meaning it
+spans across entire phrases, sentences, and discourse rather than
+residing within individual phonetic units. Concatenative systems
+optimized for local join costs—ensuring that the boundary between two
+spliced phonemes was as smooth as possible—often at the expense of
+global prosodic continuity. As a result, an utterance might combine a
+diphone recorded with high vocal energy and another recorded with low
+energy, creating jarring micro-fluctuations in mood, volume, and pitch
+within a single sentence.</p>
+<p>Ultimately, concatenative TTS struggled with emotion because human
+emotional expression is dynamic, continuous, and highly contextual. A
+rigid architecture built on discrete, pre-recorded puzzle pieces could
+never effectively replicate the fluid, continuous acoustic shifts that
+human vocal cords naturally produce under the influence of emotion.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

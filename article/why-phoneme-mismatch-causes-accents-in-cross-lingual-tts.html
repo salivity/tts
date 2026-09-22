@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Phoneme Mismatch Causes Accents in Cross-Lingual TTS - tts</title>
+    <meta name="description" content="In cross-lingual Text-to-Speech (TTS), synthesis models often produce noticeable foreign accents when generating speech in a target language using a voice trained on a different source language. This article examines how phoneme inventory mismatch—the">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-phoneme-mismatch-causes-accents-in-cross-lingual-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Phoneme Mismatch Causes Accents in Cross-Lingual TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-phoneme-mismatch-causes-accents-in-cross-lingual-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In cross-lingual Text-to-Speech (TTS), synthesis models often produce noticeable foreign accents when generating speech in a target language using a voice trained on a different source language. This article examines how phoneme inventory mismatch—the" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-phoneme-mismatch-causes-accents-in-cross-lingual-tts">Why
+Phoneme Mismatch Causes Accents in Cross-Lingual TTS</h1>
+<p>In cross-lingual Text-to-Speech (TTS), synthesis models often produce
+noticeable foreign accents when generating speech in a target language
+using a voice trained on a different source language. This article
+examines how phoneme inventory mismatch—the fundamental discrepancy
+between the distinct sound units of the source and target
+languages—forces models to approximate missing sounds and leak native
+acoustic traits, ultimately generating accented synthetic audio.</p>
+<h3 id="the-nature-of-phoneme-inventory-mismatch">The Nature of Phoneme
+Inventory Mismatch</h3>
+<p>Every language relies on a unique inventory of phonemes, the smallest
+distinct units of sound used to build words. For instance, the English
+language contains phonemes like the dental fricative /θ/ (as in
+"think"), which does not exist in standard French, German, or
+Japanese.</p>
+<p>When a TTS model is trained exclusively or predominantly on a speaker
+of Language A, the model learns the exact articulatory mechanics,
+formant frequencies, and vocal tract configurations of Language A's
+phoneme inventory. When prompted to synthesize speech in Language B, the
+system encounters target phonemes that the speaker's acoustic profile
+has never produced.</p>
+<h3 id="phonemic-approximation-and-substitution">Phonemic Approximation
+and Substitution</h3>
+<p>When a TTS system faces a phoneme absent from the source speaker's
+inventory, it must resolve the missing information through approximation
+or direct mapping.</p>
+<ul>
+<li><strong>Phoneme Mapping:</strong> Systems that rely on International
+Phonetic Alphabet (IPA) mappings often substitute an out-of-vocabulary
+phoneme with the acoustically closest native equivalent. For example,
+substituting the English /θ/ with /s/ or /t/.</li>
+<li><strong>Shared Embedding Spaces:</strong> In end-to-end multilingual
+systems, unified phoneme embeddings attempt to place similar
+cross-lingual sounds into a shared latent space. However, if the speaker
+embedding has only ever been conditioned on the native phoneme
+distribution, the decoder projects the target phoneme using the acoustic
+dimensions of the source language.</li>
+</ul>
+<p>This substitution or projection mimics the exact mechanism of human
+second-language acquisition: the speaker substitutes their native
+phonological categories for unfamiliar foreign sounds, resulting in a
+distinct non-native pronunciation.</p>
+<h3 id="acoustic-and-articulatory-bias">Acoustic and Articulatory
+Bias</h3>
+<p>A voice embedding does not merely capture vocal pitch; it captures
+the speaker's habitual articulatory dynamics. These dynamics govern:</p>
+<ul>
+<li><strong>Vowel Formants:</strong> The precise tongue height and mouth
+shape used to create vowel sounds differ subtly across languages, even
+for phonemes that share the same phonetic label.</li>
+<li><strong>Coarticulation Effects:</strong> The way a sound transitions
+into the next sound depends on language-specific speech habits. A
+speaker's acoustic model implicitly encodes these native coarticulation
+patterns.</li>
+<li><strong>Voice Onset Time (VOT):</strong> The timing between the
+release of a consonant and the start of vocal cord vibration varies
+widely between languages for the same plosives (e.g., /p/, /t/,
+/k/).</li>
+</ul>
+<p>When synthesizing a target language, the model applies the source
+speaker's learned articulatory constraints to the new phoneme sequence.
+This structural bias causes vowels to sound off-target and consonants to
+carry non-native timing.</p>
+<h3 id="prosodic-incompatibility">Prosodic Incompatibility</h3>
+<p>Phoneme inventory mismatches also disrupt suprasegmental features,
+including stress, duration, and pitch contours. Languages use different
+rules for phoneme duration and lexical stress (such as tone-timed versus
+stress-timed cadences).</p>
+<p>Because the acoustic model relies on the source speaker's statistical
+priors, it frequently predicts phoneme durations and pitch trajectories
+aligned with the native language's rhythm rather than the target
+language's natural cadence. This mismatch in prosody compounds the
+phonetic errors, making the synthetic accent sound even more pronounced
+to native listeners.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

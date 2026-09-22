@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G2P Conversion for OOV Words in Multilingual TTS - tts</title>
+    <meta name="description" content="Grapheme-to-Phoneme (G2P) conversion translates written orthography into phonetic transcriptions, serving as a foundational step in Text-to-Speech (TTS) synthesis. In multilingual systems, Out-of-Vocabulary (OOV) words—such as proper nouns, technical j">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/g-2-p-conversion-for-oov-words-in-multilingual-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="G2P Conversion for OOV Words in Multilingual TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/g-2-p-conversion-for-oov-words-in-multilingual-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Grapheme-to-Phoneme (G2P) conversion translates written orthography into phonetic transcriptions, serving as a foundational step in Text-to-Speech (TTS) synthesis. In multilingual systems, Out-of-Vocabulary (OOV) words—such as proper nouns, technical j" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="g2p-conversion-for-oov-words-in-multilingual-tts">G2P Conversion
+for OOV Words in Multilingual TTS</h1>
+<p>Grapheme-to-Phoneme (G2P) conversion translates written orthography
+into phonetic transcriptions, serving as a foundational step in
+Text-to-Speech (TTS) synthesis. In multilingual systems,
+Out-of-Vocabulary (OOV) words—such as proper nouns, technical jargon,
+neologisms, and foreign loanwords—frequently break standard dictionary
+lookups. Modern multilingual TTS architectures overcome this limitation
+by deploying neural sequence-to-sequence models, shared phonetic
+representations, morphological decomposition, and cross-lingual transfer
+techniques to predict accurate pronunciations dynamically.</p>
+<h3 id="neural-sequence-to-sequence-generalization">Neural
+Sequence-to-Sequence Generalization</h3>
+<p>Traditional G2P relied heavily on static pronunciation lexicons and
+hand-crafted pronunciation rules, which immediately fail when
+encountering an OOV token. Modern pipelines replace or augment lexicons
+with neural sequence-to-sequence architectures, predominantly
+Transformer-based or recurrent neural networks (RNNs).</p>
+<p>These models operate at the character level. By mapping grapheme
+sequences directly to phoneme sequences, neural models learn latent
+spelling-to-sound rules from vast multilingual training corpora. When an
+unseen word appears, the network does not require an exact match; it
+extrapolates phonemic output based on learned statistical patterns of
+surrounding graphemes, prefix-suffix structures, and phonotactic
+probabilities.</p>
+<h3 id="unified-phonetic-spaces-ipa-and-x-sampa">Unified Phonetic Spaces
+(IPA and X-SAMPA)</h3>
+<p>Multilingual G2P models commonly project diverse writing systems into
+a shared target vocabulary, such as the International Phonetic Alphabet
+(IPA) or X-SAMPA. Instead of maintaining isolated phoneme sets for each
+language, a global acoustic-phonetic inventory is used.</p>
+<p>This unified space allows the system to utilize cross-lingual
+transfer. If an OOV word shares phonetic or orthographic characteristics
+with another language within the model's training data, the model
+transfers sound-mapping rules across linguistic boundaries. Low-resource
+languages benefit directly from high-resource languages that share
+linguistic roots or orthographic conventions, enabling viable zero-shot
+pronunciation generation.</p>
+<h3 id="subword-and-morphological-decomposition">Subword and
+Morphological Decomposition</h3>
+<p>In agglutinative or compounding languages (such as German, Finnish,
+or Turkish), OOV words are frequently new combinations of known
+morphemes rather than entirely novel roots. Multilingual G2P systems
+address this through subword tokenization techniques, such as Byte-Pair
+Encoding (BPE), or dedicated morphological analyzers.</p>
+<p>By decomposing a complex OOV word into constituent stems, prefixes,
+and suffixes, the system converts an unknown compound into several known
+units. Each unit is mapped to its corresponding phonemes, and
+language-specific phonological rules (such as liaison, vowel harmony, or
+German final-obstruent devoicing) are applied at the boundaries during
+reconstruction.</p>
+<h3
+id="code-switching-and-context-aware-language-identification">Code-Switching
+and Context-Aware Language Identification</h3>
+<p>In multilingual TTS, OOV words are often loanwords or instances of
+code-switching (e.g., an English brand name appearing in Spanish text).
+Standard monolingual G2P typically mispronounces these by forcing native
+grapheme-to-phoneme rules onto foreign orthography.</p>
+<p>Advanced architectures integrate Language Identification (LID)
+modules directly into the text front-end or condition the G2P model with
+language embeddings. When the model detects an OOV token from a foreign
+origin:</p>
+<ol type="1">
+<li>It applies the phonology of the source language to generate the base
+pronunciation.</li>
+<li>It maps foreign phonemes to the closest equivalent sounds supported
+by the target speaker’s voice via phoneme substitution matrices.</li>
+</ol>
+<h3 id="hybrid-inference-pipelines">Hybrid Inference Pipelines</h3>
+<p>In production systems, G2P modules typically operate as hybrid
+pipelines:</p>
+<ol type="1">
+<li><strong>Lexicon Lookup:</strong> The system first queries
+high-precision, human-curated dictionaries for known irregular
+pronunciations.</li>
+<li><strong>Neural Prediction:</strong> Any unresolved tokens (OOVs) are
+passed to the multilingual neural G2P model.</li>
+<li><strong>Phonotactic Constraints:</strong> The generated phonemes are
+checked against language-specific phonotactic constraints to avoid
+generating unpronounceable sound sequences before being passed to the
+acoustic model.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classifier-Free Guidance in Diffusion TTS Models - tts</title>
+    <meta name="description" content="Classifier-Free Guidance (CFG) is an essential inference-time technique that dramatically shapes the performance of diffusion-based Text-to-Speech (TTS) systems. By interpolating between a model's conditional and unconditional outputs, CFG allows develop">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/classifier-free-guidance-in-diffusion-tts-models">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Classifier-Free Guidance in Diffusion TTS Models - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/classifier-free-guidance-in-diffusion-tts-models" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Classifier-Free Guidance (CFG) is an essential inference-time technique that dramatically shapes the performance of diffusion-based Text-to-Speech (TTS) systems. By interpolating between a model's conditional and unconditional outputs, CFG allows develop" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="classifier-free-guidance-in-diffusion-tts-models">Classifier-Free
+Guidance in Diffusion TTS Models</h1>
+<p>Classifier-Free Guidance (CFG) is an essential inference-time
+technique that dramatically shapes the performance of diffusion-based
+Text-to-Speech (TTS) systems. By interpolating between a model's
+conditional and unconditional outputs, CFG allows developers to steer
+audio generation more closely toward the input text or acoustic prompt.
+While CFG significantly enhances speech intelligibility, phonetic
+clarity, and speaker similarity, an improperly tuned guidance scale can
+introduce severe acoustic artifacts, unnatural prosody, and audio
+instability.</p>
+<h3 id="how-classifier-free-guidance-works-in-tts">How Classifier-Free
+Guidance Works in TTS</h3>
+<p>In diffusion-based acoustic modeling, a neural network iteratively
+removes noise from a latent representation or mel-spectrogram to produce
+speech. During training, the conditioning input (such as text
+embeddings, phonemes, or speaker vectors) is randomly dropped at a
+predetermined probability, typically between 10% and 20%. This forces
+the single model to learn both conditional distribution <span
+class="math inline">\(P(\text{audio}|\text{text})\)</span> and
+unconditional distribution <span
+class="math inline">\(P(\text{audio})\)</span>.</p>
+<p>During inference, the score estimate is calculated as:</p>
+<p><span class="math display">\[\hat{\epsilon} =
+\epsilon_{\text{uncond}} + w \cdot (\epsilon_{\text{cond}} -
+\epsilon_{\text{uncond}})\]</span></p>
+<p>where <span class="math inline">\(w\)</span> represents the guidance
+scale. When <span class="math inline">\(w = 1\)</span>, the model
+operates under standard conditional generation. When <span
+class="math inline">\(w &gt; 1\)</span>, the model amplifies the
+difference between the conditioned output and the unconditioned
+baseline, pushing the generated audio toward paths that strongly reflect
+the input text.</p>
+<h3 id="impact-on-speech-quality">Impact on Speech Quality</h3>
+<p>The primary benefit of CFG in diffusion TTS is the marked improvement
+in perceptual audio quality and phonetic precision.</p>
+<ul>
+<li><strong>Phonetic Intelligibility:</strong> Low-guidance diffusion
+models often suffer from slurred pronunciation, skipped words, or
+mumbled phonemes. Applying CFG forces the generative process to
+prioritize textual adherence, substantially reducing the Word Error Rate
+(WER).</li>
+<li><strong>Acoustic Detail and Crispness:</strong> CFG sharpens the
+boundaries in mel-spectrograms. Formant transitions, fricatives, and
+plosives become more distinct, removing the muffled or "over-smoothed"
+quality commonly seen in raw generative models.</li>
+<li><strong>Speaker and Emotion Alignment:</strong> When multi-speaker
+or style embeddings are included in the conditioning, CFG accentuates
+these characteristics, yielding higher speaker similarity and more
+pronounced emotional delivery.</li>
+</ul>
+<h3 id="impact-on-generation-stability">Impact on Generation
+Stability</h3>
+<p>While CFG enhances intelligibility, increasing the guidance weight
+introduces a trade-off between text adherence and sample
+naturalness.</p>
+<ul>
+<li><strong>Over-Saturation and Clipping:</strong> Excessively high
+guidance scales (<span class="math inline">\(w\)</span>) push latent
+values outside the typical training distribution. In mel-spectrogram
+domains, this causes over-exposure or dynamic range clipping, which
+manifests as harsh digital distortion, buzzing, or static noise in the
+vocoder output.</li>
+<li><strong>Prosodic Rigidity and Monotony:</strong> Extremely high
+guidance reduces the diversity of the diffusion trajectory. The
+resulting speech may sound robotic, overly strained, or unnaturally
+uniform, stripping away the micro-prosody that makes human speech sound
+organic.</li>
+<li><strong>Instability at Low Guidance:</strong> Conversely, setting
+<span class="math inline">\(w \le 1\)</span> can cause the generation to
+drift, resulting in hallucinations, repeated syllables, or trailing
+background noise, especially in complex sentences or zero-shot voice
+cloning setups.</li>
+</ul>
+<h3 id="finding-the-optimal-guidance-scale">Finding the Optimal Guidance
+Scale</h3>
+<p>Optimal stability and quality depend on calibrating the guidance
+weight to the specific diffusion architecture, sampling schedule, and
+condition type.</p>
+<ul>
+<li><strong>Static Values:</strong> For most mel-diffusion architectures
+(such as Grad-TTS or Diff-TTS derivatives), empirical testing shows that
+guidance scales between <span class="math inline">\(1.2\)</span> and
+<span class="math inline">\(2.5\)</span> offer the best compromise
+between naturalness and low WER.</li>
+<li><strong>Dynamic Guidance:</strong> Advanced implementations employ
+dynamic or scheduled guidance, where <span
+class="math inline">\(w\)</span> varies across diffusion timesteps.
+Applying stronger guidance at earlier steps establishes the global
+phonetic structure, while reducing guidance in final steps preserves
+natural acoustic textures and prevents artifacts.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

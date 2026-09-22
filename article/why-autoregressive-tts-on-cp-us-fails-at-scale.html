@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Autoregressive TTS on CPUs Fails at Scale - tts</title>
+    <meta name="description" content="Running autoregressive Text-to-Speech (TTS) models entirely on CPU hardware becomes commercially and computationally unfeasible when scaling to production workloads. While central processing units (CPUs) handle general-purpose computing efficiently, auto">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/why-autoregressive-tts-on-cp-us-fails-at-scale">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Autoregressive TTS on CPUs Fails at Scale - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/why-autoregressive-tts-on-cp-us-fails-at-scale" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Running autoregressive Text-to-Speech (TTS) models entirely on CPU hardware becomes commercially and computationally unfeasible when scaling to production workloads. While central processing units (CPUs) handle general-purpose computing efficiently, auto" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-autoregressive-tts-on-cpus-fails-at-scale">Why
+Autoregressive TTS on CPUs Fails at Scale</h1>
+<p>Running autoregressive Text-to-Speech (TTS) models entirely on CPU
+hardware becomes commercially and computationally unfeasible when
+scaling to production workloads. While central processing units (CPUs)
+handle general-purpose computing efficiently, autoregressive speech
+synthesis demands massive sequential matrix operations and rapid memory
+access that drastically exceed standard CPU architecture capabilities.
+As concurrency demands rise, CPU-only infrastructure suffers from
+crippling latency, catastrophic throughput degradation, and
+unsustainable operational costs.</p>
+<h3 id="the-sequential-generation-bottleneck">The Sequential Generation
+Bottleneck</h3>
+<p>Autoregressive TTS models—such as Bark, Tortoise-TTS, and
+VALL-E—synthesize speech sequentially, predicting audio tokens one step
+at a time where each new token depends strictly on all previously
+generated tokens. Because token <span class="math inline">\(N\)</span>
+requires the output of token <span class="math inline">\(N-1\)</span>,
+the generation process across the temporal dimension cannot be
+parallelized.</p>
+<p>A typical speech segment requires hundreds or thousands of forward
+passes through the neural network to produce just a few seconds of
+audio. While graphics processing units (GPUs) accelerate individual
+forward passes using thousands of dedicated tensor cores, CPUs rely on a
+limited number of high-performance cores optimized for complex branching
+rather than brute-force matrix multiplication. Consequently, individual
+token generation on a CPU is inherently slow, leading to high initial
+latency and poor overall responsiveness.</p>
+<h3 id="memory-bandwidth-limitations">Memory Bandwidth Limitations</h3>
+<p>Autoregressive inference is heavily memory-bandwidth bound. During
+each sequential step:</p>
+<ol type="1">
+<li>The model must fetch its entire set of weights from RAM into the
+processor's cache.</li>
+<li>It computes the next token.</li>
+<li>It repeats this retrieval process for every single subsequent
+token.</li>
+</ol>
+<p>Standard CPU platforms rely on DDR4 or DDR5 memory channels,
+providing throughput typically ranging between 50 GB/s and 300 GB/s
+across multiple channels. In contrast, modern accelerators equipped with
+High Bandwidth Memory (HBM) deliver anywhere from 1,000 GB/s to over
+3,000 GB/s. Because CPUs lack the memory bus width necessary to shuffle
+multi-gigabyte weight tensors thousands of times per second, the
+processor cores spend substantial compute cycles idle, waiting for data
+retrieval.</p>
+<h3 id="unfavorable-real-time-factor-rtf">Unfavorable Real-Time Factor
+(RTF)</h3>
+<p>Production voice interfaces demand a low Real-Time Factor (RTF)—the
+ratio of computation time to the duration of the audio produced. An RTF
+under 1.0 is required for real-time output, while streaming voice
+applications typically require an RTF below 0.2 to account for network
+jitter and buffering.</p>
+<p>On CPU-only hardware, complex autoregressive TTS models frequently
+exhibit RTFs ranging from 2.0 to 10.0 or higher. Generating a 10-second
+voice clip can require 20 to 100 seconds of compute time. This
+computational drag prevents real-time, conversational interaction and
+leads to immediate queue buildup under standard user loads.</p>
+<h3 id="concurrency-and-infrastructure-costs">Concurrency and
+Infrastructure Costs</h3>
+<p>When scaling to serve multiple concurrent users, CPUs face steep
+performance degradation:</p>
+<ul>
+<li><strong>Cache Contention:</strong> Running multiple concurrent
+inferences causes CPU L2 and L3 caches to thrash continuously as
+processes fight over shared cache space, causing per-stream inference
+times to degrade non-linearly.</li>
+<li><strong>Core Saturation:</strong> Because generating a single stream
+within an acceptable time frame often requires utilizing multiple
+threads via SIMD (AVX-512) instructions, a single user request can fully
+saturate several CPU cores.</li>
+<li><strong>Massive Hardware Footprint:</strong> Supporting hundreds of
+simultaneous users on CPU-only infrastructure requires hundreds of
+multi-socket server nodes. The resulting rack space, power consumption,
+and cooling overhead make the total cost of ownership (TCO)
+exponentially higher than deploying dedicated inference accelerators
+designed specifically for dense matrix operations.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How MelGAN Achieves Ultra-Low Latency TTS - tts</title>
+    <meta name="description" content="MelGAN is a non-autoregressive, generative adversarial network (GAN) designed as a neural vocoder to convert mel-spectrograms into raw audio waveforms. This article explains the architectural and algorithmic factors that allow MelGAN to deliver ultra-low">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/how-mel-gan-achieves-ultra-low-latency-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How MelGAN Achieves Ultra-Low Latency TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/how-mel-gan-achieves-ultra-low-latency-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="MelGAN is a non-autoregressive, generative adversarial network (GAN) designed as a neural vocoder to convert mel-spectrograms into raw audio waveforms. This article explains the architectural and algorithmic factors that allow MelGAN to deliver ultra-low" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-melgan-achieves-ultra-low-latency-tts">How MelGAN Achieves
+Ultra-Low Latency TTS</h1>
+<p>MelGAN is a non-autoregressive, generative adversarial network (GAN)
+designed as a neural vocoder to convert mel-spectrograms into raw audio
+waveforms. This article explains the architectural and algorithmic
+factors that allow MelGAN to deliver ultra-low inference latency for
+edge-deployed Text-to-Speech (TTS) systems, focusing on its
+non-autoregressive feed-forward pipeline, lightweight convolutional
+building blocks, minimal computational footprint, and memory-friendly
+execution profile.</p>
+<h2 id="non-autoregressive-feed-forward-architecture">Non-Autoregressive
+Feed-Forward Architecture</h2>
+<p>Traditional neural vocoders, such as WaveNet, rely on autoregressive
+generation where each audio sample is predicted sequentially conditioned
+on all previous samples. Because raw audio typically runs at rates
+between 16 kHz and 48 kHz, sequential generation creates an enormous
+computational bottleneck that precludes real-time execution on low-power
+edge hardware.</p>
+<p>MelGAN eliminates sequential dependencies entirely by employing a
+fully feed-forward, non-autoregressive generator. It maps an entire
+sequence of mel-spectrogram frames to continuous audio waveforms in a
+single forward pass. Because all output samples are generated in
+parallel, the inference time scales with the depth of the network rather
+than the length of the audio signal, allowing full exploitation of
+multi-core edge CPUs, DSPs, and NPUs.</p>
+<h2 id="lightweight-convolutional-stack">Lightweight Convolutional
+Stack</h2>
+<p>The MelGAN generator relies on an efficient sequence of transposed
+convolutions and residual dilated convolutional blocks:</p>
+<ul>
+<li><strong>Efficient Upsampling:</strong> Transposed 1D convolutions
+progressively upsample the temporal resolution of the mel-spectrogram
+frames to match the target audio sample rate.</li>
+<li><strong>Dilated Convolutions:</strong> Residual blocks utilize
+dilated convolutions to exponentially expand the model’s receptive
+field. This captures long-range temporal dependencies and harmonic
+structures without significantly increasing the layer count or parameter
+size.</li>
+<li><strong>Weight Normalization:</strong> MelGAN avoids compute-heavy
+normalization techniques, such as instance or batch normalization,
+during inference. Instead, it relies on weight normalization, which adds
+zero computational overhead during deployment because the weights can be
+pre-computed offline.</li>
+</ul>
+<h2 id="small-parameter-footprint-and-cache-locality">Small Parameter
+Footprint and Cache Locality</h2>
+<p>MelGAN operates with approximately 4.2 million parameters in its
+standard configuration, and can be pruned down even further for embedded
+targets. This small footprint is critical for edge inference:</p>
+<ul>
+<li><strong>SRAM/Cache Residence:</strong> At roughly 16 to 17 megabytes
+of 32-bit floating-point parameters (and under 5 megabytes when
+quantized to INT8), the entire model fits comfortably inside the on-chip
+cache (L2/L3 or embedded SRAM) of modern edge system-on-chips (SoCs).
+This avoids frequent, power-hungry round-trips to off-chip DRAM, which
+are typically the primary cause of latency spikes.</li>
+<li><strong>Absence of Attention and Recurrence:</strong> MelGAN
+contains no self-attention mechanisms or recurrent connections (such as
+LSTMs or GRUs). Consequently, inference does not require caching
+key-value states or maintaining hidden states across execution steps,
+leading to predictable, deterministic memory consumption.</li>
+</ul>
+<h2 id="multi-scale-discriminator-training">Multi-Scale Discriminator
+Training</h2>
+<p>Although discriminators are discarded during edge deployment,
+MelGAN’s training framework plays a direct role in its low inference
+latency. By using a multi-scale discriminator architecture that
+evaluates audio at raw, downsampled, and heavily downsampled rates along
+with a feature-matching loss, the training process forces the compact
+generator to learn fine acoustic details. This allows the generator to
+remain structurally lightweight without sacrificing perceptual audio
+quality.</p>
+<h2 id="real-time-factor-on-edge-hardware">Real-Time Factor on Edge
+Hardware</h2>
+<p>Due to these optimizations, MelGAN exhibits a Real-Time Factor (RTF)
+significantly below 1.0—often operating at 0.05 to 0.1 on standard
+mobile CPUs and even lower on dedicated micro-NPUs. This ensures that
+synthesized audio is rendered substantially faster than real-time
+speech, providing the instant response required for offline voice
+assistants, on-device screen readers, and low-latency interactive edge
+applications.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

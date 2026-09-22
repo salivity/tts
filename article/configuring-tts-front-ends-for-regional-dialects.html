@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuring TTS Front-Ends for Regional Dialects - tts</title>
+    <meta name="description" content="Text-to-Speech (TTS) front-ends often struggle with regional orthographies like Scots due to non-standardized spellings, unique phonemes, and vocabulary absent from standard language models. Configuring a TTS front-end to accurately pronounce regional di">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/configuring-tts-front-ends-for-regional-dialects">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configuring TTS Front-Ends for Regional Dialects - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/configuring-tts-front-ends-for-regional-dialects" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Text-to-Speech (TTS) front-ends often struggle with regional orthographies like Scots due to non-standardized spellings, unique phonemes, and vocabulary absent from standard language models. Configuring a TTS front-end to accurately pronounce regional di" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configuring-tts-front-ends-for-regional-dialects">Configuring
+TTS Front-Ends for Regional Dialects</h1>
+<p>Text-to-Speech (TTS) front-ends often struggle with regional
+orthographies like Scots due to non-standardized spellings, unique
+phonemes, and vocabulary absent from standard language models.
+Configuring a TTS front-end to accurately pronounce regional dialects
+requires adapting the text normalization pipeline, expanding the
+phonetic inventory, implementing custom pronunciation lexicons, and
+retraining grapheme-to-phoneme (G2P) models. By systematically
+addressing how non-standard text is tokenized, transcribed, and mapped
+to phonemes, developers can ensure that regional terms such as
+<em>dreich</em>, <em>bairn</em>, or <em>scunner</em> are pronounced
+naturally rather than mistreated as standard English typographical
+errors.</p>
+<h3 id="1-implementing-custom-pronunciation-lexicons">1. Implementing
+Custom Pronunciation Lexicons</h3>
+<p>The most direct method to handle known dialect words is through an
+exception lexicon (pronunciation dictionary). In standard TTS
+architectures, the front-end checks input tokens against a lexicon
+before passing unresolved tokens to a fallback model.</p>
+<ul>
+<li><strong>Lookup Overrides:</strong> Add dialectal terms directly to a
+localized phonetic dictionary mapped to International Phonetic Alphabet
+(IPA) or dialect-extended ARPAbet representations (e.g., mapping
+<em>bairn</em> to <code>/bɛərn/</code> rather than an Anglicized
+interpretation).</li>
+<li><strong>Variant Mapping:</strong> Scots exhibits substantial
+orthographic variation across regions (e.g., <em>ken</em>, <em>kin</em>,
+<em>kno</em>). Lexicon entries should map common spelling variants to
+their corresponding regional pronunciations.</li>
+</ul>
+<h3 id="2-expanding-the-phonemic-inventory">2. Expanding the Phonemic
+Inventory</h3>
+<p>Standard English TTS front-ends typically omit phonemes that are
+essential to regional languages. For Scots, the system must recognize
+and produce sounds not present in Received Pronunciation or General
+American.</p>
+<ul>
+<li><strong>Velar Fricative (/x/):</strong> Words like <em>loch</em>,
+<em>dreich</em>, and <em>sich</em> require the voiceless velar fricative
+<code>/x/</code>. The front-end symbol set must include this token and
+ensure the downstream acoustic model is trained to synthesize it.</li>
+<li><strong>Rhoticity and Consonant Clusters:</strong> Scots is strongly
+rhotic and preserves historic consonant contrasts (such as the
+distinction between /w/ in <em>witch</em> and /ʍ/ in <em>which</em>).
+The front-end's phoneme mapping must preserve these distinctions instead
+of collapsing them into standard phonemes.</li>
+</ul>
+<h3 id="3-adapting-the-text-normalization-tn-engine">3. Adapting the
+Text Normalization (TN) Engine</h3>
+<p>Text normalization transforms raw text into spoken-form words (e.g.,
+expanding abbreviations, symbols, and non-standard contractions).
+Standard TN rules frequently break when processing regional grammar and
+syntax.</p>
+<ul>
+<li><strong>Contraction Handling:</strong> Scots frequently uses unique
+negative enclitics such as <em>-nae</em> (<em>cannae</em>,
+<em>didnae</em>, <em>isnae</em>). Default rule-based normalizers often
+flag these as spelling errors or split them incorrectly. Custom
+tokenization rules must preserve these forms as single semantic
+units.</li>
+<li><strong>Apostrophe Standardization:</strong> Regional writing often
+uses apostrophes to denote historical consonant omission (e.g.,
+<em>an'</em>, <em>o'</em>, <em>wi'</em>). Normalization pipelines should
+map these to their full dialectal pronunciations rather than stripping
+the punctuation or reading them as fragmented letters.</li>
+</ul>
+<h3 id="4-retraining-grapheme-to-phoneme-g2p-models">4. Retraining
+Grapheme-to-Phoneme (G2P) Models</h3>
+<p>When a word is not present in the lexicon, the front-end relies on a
+G2P model (often a neural network or a joint n-gram model) to predict
+pronunciation from raw text. Standard English G2P models fail on Scots
+orthography because the letter-to-sound rules differ significantly.</p>
+<ul>
+<li><strong>Corpus Fine-Tuning:</strong> Fine-tune existing G2P models
+on paired datasets of Scots text and phonetic transcriptions. This
+teaches the model regional spelling-sound conventions, such as
+<em>quh-</em> representing /xw/ or /hw/.</li>
+<li><strong>Rule-Based Pre-Passes:</strong> In resource-constrained
+environments, rule-based transducers can transform predictable Scots
+digraphs into phonetic symbols before invoking generic G2P
+algorithms.</li>
+</ul>
+<h3 id="5-integrating-dialect-aware-language-identification">5.
+Integrating Dialect-Aware Language Identification</h3>
+<p>Speakers frequently code-switch between standard language and
+regional dialects within the same sentence. Deploying a front-end
+Language Identification (LID) or token-level dialect tagger allows the
+TTS system to dynamically route tokens. When a Scots token is detected
+within predominantly Standard Scottish English text, the system applies
+the dialect-specific lexicon and phonology, preserving authentic
+pronunciation without compromising the delivery of standard text.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

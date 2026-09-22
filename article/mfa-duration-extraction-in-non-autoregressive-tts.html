@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFA Duration Extraction in Non-Autoregressive TTS - tts</title>
+    <meta name="description" content="This article explores how integrating the Montreal Forced Aligner (MFA) for phoneme duration extraction significantly improves the training stability, speed, and audio quality of non-autoregressive Text-to-Speech (TTS) architectures. By replacing fragile">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/mfa-duration-extraction-in-non-autoregressive-tts">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="MFA Duration Extraction in Non-Autoregressive TTS - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/mfa-duration-extraction-in-non-autoregressive-tts" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores how integrating the Montreal Forced Aligner (MFA) for phoneme duration extraction significantly improves the training stability, speed, and audio quality of non-autoregressive Text-to-Speech (TTS) architectures. By replacing fragile" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="mfa-duration-extraction-in-non-autoregressive-tts">MFA Duration
+Extraction in Non-Autoregressive TTS</h1>
+<p>This article explores how integrating the Montreal Forced Aligner
+(MFA) for phoneme duration extraction significantly improves the
+training stability, speed, and audio quality of non-autoregressive
+Text-to-Speech (TTS) architectures. By replacing fragile,
+attention-based teacher alignments with robust acoustic forced
+alignment, MFA provides hard, deterministic frame-to-phoneme boundaries.
+This external supervision resolves the fundamental length mismatch
+problem in parallel speech generation, eliminates common synthesis
+errors like skipped or repeated words, and streamlines the training
+pipeline for modern acoustic models like FastSpeech 2.</p>
+<h3 id="the-alignment-challenge-in-non-autoregressive-tts">The Alignment
+Challenge in Non-Autoregressive TTS</h3>
+<p>Non-autoregressive TTS models synthesize speech frames simultaneously
+rather than sequentially, enabling ultra-fast inference and real-time
+streaming capabilities. However, because speech duration varies
+dynamically based on context, speaker, and cadence, the length of the
+input text sequence rarely matches the length of the target acoustic
+spectrogram.</p>
+<p>To bridge this length discrepancy, parallel TTS architectures utilize
+a duration predictor module to expand phoneme embeddings to match the
+target frame count. Training this duration predictor requires accurate
+target durations for every phoneme in the training dataset.</p>
+<h3 id="how-montreal-forced-aligner-operates">How Montreal Forced
+Aligner Operates</h3>
+<p>Montreal Forced Aligner is an open-source speech alignment tool built
+upon Kaldi. It utilizes Hidden Markov Models (HMMs) and Gaussian Mixture
+Models (GMMs), alongside deep neural acoustic models, to align phonetic
+transcripts with speech waveforms.</p>
+<p>Given an audio file, a transcription, and a pronunciation lexicon,
+MFA performs the following:</p>
+<ol type="1">
+<li>Translates the text into an optimal sequence of phonemes.</li>
+<li>Evaluates the acoustic spectral features (such as MFCCs) of the
+audio.</li>
+<li>Computes the optimal path through the acoustic state sequence using
+the Viterbi algorithm.</li>
+<li>Outputs the exact millisecond-level start and end timestamps for
+every phone and word.</li>
+</ol>
+<p>These timestamps convert directly into discrete frame counts,
+establishing the exact duration target for each phoneme.</p>
+<h3 id="eliminating-dependence-on-autoregressive-teachers">Eliminating
+Dependence on Autoregressive Teachers</h3>
+<p>Early non-autoregressive systems, such as the original FastSpeech,
+extracted durations by distilling soft attention maps from pre-trained
+autoregressive models (like Tacotron 2). This approach had several
+critical flaws:</p>
+<ul>
+<li><strong>Attention Errors:</strong> Autoregressive attention
+mechanisms frequently suffer from attention collapse, blurriness, or
+misalignment, causing duration errors that cascade directly into the
+student model.</li>
+<li><strong>Complex Pipelines:</strong> Training an autoregressive
+teacher adds considerable computational overhead and requires extensive
+validation before training the non-autoregressive model can even
+begin.</li>
+</ul>
+<p>MFA replaces this teacher-student distillation entirely. Because MFA
+uses robust acoustic alignment independent of neural cross-attention, it
+generates reliable, hard alignments without requiring a pre-trained
+neural network teacher.</p>
+<h3 id="enhancing-training-stability-and-convergence">Enhancing Training
+Stability and Convergence</h3>
+<p>Using MFA-extracted durations directly simplifies the training
+objective. Models like FastSpeech 2 can treat duration prediction as a
+straightforward supervised regression task. By calculating Mean Squared
+Error (MSE) or Huber loss between the predicted durations and the MFA
+ground-truth durations, the duration predictor converges rapidly.</p>
+<p>Furthermore, during training, the model uses the ground-truth MFA
+durations to expand the text representations through a length regulator.
+This ensures that the downstream spectrogram decoder receives accurately
+aligned representations, preventing gradients from destabilizing early
+in the training process.</p>
+<h3 id="mitigating-word-skipping-and-phoneme-repetition">Mitigating Word
+Skipping and Phoneme Repetition</h3>
+<p>Attention failures in sequence-to-sequence models frequently lead to
+skipped words, unnatural stuttering, or looping phonemes in synthetic
+speech. MFA relies on strict temporal progression enforced by HMM state
+transitions. Phonemes are forced to align linearly with the audio
+stream, meaning MFA durations preserve the chronological integrity of
+the transcription. Consequently, non-autoregressive models trained on
+MFA alignments virtually eliminate phoneme omission and looping defects,
+producing significantly clearer and more intelligible audio.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

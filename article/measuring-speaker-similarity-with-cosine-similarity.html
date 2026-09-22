@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Measuring Speaker Similarity with Cosine Similarity - tts</title>
+    <meta name="description" content="In zero-shot voice cloning Text-to-Speech (TTS), measuring how closely a synthesized voice matches an unseen target speaker is critical for assessing model performance. This article explains how speaker similarity is evaluated quantitatively through obje">
+    <link rel="canonical" href="https://salivity.github.io/tts/article/measuring-speaker-similarity-with-cosine-similarity">
+    <link rel="search" type="application/opensearchdescription+xml" title="tts" href="/tts/opensearch.xml">
+    <link rel="icon" href="/tts/favicon.ico">
+    <link rel="stylesheet" href="/tts/css/style.css">
+    <link media="print" rel="stylesheet" href="/tts/css/print.css">
+    <script src="/tts/js/fuse.min.js"></script>
+    <script src="/tts/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Measuring Speaker Similarity with Cosine Similarity - tts" />
+    <meta property="og:url" content="https://salivity.github.io/tts/article/measuring-speaker-similarity-with-cosine-similarity" />
+    <meta property="og:image" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/tts/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In zero-shot voice cloning Text-to-Speech (TTS), measuring how closely a synthesized voice matches an unseen target speaker is critical for assessing model performance. This article explains how speaker similarity is evaluated quantitatively through obje" />
+    <link rel="manifest" href="/tts/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/tts/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>tts</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/tts/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="measuring-speaker-similarity-with-cosine-similarity">Measuring
+Speaker Similarity with Cosine Similarity</h1>
+<p>In zero-shot voice cloning Text-to-Speech (TTS), measuring how
+closely a synthesized voice matches an unseen target speaker is critical
+for assessing model performance. This article explains how speaker
+similarity is evaluated quantitatively through objective metrics,
+focusing on the extraction of high-dimensional speaker embeddings, the
+mathematical application of cosine similarity, the evaluation protocol,
+and the practical strengths and limitations of this approach.</p>
+<h3 id="the-role-of-speaker-verification-models">The Role of Speaker
+Verification Models</h3>
+<p>Zero-shot voice cloning aims to replicate a target voice using only a
+short reference audio prompt that the model never encountered during
+training. To measure speaker similarity quantitatively without human
+listeners, researchers use pre-trained speaker verification (SV)
+networks.</p>
+<p>Popular SV architectures include ECAPA-TDNN, ResNet-based models, and
+self-supervised models like WavLM or Wav2Vec 2.0. These models are
+trained on massive multi-speaker datasets (such as VoxCeleb) to project
+raw audio into a compact, fixed-dimensional latent space. The resulting
+vectors, commonly called speaker embeddings (or d-vectors/x-vectors),
+capture speaker-specific acoustic traits—such as vocal tract geometry
+and fundamental pitch range—while ignoring linguistic content, recording
+environments, and background noise.</p>
+<h3 id="the-cosine-similarity-metric">The Cosine Similarity Metric</h3>
+<p>To quantify how identical the synthesized voice is to the target
+prompt, embeddings are extracted from both audio samples:</p>
+<ol type="1">
+<li><strong>Reference Embedding (<span
+class="math inline">\(u\)</span>):</strong> Extracted from the
+ground-truth reference audio provided to the cloning model.</li>
+<li><strong>Synthesized Embedding (<span
+class="math inline">\(v\)</span>):</strong> Extracted from the generated
+audio produced by the TTS system.</li>
+</ol>
+<p>The similarity between these two vectors is calculated using the
+cosine similarity formula:</p>
+<p><span class="math display">\[\text{Cosine Similarity}(u, v) = \frac{u
+\cdot v}{\|u\|_2 \|v\|_2} = \frac{\sum_{i=1}^{n} u_i
+v_i}{\sqrt{\sum_{i=1}^{n} u_i^2} \sqrt{\sum_{i=1}^{n}
+v_i^2}}\]</span></p>
+<p>Cosine similarity computes the cosine of the angle between the two
+vectors in multidimensional space.</p>
+<ul>
+<li>A value of <strong>1.0</strong> indicates identical orientation,
+representing maximum voice similarity.</li>
+<li>A value of <strong>0.0</strong> indicates orthogonality, meaning no
+correlation between the speaker profiles.</li>
+<li>Negative values indicate opposing vectors, though deep speaker
+embeddings generally fall within positive ranges for human speech.</li>
+</ul>
+<p>Because cosine similarity evaluates the directional alignment rather
+than the magnitude of the vectors, it remains invariant to absolute
+volume and scaling differences between the audio tracks.</p>
+<h3 id="quantitative-evaluation-protocol">Quantitative Evaluation
+Protocol</h3>
+<p>A standard benchmarking workflow uses a held-out dataset of unseen
+speakers and follows a structured procedure:</p>
+<ol type="1">
+<li><strong>Pair Generation:</strong> For each target speaker, one
+utterance is selected as the cloning prompt, and the model synthesizes a
+test sentence.</li>
+<li><strong>Score Extraction:</strong> The cosine similarity is
+calculated between the synthesized sample and the reference sample (or
+an alternate real recording of the same speaker to prevent trivial
+acoustic matching).</li>
+<li><strong>Thresholding and Baseline Comparison:</strong> Scores are
+benchmarked against two reference sets:
+<ul>
+<li><strong>Positive Pairs:</strong> Different real recordings from the
+<em>same</em> human speaker to establish an empirical upper bound.</li>
+<li><strong>Negative Pairs:</strong> Real recordings from
+<em>different</em> speakers to establish a distinctiveness
+threshold.</li>
+</ul></li>
+<li><strong>Aggregation:</strong> Individual pair scores are averaged
+across the dataset to produce a single Mean Cosine Similarity (MCS) or
+Speaker Similarity Score (SIM). Often, models are also evaluated on
+Equal Error Rate (EER), assessing whether an automated verification
+system can accurately distinguish the clone from imposter voices based
+on a similarity threshold.</li>
+</ol>
+<h3 id="strengths-and-limitations">Strengths and Limitations</h3>
+<p>Cosine similarity provides a rapid, cost-effective, and fully
+automated evaluation method that correlates strongly with human Mean
+Opinion Score (MOS) evaluations for speaker identity.</p>
+<p>However, the metric has notable constraints. It does not measure
+audio fidelity, naturalness, or speech intelligibility, which must be
+tested using complementary metrics such as Word Error Rate (WER) and
+Perceptual Evaluation of Speech Quality (PESQ). Additionally, if the
+synthesized speech contains acoustic artifacts or significant channel
+differences from the reference file, the embedding model may
+misinterpret these anomalies, artificially lowering or skewing the
+similarity score.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/tts'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/tts/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/tts/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
